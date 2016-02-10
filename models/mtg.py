@@ -76,7 +76,7 @@ class MTGCard(models.Model):
     toughness_special = models.CharField(max_length=10, blank=True,
                                          default='')
     loyalty = models.PositiveSmallIntegerField(default=0)
-    loyalty_special = models.CharFIeld(max_length=10, blank=True, default='')
+    loyalty_special = models.CharField(max_length=10, blank=True, default='')
 
     # === rarity =====================================================
     RARITY_MYTHIC_RARE = 'M'
@@ -140,7 +140,7 @@ class MTGCard(models.Model):
     # === META =======================================================
     class Meta:
         ordering = ['name']
-        unique_together = ('set_code', 'set_name')
+        unique_together = ('set_code', 'set_number')
 
     def __str__(self):
         return self.name
@@ -148,7 +148,7 @@ class MTGCard(models.Model):
 
 class MTGRuling(models.Model):
     """Model for rulings that affect certain `tccm.models.MTGCard`s."""
-    cards = models.ManyToManyField(MTGCard, on_delete=models.CASCADE)
+    cards = models.ManyToManyField(MTGCard)
     ruling = models.TextField(unique=True)
     date = models.DateField("date of the ruling")
 
@@ -160,8 +160,10 @@ class MTGCollection(models.Model):
     date_created = models.DateField()
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    viewers = models.ManyToManyField(User, on_delete=models.SET_NULL, null=True)
-    editors = models.ManyToManyField(User, on_delete=models.SET_NULL, null=True)
+    viewers = models.ManyToManyField(User,
+                                     related_name='viewable_mtgcollections')
+    editors = models.ManyToManyField(User,
+                                     related_name='editable_mtgcollections')
 
     class Meta:
         ordering = ['date_created']
@@ -173,7 +175,7 @@ class MTGCollection(models.Model):
 class MTGCollectionEntry(models.Model):
     """Model of a single entry of a `tccm.models.MTGCollection`."""
     collection = models.ForeignKey(MTGCollection, on_delete=models.CASCADE)
-    card = models.ForeignKey(MTGCollection, on_delete=models.CASCADE)
+    card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField("number of copies in the "
                                              "collection", default=1)
     foil_count = models.PositiveSmallIntegerField("number of foiled "
