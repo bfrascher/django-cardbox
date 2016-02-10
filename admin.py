@@ -5,6 +5,7 @@ from .models import (
     MTGBlock,
     MTGSet,
     MTGCard,
+    MTGToken,
     MTGRuling,
     MTGCollection,
 #    MTGCollectionEntry,
@@ -18,3 +19,4 @@ admin.site.register(MTGSet)
 admin.site.register(MTGCard)
 admin.site.register(MTGRuling)
 admin.site.register(MTGCollection)
+admin.site.register(MTGToken)
