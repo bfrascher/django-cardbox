@@ -185,6 +185,9 @@ class MTGToken(MTGBaseCard):
     rarity = models.CharField(max_length=1, choices=RARITIES, blank=True,
                               default=RARITY_NONE)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
