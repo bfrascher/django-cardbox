@@ -1,9 +1,11 @@
 from .mtg import (
     Artist,
+    MTGRuling,
     MTGBlock,
     MTGSet,
     MTGCard,
-    MTGRuling,
+    MTGToken,
     MTGCollection,
-    MTGCollectionEntry,
+    MTGCollectionCardEntry,
+    MTGCollectionTokenEntry,
 )
