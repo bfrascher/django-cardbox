@@ -11,6 +11,12 @@ from .models import (
 )
 
 
+@admin.register(Artist)
+class ArtistAdmin(admin.ModelAdmin):
+    list_display = ('last_name', 'first_name')
+    search_fields = ('^last_name', '^first_name')
+
+
 @admin.register(MTGCard)
 class MTGCardAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -80,7 +86,7 @@ class MTGCollectionAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-admin.site.register(Artist)
+# admin.site.register(Artist)
 admin.site.register(MTGBlock)
 admin.site.register(MTGSet)
 # admin.site.register(MTGCard)
