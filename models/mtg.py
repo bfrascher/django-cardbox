@@ -72,16 +72,20 @@ class MTGBaseCard(models.Model):
     flavour = models.TextField(blank=True)
 
     # === stats ======================================================
-    power = models.PositiveSmallIntegerField(default=0)
+    power = models.PositiveSmallIntegerField(default=None, null=True,
+                                             blank=True)
     power_special = models.CharField(max_length=10, blank=True, default='')
-    toughness = models.PositiveSmallIntegerField(default=0)
+    toughness = models.PositiveSmallIntegerField(default=None, null=True,
+                                                 blank=True)
     toughness_special = models.CharField(max_length=10, blank=True,
                                          default='')
-    loyalty = models.PositiveSmallIntegerField(default=0)
+    loyalty = models.PositiveSmallIntegerField(default=None, null=True,
+                                               blank=True)
     loyalty_special = models.CharField(max_length=10, blank=True, default='')
 
     # === art ========================================================
-    artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True)
+    artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True,
+                               blank=True)
 
     class Meta:
         abstract = True
@@ -170,7 +174,7 @@ class MTGCard(MTGBaseCard):
 
 
 class MTGToken(MTGBaseCard):
-    """Model of a token in Magic The Gatherin."""
+    """Model of a token in Magic The Gathering."""
     # === rarity =====================================================
     RARITY_NONE = ''
     RARITY_TOKEN = 'T'
