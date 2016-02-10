@@ -4,7 +4,7 @@ from django.db import models
 
 class Artist(models.Model):
     """Simple model for an artist.  Referenced in `tccm.models.MTGCard`"""
-    first_name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=100)
 
     class Meta:
