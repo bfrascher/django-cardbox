@@ -50,6 +50,7 @@ class MTGCard(models.Model):
     """Model for a card in Magic The Gathering."""
     # === set ========================================================
     set_code = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
+    set_number_suffix = models.CharField(max_length=1, blank=True, default='')
     set_number = models.PositiveSmallIntegerField()
 
     # === card text ==================================================
