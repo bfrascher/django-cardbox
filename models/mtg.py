@@ -66,7 +66,7 @@ class MTGCard(models.Model):
     mana_r = models.PositiveSmallIntegerField("red mana", default=0)
     mana_g = models.PositiveSmallIntegerField("green mana", default=0)
     mana_c = models.PositiveSmallIntegerField("colorless mana", default=0)
-    mana_special = models.CharField("special mana", max_length=50)
+    mana_special = models.CharField("special mana", max_length=50, blank=True)
     cmc = models.PositiveSmallIntegerField("converted mana cost", default=0)
 
     # === stats ======================================================
@@ -109,7 +109,7 @@ class MTGCard(models.Model):
     dual_type = models.CharField(max_length=1, choices=DUAL_TYPES,
                                  default=DUAL_NONE, blank=True)
     dual_card = models.OneToOneField('self', on_delete=models.SET_NULL,
-                                     default=None, null=True)
+                                     default=None, null=True, blank=True)
 
     # === legality ===================================================
     LEGALITY_NONE = ''
@@ -140,7 +140,6 @@ class MTGCard(models.Model):
     # === META =======================================================
     class Meta:
         ordering = ['name']
-        unique_together = ('set_code', 'set_number')
 
     def __str__(self):
         return self.name
