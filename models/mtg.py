@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -148,7 +149,7 @@ class MTGCard(models.Model):
 class MTGRuling(models.Model):
     """Model for rulings that affect certain `tccm.models.MTGCard`s."""
     cards = models.ManyToManyField(MTGCard, on_delete=models.CASCADE)
-    ruling = models.TextField()
+    ruling = models.TextField(unique=True)
     date = models.DateField("date of the ruling")
 
 
@@ -157,6 +158,10 @@ class MTGCollection(models.Model):
     name = models.CharField(max_length=100)
     cards = models.ManyToManyField(MTGCard, through='MTGCollectionEntry')
     date_created = models.DateField()
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    viewers = models.ManyToManyField(User, on_delete=models.SET_NULL, null=True)
+    editors = models.ManyToManyField(User, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         ordering = ['date_created']
