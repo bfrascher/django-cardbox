@@ -17,6 +17,23 @@ class ArtistAdmin(admin.ModelAdmin):
     search_fields = ('^last_name', '^first_name')
 
 
+@admin.register(MTGBlock)
+class MTGBlockAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+
+
+@admin.register(MTGSet)
+class MTGSetAdmin(admin.ModelAdmin):
+    search_fields = ('name', '^code')
+    list_display = ('name', 'code', 'release_date', 'block')
+
+
+@admin.register(MTGRuling)
+class MRGRulingAdmin(admin.ModelAdmin):
+    search_fields = ('ruling',)
+    list_display = ('date', 'ruling',)
+
+
 @admin.register(MTGCard)
 class MTGCardAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -57,12 +74,39 @@ class MTGCardAdmin(admin.ModelAdmin):
             'fields': ['artist']
         }),
     )
-    filter_horizontal = ['rulings']
+    filter_horizontal = ('rulings',)
     list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',
                     'mtgset')
     list_filter = ('rarity', 'mtgset', 'dual_type',
                    'legal_standard', 'legal_modern')
     search_fields = ('name', 'types')
+
+
+@admin.register(MTGToken)
+class MTGTokenAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Set', {
+            'fields': ('multiverseid', ('mtgset', 'set_number',
+                                        'set_number_suffix'))
+        }),
+        ('Card', {
+            'fields': ('name', 'types', 'rules', 'flavour')
+        }),
+        ('Stats', {
+            'fields': (('power', 'toughness', 'loyalty'),
+                       ('power_special', 'toughness_special',
+                       'loyalty_special'))
+        }),
+        ('Rarity', {
+            'fields': ('rarity',)
+        }),
+        ('Artist', {
+            'fields': ('artist',)
+        }),
+    )
+    search_fields = ('name', 'types',)
+    list_display = ('name', 'types', 'power', 'toughness', 'rarity', 'mtgset')
+    list_filter = ('rarity', 'mtgset',)
 
 
 @admin.register(MTGCollection)
@@ -83,13 +127,3 @@ class MTGCollectionAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ('viewers', 'editors',)
     list_display = ('name', 'owner', 'date_created')
-
-
-# Register your models here.
-# admin.site.register(Artist)
-admin.site.register(MTGBlock)
-admin.site.register(MTGSet)
-# admin.site.register(MTGCard)
-admin.site.register(MTGRuling)
-# admin.site.register(MTGCollection)
-admin.site.register(MTGToken)
