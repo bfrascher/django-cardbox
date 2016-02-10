@@ -21,7 +21,7 @@ class MTGRuling(models.Model):
     date = models.DateField("date of the ruling")
 
     def __str__(self):
-        return '{0}: {1}'.format(self.date, self.ruling[:50])
+        return '{0}: {1}'.format(self.date, self.ruling)
 
 
 class MTGBlock(models.Model):
@@ -57,8 +57,11 @@ class MTGSet(models.Model):
 
 class MTGBaseCard(models.Model):
     """The base model for a card from Magic The Gathering."""
+    multiverseid = models.PositiveSmallIntegerField(null=True)
+
     # === set ========================================================
-    set_code = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
+    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE,
+                               verbose_name="expansion")
     set_number_suffix = models.CharField(max_length=1, blank=True, default='')
     set_number = models.PositiveSmallIntegerField()
 
