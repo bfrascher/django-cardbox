@@ -8,7 +8,6 @@ from .models import (
     MTGToken,
     MTGRuling,
     MTGCollection,
-#    MTGCollectionEntry,
 )
 
 
@@ -60,11 +59,31 @@ class MTGCardAdmin(admin.ModelAdmin):
     search_fields = ('name', 'types')
 
 
+@admin.register(MTGCollection)
+class MTGCollectionAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'owner', 'date_created'),
+        }),
+        ('Share', {
+            'classes': ('collapse',),
+            'fields': ('viewers', 'editors',)
+        }),
+        ('Basic Lands', {
+            'classes': ('collapse',),
+            'fields': (('lands_plains', 'lands_island', 'lands_swamp',
+                        'lands_mountain', 'lands_forest', 'lands_wastes'),),
+        }),
+    )
+    filter_horizontal = ('viewers', 'editors',)
+    list_display = ('name', 'owner', 'date_created')
+
+
 # Register your models here.
 admin.site.register(Artist)
 admin.site.register(MTGBlock)
 admin.site.register(MTGSet)
 # admin.site.register(MTGCard)
 admin.site.register(MTGRuling)
-admin.site.register(MTGCollection)
+# admin.site.register(MTGCollection)
 admin.site.register(MTGToken)
