@@ -198,9 +198,9 @@ class MTGCollection(models.Model):
 
     # === user =======================================================
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    viewers = models.ManyToManyField(User,
+    viewers = models.ManyToManyField(User, blank=True,
                                      related_name='viewable_mtgcollections')
-    editors = models.ManyToManyField(User,
+    editors = models.ManyToManyField(User, blank=True,
                                      related_name='editable_mtgcollections')
 
     # === lands ======================================================
