@@ -173,18 +173,6 @@ class MTGCard(models.Model):
     legal_modern = models.CharField(max_length=1, choices=LEGALITIES,
                                     default=LEGALITY_NONE, blank=True)
 
-    # === category ===================================================
-    CATEGORY_CARD = 'C'
-    CATEGORY_TOKEN = 'T'
-    CATEGORY_BASIC_LAND = 'B'
-    CATEGORIES = (
-        (CATEGORY_CARD, 'play card'),
-        (CATEGORY_TOKEN, 'token'),
-        (CATEGORY_BASIC_LAND, 'basic land'),
-    )
-    category = models.CharField(max_length=1, choices=CATEGORIES,
-                                default=CATEGORY_CARD)
-
     # === META =======================================================
     class Meta:
         ordering = ['name']
