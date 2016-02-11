@@ -110,19 +110,27 @@ class MTGCard(MTGBaseCard):
                                               null=True, blank=True)
 
     # === rarity =====================================================
+    RARITY_NONE = ''
     RARITY_MYTHIC_RARE = 'M'
     RARITY_RARE = 'R'
     RARITY_UNCOMMON = 'U'
     RARITY_COMMON = 'C'
     RARITY_SPECIAL = 'S'
     RARITY_LAND = 'L'
+    RARITY_TOKEN = 'T'
+    RARITY_EMBLEM = 'E'
+    RARITY_OTHER = 'O'
     RARITIES = (
+        (RARITY_NONE, 'No rarity'),
         (RARITY_MYTHIC_RARE, 'Mythic Rare'),
         (RARITY_RARE, 'Rare'),
         (RARITY_UNCOMMON, 'Uncommon'),
         (RARITY_COMMON, 'Common'),
         (RARITY_SPECIAL, 'Special'),
         (RARITY_LAND, 'Land'),
+        (RARITY_TOKEN, 'Token'),
+        (RARITY_EMBLEM, 'Emblem'),
+        (RARITY_OTHER, 'Other'),
     )
     rarity = models.CharField(max_length=1, choices=RARITIES,
                               default=RARITY_COMMON)
@@ -171,6 +179,9 @@ class MTGCard(MTGBaseCard):
     legal_modern = models.CharField(max_length=1, choices=LEGALITIES,
                                     default=LEGALITY_NONE, blank=True)
 
+    # === token ======================================================
+    token = models.BooleanField(default=False)
+
     # === META =======================================================
     class Meta:
         ordering = ['name']
@@ -179,31 +190,8 @@ class MTGCard(MTGBaseCard):
         return self.name
 
 
-class MTGToken(MTGBaseCard):
-    """Model of a token in Magic The Gathering."""
-    # === rarity =====================================================
-    RARITY_NONE = ''
-    RARITY_TOKEN = 'T'
-    RARITY_EMBLEM = 'E'
-    RARITY_OTHER = 'O'
-    RARITIES = (
-        (RARITY_NONE, 'No rarity'),
-        (RARITY_TOKEN, 'Token'),
-        (RARITY_EMBLEM, 'Emblem'),
-        (RARITY_OTHER, 'Other'),
-    )
-    rarity = models.CharField(max_length=1, choices=RARITIES, blank=True,
-                              default=RARITY_NONE)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
 class MTGCardEdition(models.Model):
-    """Model linking `cardbox.models.MTGBaseCard` with
+    """Model linking `cardbox.models.MTGCard` with
     `cardbox.models.MTGSet`.
 
     """
@@ -211,13 +199,10 @@ class MTGCardEdition(models.Model):
     number_suffix = models.CharField(max_length=10, blank=True)
     mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
     card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
-    token = models.ForeignKey(MTGToken, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.card:
             return '{0} in {1}'.format(self.card.name, self.mtgset.name)
-        elif self.token:
-            return '{0} in {1}'.format(self.token.name, self.mtgset.name)
         else:
             return '{0}{1} in {2}'.format(self.number, self.number_suffix,
                                           self.mtgset.name)
@@ -227,7 +212,6 @@ class MTGCollection(models.Model):
     """Model of a shareable collection of `cardbox.models.MTGCard`s."""
     name = models.CharField(max_length=100)
     cards = models.ManyToManyField(MTGCard, through='MTGCollectionCardEntry')
-    tokens = models.ManyToManyField(MTGToken, through='MTGCollectionTokenEntry')
     date_created = models.DateField()
 
     # === user =======================================================
@@ -277,11 +261,3 @@ class MTGCollectionCardEntry(MTGCollectionEntry):
 
     def __str__(self):
         return '{0} in {1}'.format(self.card.name, self.collection.name)
-
-
-class MTGCollectionTokenEntry(MTGCollectionEntry):
-    """Model a single token entry of a `cardbox.models.MTGCollection`."""
-    token = models.ForeignKey(MTGToken, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return '{0} in {1}'.format(self.token.name, self.collection.name)
