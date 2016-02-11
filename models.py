@@ -212,20 +212,6 @@ class MTGCollection(models.Model):
     editors = models.ManyToManyField(User, blank=True,
                                      related_name='editable_mtgcollections')
 
-    # === lands ======================================================
-    lands_plains = models.PositiveSmallIntegerField("number of basic plains",
-                                                    default=0)
-    lands_island = models.PositiveSmallIntegerField("number of basic islands",
-                                                    default=0)
-    lands_swamp = models.PositiveSmallIntegerField("number of basic swamps",
-                                                   default=0)
-    lands_mountain = models.PositiveSmallIntegerField("number of basic "
-                                                      "mountains", default=0)
-    lands_forest = models.PositiveSmallIntegerField("number of basic forests",
-                                                    default=0)
-    lands_wastes = models.PositiveSmallIntegerField("number of basic wastes",
-                                                    default=0)
-
     class Meta:
         ordering = ['date_created']
 
