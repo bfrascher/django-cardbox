@@ -2,12 +2,13 @@ from django.contrib import admin
 
 from .models import (
     Artist,
+    MTGRuling,
     MTGBlock,
     MTGSet,
     MTGCard,
-    MTGToken,
-    MTGRuling,
+    MTGCardEdition,
     MTGCollection,
+    MTGCollectionEntry,
 )
 
 
@@ -20,6 +21,12 @@ class ArtistAdmin(admin.ModelAdmin):
 @admin.register(MTGBlock)
 class MTGBlockAdmin(admin.ModelAdmin):
     search_fields = ('name',)
+    list_display = ('name', 'category')
+    fieldsets = (
+        (None, {
+            'fields': ('category', 'name',),
+        }),
+    )
 
 
 @admin.register(MTGSet)
@@ -34,12 +41,22 @@ class MRGRulingAdmin(admin.ModelAdmin):
     list_display = ('date', 'ruling',)
 
 
-@admin.register(MTGCard)
-class MTGCardAdmin(admin.ModelAdmin):
+class MTGCardEditionInline(admin.TabularInline):
+    model = MTGCardEdition
+    extra = 1
     fieldsets = (
         ('Set', {
-            'fields': ('multiverseid', ('mtgset', 'set_number',
-                                        'set_number_suffix'))
+            'fields': ('mtgset', 'number', 'number_suffix',),
+        }),
+    )
+
+
+@admin.register(MTGCard)
+class MTGCardAdmin(admin.ModelAdmin):
+    inlines = (MTGCardEditionInline,)
+    fieldsets = (
+        (None, {
+            'fields': ('multiverseid',),
         }),
         ('Card', {
             'fields': ('name', 'types', 'rules', 'flavour')
@@ -75,42 +92,25 @@ class MTGCardAdmin(admin.ModelAdmin):
         }),
     )
     filter_horizontal = ('rulings',)
-    list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',
-                    'mtgset')
-    list_filter = ('rarity', 'mtgset', 'dual_type',
+    list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',)
+    list_filter = ('rarity', 'sets', 'dual_type',
                    'legal_standard', 'legal_modern')
     search_fields = ('name', 'types')
 
 
-@admin.register(MTGToken)
-class MTGTokenAdmin(admin.ModelAdmin):
+class MTGCollectionEntryInline(admin.TabularInline):
+    model = MTGCollectionEntry
+    extra = 1
     fieldsets = (
-        ('Set', {
-            'fields': ('multiverseid', ('mtgset', 'set_number',
-                                        'set_number_suffix'))
-        }),
-        ('Card', {
-            'fields': ('name', 'types', 'rules', 'flavour')
-        }),
-        ('Stats', {
-            'fields': (('power', 'toughness', 'loyalty'),
-                       ('power_special', 'toughness_special',
-                       'loyalty_special'))
-        }),
-        ('Rarity', {
-            'fields': ('rarity',)
-        }),
-        ('Artist', {
-            'fields': ('artist',)
+        ('Collection Entry', {
+            'fields': ('count', 'foil_count', 'card'),
         }),
     )
-    search_fields = ('name', 'types',)
-    list_display = ('name', 'types', 'power', 'toughness', 'rarity', 'mtgset')
-    list_filter = ('rarity', 'mtgset',)
 
 
 @admin.register(MTGCollection)
 class MTGCollectionAdmin(admin.ModelAdmin):
+    inlines = (MTGCollectionEntryInline,)
     fieldsets = (
         (None, {
             'fields': ('name', 'owner', 'date_created'),
@@ -118,11 +118,6 @@ class MTGCollectionAdmin(admin.ModelAdmin):
         ('Share', {
             'classes': ('collapse',),
             'fields': ('viewers', 'editors',)
-        }),
-        ('Basic Lands', {
-            'classes': ('collapse',),
-            'fields': (('lands_plains', 'lands_island', 'lands_swamp',
-                        'lands_mountain', 'lands_forest', 'lands_wastes'),),
         }),
     )
     filter_horizontal = ('viewers', 'editors',)
