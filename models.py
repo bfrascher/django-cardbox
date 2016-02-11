@@ -31,6 +31,21 @@ class MTGBlock(models.Model):
     """
     name = models.CharField(max_length=100, unique=True)
 
+    CATEGORY_EXPANSION = 'E'
+    CATEGORY_CORE_SET = 'C'
+    CATEGORY_MTGO = 'O'
+    CATEGORY_SPECIAL_SET = 'S'
+    CATEGORY_PROMO_CARD = 'P'
+    CATEGORIES = (
+        (CATEGORY_EXPANSION, 'Expansion'),
+        (CATEGORY_CORE_SET, 'Core Set'),
+        (CATEGORY_MTGO, 'MTGO'),
+        (CATEGORY_SPECIAL_SET, 'Special Set'),
+        (CATEGORY_PROMO_CARD, 'Promo Card'),
+    )
+    category = models.CharField(max_length=1, choices=CATEGORIES,
+                                default=CATEGORY_EXPANSION)
+
     class Meta:
         ordering = ['name']
 
