@@ -134,7 +134,8 @@ class MTGCard(MTGBaseCard):
     dual_type = models.CharField(max_length=1, choices=DUAL_TYPES,
                                  default=DUAL_NONE, blank=True)
     dual_card = models.OneToOneField('self', on_delete=models.SET_NULL,
-                                     default=None, null=True, blank=True)
+                                     default=None, null=True, blank=True,
+                                     related_name='other_part')
 
     # === rulings ====================================================
     rulings = models.ManyToManyField(MTGRuling)
