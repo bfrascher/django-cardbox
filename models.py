@@ -217,7 +217,8 @@ class MTGCardEdition(models.Model):
 class MTGCollection(models.Model):
     """Model of a shareable collection of `cardbox.models.MTGCard`s."""
     name = models.CharField(max_length=100)
-    cards = models.ManyToManyField(MTGCard, through='MTGCollectionEntry')
+    cards = models.ManyToManyField(MTGCard, through='MTGCollectionEntry',
+                                   blank=True)
     date_created = models.DateField()
 
     # === user =======================================================
