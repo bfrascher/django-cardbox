@@ -1,6 +1,4 @@
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -90,34 +88,26 @@ class MTGBaseCard(models.Model):
         abstract = True
 
 
-class MTGCardEdition(models.Model):
-    """Model linking `cardbox.models.MTGBaseCard` with
-    `cardbox.models.MTGSet`.
-
-    """
-    number = models.PositiveSmallIntegerField()
-    number_suffix = models.CharField(max_length=10, blank=True)
-    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
-    card_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    card_id = models.PositiveIntegerField()
-    card = GenericForeignKey('card_type', 'card_id')
-
-    def __str__(self):
-        return '{0} in {1}'.format(self.card.name, self.mtgset.name)
-
-
 class MTGCard(MTGBaseCard):
     """Model for a card in Magic The Gathering."""
     # === mana =======================================================
-    mana_n = models.PositiveSmallIntegerField("neutral mana", default=0)
-    mana_w = models.PositiveSmallIntegerField("white mana", default=0)
-    mana_u = models.PositiveSmallIntegerField("blue mana", default=0)
-    mana_b = models.PositiveSmallIntegerField("black mana", default=0)
-    mana_r = models.PositiveSmallIntegerField("red mana", default=0)
-    mana_g = models.PositiveSmallIntegerField("green mana", default=0)
-    mana_c = models.PositiveSmallIntegerField("colorless mana", default=0)
+    mana_n = models.PositiveSmallIntegerField("neutral mana", default=None,
+                                              null=True, blank=True)
+    mana_w = models.PositiveSmallIntegerField("white mana", default=None,
+                                              null=True, blank=True)
+    mana_u = models.PositiveSmallIntegerField("blue mana", default=None,
+                                              null=True, blank=True)
+    mana_b = models.PositiveSmallIntegerField("black mana", default=None,
+                                              null=True, blank=True)
+    mana_r = models.PositiveSmallIntegerField("red mana", default=None,
+                                              null=True, blank=True)
+    mana_g = models.PositiveSmallIntegerField("green mana", default=None,
+                                              null=True, blank=True)
+    mana_c = models.PositiveSmallIntegerField("colorless mana", default=None,
+                                              null=True, blank=True)
     mana_special = models.CharField("special mana", max_length=50, blank=True)
-    cmc = models.PositiveSmallIntegerField("converted mana cost", default=0)
+    cmc = models.PositiveSmallIntegerField("converted mana cost", default=None,
+                                              null=True, blank=True)
 
     # === rarity =====================================================
     RARITY_MYTHIC_RARE = 'M'
@@ -210,6 +200,27 @@ class MTGToken(MTGBaseCard):
 
     def __str__(self):
         return self.name
+
+
+class MTGCardEdition(models.Model):
+    """Model linking `cardbox.models.MTGBaseCard` with
+    `cardbox.models.MTGSet`.
+
+    """
+    number = models.PositiveSmallIntegerField()
+    number_suffix = models.CharField(max_length=10, blank=True)
+    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
+    card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
+    token = models.ForeignKey(MTGToken, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.card:
+            return '{0} in {1}'.format(self.card.name, self.mtgset.name)
+        elif self.token:
+            return '{0} in {1}'.format(self.token.name, self.mtgset.name)
+        else:
+            return '{0}{1} in {2}'.format(self.number, self.number_suffix,
+                                          self.mtgset.name)
 
 
 class MTGCollection(models.Model):
