@@ -59,7 +59,7 @@ class MTGSet(models.Model):
 
 class MTGBaseCard(models.Model):
     """The base model for a card from Magic The Gathering."""
-    multiverseid = models.PositiveSmallIntegerField(null=True, blank=True)
+    multiverseid = models.PositiveIntegerField(null=True, blank=True)
 
     # === set ========================================================
     sets = models.ManyToManyField(MTGSet, through='MTGCardEdition')
