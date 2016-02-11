@@ -145,7 +145,7 @@ class MTGCard(models.Model):
                                      related_name='other_part')
 
     # === rulings ====================================================
-    rulings = models.ManyToManyField(MTGRuling)
+    rulings = models.ManyToManyField(MTGRuling, blank=True)
 
     # === legality ===================================================
     LEGALITY_NONE = ''
