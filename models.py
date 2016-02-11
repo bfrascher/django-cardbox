@@ -57,7 +57,7 @@ class MTGSet(models.Model):
 
 class MTGBaseCard(models.Model):
     """The base model for a card from Magic The Gathering."""
-    multiverseid = models.PositiveSmallIntegerField(null=True)
+    multiverseid = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # === set ========================================================
     mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE,
