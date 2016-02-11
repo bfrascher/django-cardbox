@@ -55,8 +55,8 @@ class MTGSet(models.Model):
         return self.name
 
 
-class MTGBaseCard(models.Model):
-    """The base model for a card from Magic The Gathering."""
+class MTGCard(models.Model):
+    """Model for a card in Magic The Gathering."""
     multiverseid = models.PositiveIntegerField(null=True, blank=True)
 
     # === set ========================================================
@@ -84,12 +84,6 @@ class MTGBaseCard(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True,
                                blank=True)
 
-    class Meta:
-        abstract = True
-
-
-class MTGCard(MTGBaseCard):
-    """Model for a card in Magic The Gathering."""
     # === mana =======================================================
     mana_n = models.PositiveSmallIntegerField("neutral mana", default=None,
                                               null=True, blank=True)
@@ -179,8 +173,17 @@ class MTGCard(MTGBaseCard):
     legal_modern = models.CharField(max_length=1, choices=LEGALITIES,
                                     default=LEGALITY_NONE, blank=True)
 
-    # === token ======================================================
-    token = models.BooleanField(default=False)
+    # === category ===================================================
+    CATEGORY_CARD = 'C'
+    CATEGORY_TOKEN = 'T'
+    CATEGORY_BASIC_LAND = 'B'
+    CATEGORIES = (
+        (CATEGORY_CARD, 'play card'),
+        (CATEGORY_TOKEN, 'token'),
+        (CATEGORY_BASIC_LAND, 'basic land'),
+    )
+    category = models.CharField(max_length=1, choices=CATEGORIES,
+                                default=CATEGORY_CARD)
 
     # === META =======================================================
     class Meta:
