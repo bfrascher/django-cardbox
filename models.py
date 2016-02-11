@@ -214,7 +214,7 @@ class MTGCardEdition(models.Model):
 class MTGCollection(models.Model):
     """Model of a shareable collection of `cardbox.models.MTGCard`s."""
     name = models.CharField(max_length=100)
-    cards = models.ManyToManyField(MTGCard, through='MTGCollectionCardEntry')
+    cards = models.ManyToManyField(MTGCard, through='MTGCollectionEntry')
     date_created = models.DateField()
 
     # === user =======================================================
@@ -246,18 +246,11 @@ class MTGCollection(models.Model):
 
 
 class MTGCollectionEntry(models.Model):
-    """Model of a single entry of a `cardbox.models.MTGCollection`."""
+    """Model a single card entry of a `cardbox.models.MTGCollection`."""
     collection = models.ForeignKey(MTGCollection, on_delete=models.CASCADE)
+    card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField("number of copies in the "
                                              "collection", default=1)
-
-    class Meta:
-        abstract = True
-
-
-class MTGCollectionCardEntry(MTGCollectionEntry):
-    """Model a single card entry of a `cardbox.models.MTGCollection`."""
-    card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
     foil_count = models.PositiveSmallIntegerField("number of foiled "
                                                   "copies in the collection.",
                                                   default=0)
