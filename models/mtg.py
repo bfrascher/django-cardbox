@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Artist(models.Model):
-    """Simple model for an artist.  Referenced in `tccm.models.MTGCard`"""
+    """Simple model for an artist.  Referenced in `cardbox.models.MTGCard`"""
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=100)
 
@@ -16,7 +16,7 @@ class Artist(models.Model):
 
 
 class MTGRuling(models.Model):
-    """Model for rulings that affect certain `tccm.models.MTGCard`s."""
+    """Model for rulings that affect certain `cardbox.models.MTGCard`s."""
     ruling = models.TextField(unique=True)
     date = models.DateField("date of the ruling")
 
@@ -26,7 +26,7 @@ class MTGRuling(models.Model):
 
 class MTGBlock(models.Model):
     """Model for a block in Magic The Gathering.  Used to group
-    `tccm.models.MTGSet`.
+    `cardbox.models.MTGSet`.
 
     """
     name = models.CharField(max_length=100, unique=True)
@@ -197,7 +197,7 @@ class MTGToken(MTGBaseCard):
 
 
 class MTGCollection(models.Model):
-    """Model of a shareable collection of `tccm.models.MTGCard`s."""
+    """Model of a shareable collection of `cardbox.models.MTGCard`s."""
     name = models.CharField(max_length=100)
     cards = models.ManyToManyField(MTGCard, through='MTGCollectionCardEntry')
     tokens = models.ManyToManyField(MTGToken, through='MTGCollectionTokenEntry')
@@ -232,7 +232,7 @@ class MTGCollection(models.Model):
 
 
 class MTGCollectionEntry(models.Model):
-    """Model of a single entry of a `tccm.models.MTGCollection`."""
+    """Model of a single entry of a `cardbox.models.MTGCollection`."""
     collection = models.ForeignKey(MTGCollection, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField("number of copies in the "
                                              "collection", default=1)
@@ -242,7 +242,7 @@ class MTGCollectionEntry(models.Model):
 
 
 class MTGCollectionCardEntry(MTGCollectionEntry):
-    """Model a single card entry of a `tccm.models.MTGCollection`."""
+    """Model a single card entry of a `cardbox.models.MTGCollection`."""
     card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
     foil_count = models.PositiveSmallIntegerField("number of foiled "
                                                   "copies in the collection.",
@@ -253,7 +253,7 @@ class MTGCollectionCardEntry(MTGCollectionEntry):
 
 
 class MTGCollectionTokenEntry(MTGCollectionEntry):
-    """Model a single token entry of a `tccm.models.MTGCollection`."""
+    """Model a single token entry of a `cardbox.models.MTGCollection`."""
     token = models.ForeignKey(MTGToken, on_delete=models.CASCADE)
 
     def __str__(self):

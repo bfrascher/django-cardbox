@@ -3,8 +3,8 @@ from django.conf.urls import url
 from . import views
 
 
-app_name = 'polls'
+app_name = 'cardbox'
 urlpatterns = [
-    # ex: /tccm/
+    # ex: /cardbox!/
     url(r'^$', views.index, name='index'),
 ]

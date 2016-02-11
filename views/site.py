@@ -2,4 +2,4 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request, 'tccm/index.html')
+    return render(request, 'cardbox/index.html')
