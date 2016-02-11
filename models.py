@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -60,10 +62,7 @@ class MTGBaseCard(models.Model):
     multiverseid = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # === set ========================================================
-    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE,
-                               verbose_name="expansion")
-    set_number_suffix = models.CharField(max_length=1, blank=True, default='')
-    set_number = models.PositiveSmallIntegerField()
+    sets = models.ManyToManyField(MTGSet, through='MTGCardEdition')
 
     # === card text ==================================================
     name = models.CharField(max_length=100)
@@ -89,6 +88,22 @@ class MTGBaseCard(models.Model):
 
     class Meta:
         abstract = True
+
+
+class MTGCardEdition(models.Model):
+    """Model linking `cardbox.models.MTGBaseCard` with
+    `cardbox.models.MTGSet`.
+
+    """
+    number = models.PositiveSmallIntegerField()
+    number_suffix = models.CharField(max_length=10, blank=True)
+    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
+    card_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    card_id = models.PositiveIntegerField()
+    card = GenericForeignKey('card_type', 'card_id')
+
+    def __str__(self):
+        return '{0} in {1}'.format(self.card.name, self.mtgset.name)
 
 
 class MTGCard(MTGBaseCard):
