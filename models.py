@@ -61,7 +61,7 @@ class MTGSet(models.Model):
     block = models.ForeignKey(MTGBlock, on_delete=models.CASCADE)
     code = models.CharField("short form", max_length=10, primary_key=True)
     name = models.CharField("full name", max_length=100, unique=True)
-    release_date = models.DateField()
+    release_date = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ['-release_date']
