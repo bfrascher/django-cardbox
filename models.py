@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -194,6 +196,38 @@ class MTGCard(models.Model):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def count_mana(regex, mana):
+        color_str = ''.join(re.findall(regex, mana))
+        return len(color_str) if color_str else None
+
+    @staticmethod
+    def parse_mana(mana):
+        mana = mana.upper()
+
+        # Extract special mana first.
+        list_special = re.findall(r'(\{.*?\}|X+)', mana)
+        mana_special = ''.join(list_special)
+
+        # Remove special strings, so we don't accidentally parse it later.
+        for s in list_special:
+            mana = mana.replace(s, '')
+
+        print(mana)
+
+        mana_n_str = re.search(r'\d+', mana)
+        mana_n = int(mana_n_str.group()) if mana_n_str else None
+
+        mana_w = MTGCard.count_mana(r'W+', mana)
+        mana_u = MTGCard.count_mana(r'U+', mana)
+        mana_b = MTGCard.count_mana(r'B+', mana)
+        mana_r = MTGCard.count_mana(r'R+', mana)
+        mana_g = MTGCard.count_mana(r'G+', mana)
+        mana_c = MTGCard.count_mana(r'C+', mana)
+
+        return (mana_n, mana_w, mana_u, mana_b, mana_r,
+                mana_g, mana_c, mana_special)
 
 
 class MTGCardEdition(models.Model):
