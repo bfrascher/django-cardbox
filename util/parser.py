@@ -82,7 +82,7 @@ class MTGBlockSetParser:
 
     @staticmethod
     def parse(base_url='http://magiccards.info/sitemap.html', lang='en'):
-        return MTGBlockSetParser.MagicCardsOnlineEngine.parse(
+        yield from MTGBlockSetParser.MagicCardsOnlineEngine.parse(
             base_url=base_url, lang=lang)
 
 
