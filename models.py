@@ -198,7 +198,7 @@ class MTGCard(models.Model):
         return self.name
 
     @staticmethod
-    def count_mana(regex, mana):
+    def _count_mana(regex, mana):
         color_str = ''.join(re.findall(regex, mana))
         return len(color_str) if color_str else None
 
@@ -219,15 +219,46 @@ class MTGCard(models.Model):
         mana_n_str = re.search(r'\d+', mana)
         mana_n = int(mana_n_str.group()) if mana_n_str else None
 
-        mana_w = MTGCard.count_mana(r'W+', mana)
-        mana_u = MTGCard.count_mana(r'U+', mana)
-        mana_b = MTGCard.count_mana(r'B+', mana)
-        mana_r = MTGCard.count_mana(r'R+', mana)
-        mana_g = MTGCard.count_mana(r'G+', mana)
-        mana_c = MTGCard.count_mana(r'C+', mana)
+        mana_w = MTGCard._count_mana(r'W+', mana)
+        mana_u = MTGCard._count_mana(r'U+', mana)
+        mana_b = MTGCard._count_mana(r'B+', mana)
+        mana_r = MTGCard._count_mana(r'R+', mana)
+        mana_g = MTGCard._count_mana(r'G+', mana)
+        mana_c = MTGCard._count_mana(r'C+', mana)
 
         return (mana_n, mana_w, mana_u, mana_b, mana_r,
                 mana_g, mana_c, mana_special)
+
+    def set_mana(self, mana):
+        if mana is None:
+            return
+        (n, w, u, b, r, g, c, special) = MTGCard.parse_mana(mana)
+        self.mana_n = n
+        self.mana_w = w
+        self.mana_u = u
+        self.mana_b = b
+        self.mana_r = r
+        self.mana_g = g
+        self.mana_c = c
+        self.mana_special = special
+
+    def set_power(self, power):
+        try:
+            self.power = int(power) if power else None
+        except ValueError:
+            self.power_special = power
+
+    def set_toughness(self, toughness):
+        try:
+            self.toughness = int(toughness) if toughness else None
+        except ValueError:
+            self.toughness_special = toughness
+
+    def set_loyalty(self, loyalty):
+        try:
+            self.loyalty = int(loyalty) if loyalty else None
+        except ValueError:
+            self.loyalty_special = loyalty
 
 
 class MTGCardEdition(models.Model):
