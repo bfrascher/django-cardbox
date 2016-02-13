@@ -15,23 +15,6 @@ from cardbox.models import (
     MTGCardEdition,
 )
 
-# Test cards are:
-# ---
-# http://magiccards.info/ori/en/60a.html
-# http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=398434
-# ---
-# http://magiccards.info/dgm/en/121a.html
-# http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=369041
-# ---
-# http://magiccards.info/dka/en/81a.html
-# http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=262675
-# ---
-# http://magiccards.info/shm/en/28.html
-# http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=154408
-# ---
-# http://magiccards.info/mm2/en/79.html
-# http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=397830
-
 
 class MTGBlockSetParser:
     class MCIEngine:
