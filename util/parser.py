@@ -12,6 +12,7 @@ from cardbox.models import (
     MTGBlock,
     MTGSet,
     MTGCard,
+    MTGCardEdition,
 )
 
 # Test cards are:
@@ -272,7 +273,6 @@ class MTGCardParser:
             card.set_power(power)
             card.set_toughness(toughness)
             card.set_loyalty(loyalty)
-            print('{0}.mana = {1}'.format(card, mana))
             card.set_mana(mana)
             card.cmc = cmc
 
@@ -319,9 +319,48 @@ class MTGCardParser:
             return card, dual_card, artist, rulings
 
         @staticmethod
+        def _parse_rarity(rarity_str):
+            # We don't need to check for RARITY_NONE here.
+            for (rarity_code, rarity_full) in MTGCard.RARITIES[1:]:
+                if rarity_str == rarity_full:
+                    return rarity_code
+            return MTGCard.RARITY_NONE
+
+        @staticmethod
         def parse_set(setcode, lang='en'):
+            """Parse all cards in a set.
+
+            Each card will be yielded along with it's edition,
+            dual_card (if any), artist and all rulings (if any).
+
+            """
             engine = MTGCardParser.MCIEngine
             url = '{0}/{1}/{2}.html'.format(engine.URL, setcode, lang)
+            html = requests.get(url)
+            soup = BeautifulSoup(html.text, 'html.parser')
+            table = soup.find('table', {'cellpadding': '3'})
+            # Skip the first entry since it only declares the headers.
+            for tr in table.find_all('tr')[1:]:
+                card = MTGCard()
+                tds = tr.find_all('td')
+                number_str = tds[0].text
+                try:
+                    number = int(number_str)
+                    number_suffix = ''
+                except ValueError:
+                    number = int(number_str[:-1])
+                    number_suffix = number_str[-1]
+                    # Skip other parts of dual cards, since they have
+                    # already been parsed in the previous iteration,
+                    # together with it's 'a' part.
+                    if number_suffix != 'a':
+                        continue
+                edition = MTGCardEdition(number=number,
+                                         number_suffix=number_suffix)
+                card.rarity = engine._parse_rarity(tds[4].text)
+                card, dual_card, artist, rulings = engine.parse_card(
+                    setcode, number_str, card=card, lang=lang)
+                yield edition, card, dual_card, artist, rulings
 
 
 class MTGTokenParser:
