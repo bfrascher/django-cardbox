@@ -14,7 +14,7 @@ from cardbox.models import (
     MTGCardEdition,
 )
 
-from cardbox.util.parser import (
+from cardbox.utils.parser import (
     MTGBlockSetParser,
     MTGCardParser,
     MTGTokenParser,
