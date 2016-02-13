@@ -97,10 +97,6 @@ class MTGCard(models.Model):
                                                blank=True)
     loyalty_special = models.CharField(max_length=10, blank=True, default='')
 
-    # === art ========================================================
-    artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True,
-                               blank=True)
-
     # === mana =======================================================
     mana_n = models.PositiveSmallIntegerField("neutral mana", default=None,
                                               null=True, blank=True)
@@ -270,6 +266,8 @@ class MTGCardEdition(models.Model):
     number_suffix = models.CharField(max_length=10, blank=True)
     mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
     card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.SET_NULL,
+                               null=True, blank=True)
 
     def __str__(self):
         if self.card:
