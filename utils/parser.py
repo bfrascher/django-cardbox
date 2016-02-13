@@ -338,7 +338,12 @@ class MTGCardParser:
                 card.rarity = engine._parse_rarity(tds[4].text)
                 card, dual_card, artist, rulings = engine.parse_card(
                     setcode, number_str, card=card, lang=lang)
-                yield edition, card, dual_card, artist, rulings
+                if dual_card is not None:
+                    dual_edition = MTGCardEdition(number=number,
+                                                  number_suffix='b')
+                else:
+                    dual_edition = None
+                yield edition, card, dual_edition, dual_card, artist, rulings
 
 
 class MTGTokenParser:
