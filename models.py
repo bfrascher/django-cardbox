@@ -210,8 +210,6 @@ class MTGCard(models.Model):
         for s in list_special:
             mana = mana.replace(s, '')
 
-        print(mana)
-
         mana_n_str = re.search(r'\d+', mana)
         mana_n = int(mana_n_str.group()) if mana_n_str else None
 
