@@ -274,6 +274,24 @@ class MTGCardEdition(models.Model):
                                               self.card.name,
                                               self.mtgset.name)
 
+    @staticmethod
+    def parse_number(number_str):
+        if number_str is None:
+            return None, None
+        number_suffix = ''
+        try:
+            number = int(number_str)
+        except ValueError:
+            number = int(number_str[:-1])
+            number_suffix = number_str[-1]
+
+        return number, number_suffix
+
+    def set_number(self, number_str):
+        number, number_suffix = MTGCardEdition.parse_number(number_str)
+        self.number = number
+        self.number_suffix = number_suffix
+
 
 class MTGCollection(models.Model):
     """Model of a shareable collection of `cardbox.models.MTGCard`s."""
