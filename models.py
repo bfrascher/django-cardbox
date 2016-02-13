@@ -273,10 +273,10 @@ class MTGCardEdition(models.Model):
 
     def __str__(self):
         if self.card:
-            return '{0} in {1}'.format(self.card.name, self.mtgset.name)
-        else:
-            return '{0}{1} in {2}'.format(self.number, self.number_suffix,
-                                          self.mtgset.name)
+            return '{0}{1} {0} in {1}'.format(self.number,
+                                              self.number_suffix,
+                                              self.card.name,
+                                              self.mtgset.name)
 
 
 class MTGCollection(models.Model):
