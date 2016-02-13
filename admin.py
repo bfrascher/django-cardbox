@@ -93,9 +93,8 @@ class MTGCardAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ('rulings',)
     list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',)
-    list_filter = ('rarity', 'sets', 'dual_type',
-                   'legal_standard', 'legal_modern')
-    search_fields = ('name', 'types')
+    list_filter = ('rarity', 'dual_type', 'sets',)
+    search_fields = ('name', 'types',)
 
 
 class MTGCollectionEntryInline(admin.TabularInline):
