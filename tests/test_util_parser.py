@@ -577,10 +577,12 @@ Target creature gets -5/-5 until end of turn."""
             assert rulings[4].ruling == "Phyrexian mana is not a new color. Players can't add Phyrexian mana to their mana pools."
 
         def test_parse_card_jagged_scar_archers(self):
-            card, dual_card, artist, rulings = MTGCardParser.MCIEngine.parse_card('dpa', '72')
+            card = MTGCard(rarity=MTGCard.RARITY_UNCOMMON)
+            card, dual_card, artist, rulings = MTGCardParser.MCIEngine.parse_card('dpa', '72', card=card)
 
             # === card =========================================================
             assert card.multiverseid == 0
+            assert card.rarity == MTGCard.RARITY_UNCOMMON
 
             assert card.name == "Jagged-Scar Archers"
             assert card.types == 'Creature — Elf Archer'
@@ -676,10 +678,129 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
             assert rulings[3].ruling == "You can't exile a card from your hand to pay for itself. At the time you would pay costs, that card is on the stack, not in your hand."
 
         def test_parse_set_ogw(self):
-            pass
+            test_cards = {}
+            test_cards[0] = {'name': "Deceiver of Form",
+                             'rarity': MTGCard.RARITY_RARE,
+                             'number': 1,
+                             'number_suffix': ''}
+            test_cards[3] = {'name': "Kozilek, the Great Distortion",
+                             'rarity': MTGCard.RARITY_MYTHIC_RARE,
+                             'number': 4,
+                             'number_suffix': ''}
+            test_cards[5] = {'name': "Matter Reshaper",
+                             'rarity': MTGCard.RARITY_RARE,
+                             'number': 6,
+                             'number_suffix': ''}
+            test_cards[44] = {'name': "Gravity Negator",
+                             'rarity': MTGCard.RARITY_COMMON,
+                             'number': 45,
+                             'number_suffix': ''}
+            max_index = 44
+
+            for i, (edition, card, *_) in enumerate(MTGCardParser.MCIEngine.parse_set('ogw')):
+                if i not in test_cards:
+                    continue
+                assert card.name == test_cards[i]['name']
+                assert card.rarity == test_cards[i]['rarity']
+                assert edition.number == test_cards[i]['number']
+                assert edition.number_suffix == test_cards[i]['number_suffix']
+                # Speed up the process a little bit by not loading all cards.
+                if i >= max_index:
+                    break
 
         def test_parse_set_pro(self):
-            pass
+            test_cards = {}
+            test_cards[0] = {'name': "Eternal Dragon",
+                             'rarity': MTGCard.RARITY_SPECIAL,
+                             'number': 1,
+                             'number_suffix': ''}
+            test_cards[1] = {'name': "Mirari's Wake",
+                             'rarity': MTGCard.RARITY_SPECIAL,
+                             'number': 2,
+                             'number_suffix': ''}
+            test_cards[2] = {'name': "Treva, the Renewer",
+                             'rarity': MTGCard.RARITY_SPECIAL,
+                             'number': 3,
+                             'number_suffix': ''}
+            test_cards[3] = {'name': "Avatar of Woe",
+                             'rarity': MTGCard.RARITY_SPECIAL,
+                             'number': 4,
+                             'number_suffix': ''}
+            test_cards[4] = {'name': "Ajani Goldmane",
+                             'rarity': MTGCard.RARITY_SPECIAL,
+                             'number': 5,
+                             'number_suffix': ''}
+            max_index = 4
 
-        def test_parse_set_ps_es(self):
-            pass
+            for i, (edition, card, *_) in enumerate(MTGCardParser.MCIEngine.parse_set('pro')):
+                if i not in test_cards:
+                    continue
+                assert card.name == test_cards[i]['name']
+                assert card.rarity == test_cards[i]['rarity']
+                assert edition.number == test_cards[i]['number']
+                assert edition.number_suffix == test_cards[i]['number_suffix']
+                # Speed up the process a little bit by not loading all cards.
+                if i >= max_index:
+                    break
+
+        def test_parse_set_ddm(self):
+            test_cards = {}
+            test_cards[0] = {'name': "Jace, Architect of Thought",
+                             'rarity': MTGCard.RARITY_MYTHIC_RARE,
+                             'number': 1,
+                             'number_suffix': ''}
+            test_cards[11] = {'name': "Æther Adept",
+                             'rarity': MTGCard.RARITY_COMMON,
+                             'number': 12,
+                             'number_suffix': ''}
+            test_cards[34] = {'name': "Dread Statuary",
+                             'rarity': MTGCard.RARITY_UNCOMMON,
+                             'number': 35,
+                             'number_suffix': ''}
+            test_cards[38] = {'name': "Island",
+                             'rarity': MTGCard.RARITY_LAND,
+                             'number': 39,
+                             'number_suffix': ''}
+            max_index = 38
+
+            for i, (edition, card, *_) in enumerate(MTGCardParser.MCIEngine.parse_set('ddm')):
+                if i not in test_cards:
+                    continue
+                assert card.name == test_cards[i]['name']
+                assert card.rarity == test_cards[i]['rarity']
+                assert edition.number == test_cards[i]['number']
+                assert edition.number_suffix == test_cards[i]['number_suffix']
+                # Speed up the process a little bit by not loading all cards.
+                if i >= max_index:
+                    break
+
+        def test_parse_set_ddj(self):
+            test_cards = {}
+            test_cards[0] = {'name': "Niv-Mizzet, the Firemind",
+                             'rarity': MTGCard.RARITY_MYTHIC_RARE,
+                             'number': 1,
+                             'number_suffix': ''}
+            test_cards[16] = {'name': "Izzet Signet",
+                              'rarity': MTGCard.RARITY_COMMON,
+                              'number': 17,
+                              'number_suffix': ''}
+            test_cards[31] = {'name': "Fire (Fire/Ice)",
+                              'rarity': MTGCard.RARITY_UNCOMMON,
+                              'number': 32,
+                              'number_suffix': 'a'}
+            test_cards[32] = {'name': "Forgotten Cave",
+                              'rarity': MTGCard.RARITY_COMMON,
+                              'number': 33,
+                              'number_suffix': ''}
+            max_index = 32
+
+            for i, (edition, card, *_) in enumerate(MTGCardParser.MCIEngine.parse_set('ddj')):
+                if i not in test_cards:
+                    continue
+                assert card.name == test_cards[i]['name']
+                assert card.rarity == test_cards[i]['rarity']
+                assert edition.number == test_cards[i]['number']
+                assert edition.number_suffix == test_cards[i]['number_suffix']
+                # Speed up the process a little bit by not loading all cards.
+                if i >= max_index:
+                    break
