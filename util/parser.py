@@ -344,17 +344,12 @@ class MTGCardParser:
                 card = MTGCard()
                 tds = tr.find_all('td')
                 number_str = tds[0].text
-                try:
-                    number = int(number_str)
-                    number_suffix = ''
-                except ValueError:
-                    number = int(number_str[:-1])
-                    number_suffix = number_str[-1]
-                    # Skip other parts of dual cards, since they have
-                    # already been parsed in the previous iteration,
-                    # together with it's 'a' part.
-                    if number_suffix != 'a':
-                        continue
+                number, number_suffix = MTGCardEdition.parse_number(number_str)
+                # Skip other parts of dual cards, since they have
+                # already been parsed in the previous iteration,
+                # together with it's 'a' part.
+                if not number_suffix in ['', 'a']:
+                    continue
                 edition = MTGCardEdition(number=number,
                                          number_suffix=number_suffix)
                 card.rarity = engine._parse_rarity(tds[4].text)
