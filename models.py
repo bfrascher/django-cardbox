@@ -277,7 +277,7 @@ class MTGCardEdition(models.Model):
     @staticmethod
     def parse_number(number_str):
         if number_str is None:
-            return None, None
+            return None, ''
         number_suffix = ''
         try:
             number = int(number_str)
