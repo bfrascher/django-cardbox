@@ -46,10 +46,7 @@ class CardEditionInline(admin.TabularInline):
     extra = 1
     fieldsets = (
         ('Set', {
-            'fields': ('mtgset', 'number', 'number_suffix',),
-        }),
-        ('Artist', {
-            'fields': ('artist',),
+            'fields': ('mtgset', 'number', 'number_suffix', 'artist'),
         }),
     )
 
@@ -90,11 +87,8 @@ class CardAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
             'fields': ('rulings',),
         }),
-        ('Artist', {
-            'fields': ('artist',),
-        }),
     )
-    filter_horizontal = ('rulings',)
+    filter_horizontal = ('rulings', 'multi_cards',)
     list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',)
     list_filter = ('rarity', 'multi_type', 'sets',)
     search_fields = ('name', 'types',)
@@ -105,7 +99,7 @@ class CollectionEntryInline(admin.TabularInline):
     extra = 1
     fieldsets = (
         ('Collection Entry', {
-            'fields': ('count', 'foil_count', 'card',),
+            'fields': ('count', 'foil_count', 'edition',),
         }),
     )
 
