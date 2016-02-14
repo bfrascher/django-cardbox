@@ -745,10 +745,10 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
                           'rarity': Card.RARITY_UNCOMMON,
                           'number': 32,
                           'number_suffix': 'a'}
-        test_cards[32] = {'name': "Forgotten Cave",
-                          'rarity': Card.RARITY_COMMON,
-                          'number': 33,
-                          'number_suffix': ''}
+        test_cards[32] = {'name': "Ice (Fire/Ice)",
+                          'rarity': Card.RARITY_UNCOMMON,
+                          'number': 32,
+                          'number_suffix': 'b'}
         max_index = 32
 
         for i, (edition, card, *_) in enumerate(MCIParser.parse_cards_by_set('ddj')):
