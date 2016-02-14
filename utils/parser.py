@@ -301,14 +301,8 @@ class MCIParser:
             card = Card()
             tds = tr.find_all('td')
             number_str = tds[0].text
-            number, number_suffix = CardEdition.parse_number(number_str)
-            # Skip other parts of dual cards, since they have
-            # already been parsed in the previous iteration,
-            # together with it's 'a' part.
-            if not number_suffix in ['', 'a']:
-                continue
-            edition = CardEdition(number=number,
-                                  number_suffix=number_suffix)
+            edition = CardEdition()
+            edition.set_number(number_str)
             card.rarity = MCIParser._parse_rarity(tds[4].text)
             card, artist, rulings = MCIParser.parse_card(
                 setcode, number_str, card=card)
