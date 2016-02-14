@@ -7,112 +7,236 @@ from mtgcardbox.models import (
     Set,
     Card,
     CardEdition,
-    Collection,
-    CollectionEntry,
+#    Collection,
+#    CollectionEntry,
 )
 
 from mtgcardbox.utils.parser import (
-    BlockSetParser,
-    CardParser,
+    MCIParser,
 )
 
 
 logger = logging.getLogger(__name__)
 
 
-def update_mtg_block(block):
-    """Create/update a single  block.
-
-    :raises Block.MultipleObjectsReturned: if more than one entry
-    already exists with `block.name` and `block.category`.
-
-    """
+def insert_artist(artist, update=True):
+    """Create/update a single artist."""
     try:
-        b = Block.objects.get(name=block.name, category=block.category)
+        a = Artist.objects.get(last_name=artist.last_name)
+        if update:
+            a.first_name = artist.first_name
+
+            logger.info("Updating artist '{0}'.".format(a))
+            a.save()
+        else:
+            logger.info("Skipping existing artist '{0}'.".format(a))
+
+        artist = a
+    except Artist.DoesNotExist:
+        logger.info("Creating new artist '{0}'.".format(artist))
+        artist.save()
+
+    return artist
+
+
+def insert_ruling(ruling, update=True):
+    """Create/update a single ruling."""
+    try:
+        r = Ruling.objects.get(ruling=ruling.ruling)
+
+        if update:
+            r.date = ruling.date
+
+            logger.info("Updating ruling '{0}'.".format(r))
+            r.save()
+        else:
+            logger.info("Skipping existing ruling '{0}'.".format(r))
+
+        ruling = r
+    except Ruling.DoesNotExist:
+        logger.info("Creating new ruling '{0}'.".format(ruling))
+        ruling.save()
+
+    return ruling
+
+
+def insert_block(block, update=True):
+    """Create/update a single block."""
+    try:
+        b = Block.objects.get(name=block.name)
+        if update:
+            b.category = block.category
+            logger.info("Updating block '{0}'.".format(b))
+            b.save()
+        else:
+            logger.info("Skipping existing block '{0}'.".format(b))
+
         block = b
-        logger.info("Skipping existing Block '{0}'."
-                    .format(b.name))
     except Block.DoesNotExist:
-        logger.info("Creating new Block '{0}'.".format(block.name))
+        logger.info("Creating new block '{0}'.".format(block))
         block.save()
     return block
 
 
-def update_mtg_set(block, mtgset):
-    """Create/update a single  set.
+def insert_set(block, set_, update=True):
+    """Create/update a single set.
 
-    :raises Set.MultipleObjectsReturned: if more than one entry
-    already exists with `mtgset.name` and `mtgset.code`.
+    :type block: `mtgcardbox.models.Block`
+    :param block: A valid block from the database.
+
+    :type set_: `mtgcardbox.models.Set`
+    :param set_: The set to create or update.
 
     """
     try:
-        s = Set.objects.get(code=mtgset.code, name=mtgset.name)
-        if mtgset.release_date != s.release_date:
-            logger.info("Updating Set '{0}'."
-                        .format(mtgset))
-            s.release_date = mtgset.release_date
+        s = Set.objects.get(pk=set_.code)
+        if update:
+            s.release_date = set_.release_date
+            s.name = set_.name
+            s.block = block
+
+            logger.info("Updating set '{0}'.".format(s))
             s.save()
         else:
             logger.info("Skipping existing Set '{0}'."
-                        .format(mtgset))
+                        .format(s))
+
+        set_ = s
     except Set.DoesNotExist:
         logger.info("Creating new Set '{0}' in Block '{1}'."
-                    .format(mtgset, block))
-        mtgset.block = block
-        mtgset.save()
-    return mtgset
+                    .format(set_, block))
+        set_.block = block
+        set_.save()
+    return set_
 
 
-def update_all_mtg_blocks_sets():
-    """Create/update all  blocks and sets.
+def insert_card(card, update=True):
+    """Create/update a single card.
+
+    :type card: `mtgcardbox.models.Card`
+    :param set_: The card to create/update.
+
+    :rtype: `mtgcardbox.models.Card`
+    :returns: The created/updated card with a valid id.
+
+    """
+    try:
+        c = Card.objects.get(name=card.name)
+        if update:
+            c.name = card.name
+            c.types = card.types
+            c.rules = card.rules
+            c.flavour = card.flavour
+            c.power = card.power
+            c.power_special = card.power_special
+            c.toughness = card.toughness
+            c.toughness_special = card.toughness_special
+            c.loyalty = card.loyalty
+            c.loyalty_special = card.loyalty_special
+            c.mana_n = card.mana_n
+            c.mana_w = card.mana_w
+            c.mana_u = card.mana_u
+            c.mana_b = card.mana_b
+            c.mana_r = card.mana_r
+            c.mana_g = card.mana_g
+            c.mana_special = card.mana_special
+            c.cmc = card.cmc
+            c.rarity = card.rarity
+            c.multi_type = card.multi_type
+            c.legal_vintage = card.legal_vintage
+            c.legal_legacy = card.legal_legacy
+            c.legal_extended = card.legal_extended
+            c.legal_standard = card.legal_standard
+            c.legal_classic = card.legal_classic
+            c.legal_commander = card.legal_commander
+            c.legal_modern = card.legal_modern
+
+            logger.info("Updating card '{0}'.".format(c))
+            c.save()
+        else:
+            logger.info("Skipping existing card '{0}'.".format(c))
+
+        card = c
+    except Card.DoesNotExist:
+        logger.info("Creating new card '{0}'."
+                    .format(card))
+        card.save()
+    return card
+
+
+def insert_card_edition(set_, card, artist, edition, update=True):
+    """Create/update a single card edition."""
+    try:
+        e = CardEdition.objects.get(number=edition.number,
+                                    number_suffix=edition.number_suffix,
+                                    mtgset=edition.mtgset)
+        if update:
+            e.card = card
+            e.artist = artist
+
+            logger.info("Updating edition '{0}'.".format(e))
+            e.save()
+        else:
+            logger.info("Skipping existing edition '{0}'.".format(e))
+
+        edition = e
+    except CardEdition.DoesNotExist:
+        logger.info("Creating new edition '{0}'.".format(edition))
+        edition.mtgset = set_
+        edition.card = card
+        edition.artist = artist
+        edition.save()
+
+    return edition
+
+
+def insert_blocks_sets_from_parser(parser=MCIParser, update=True):
+    """Create/update all blocks and sets.
 
     Existing blocks and sets will be skipped.
 
     """
-    engine = BlockSetParser.MCIEngine
-    for block, sets in engine.parse():
-        try:
-            block = update_mtg_block(block)
-        except Block.MultipleObjectsReturned:
-            logger.error("There are multiple Blocks for '{0}'!"
-                         .format(block))
-            # TODO(benedikt) Throw exception here.
-            continue
-
-        for mtgset in sets:
-            try:
-                update_mtg_set(block, mtgset)
-            except Set.MutltipleObjectsReturned:
-                logger.error("There are multiple Sets for '{0}'!"
-                             .format(mtgset))
-                # TODO(benedikt) Throw exception here
-                continue
+    for block, sets in parser.parse_all_blocks_sets():
+        block = insert_block(block, update)
+        for set_ in sets:
+            insert_set(block, set_, update)
 
 
-def update_mtg_card(mtgset, card, rulings):
-    try:
-        c = Card.objects.get(name=card.name, rarity=card.rarity)
-
-    except Card.DoesNotExist:
-        logger.info("Creating new Card '{0}' in Set '{1}'"
-                    .format(card, mtgset))
-
-
-def update_all_mtg_cards_by_set():
+def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=True):
     """Create/update all  cards from all sets.
 
     Existing cards will be updated or skipped.
 
     """
-    engine = CardParser.MCIEngine
-    mtgsets = Set.objects.all()
+    multi_cards = []
+    for edition, card, artist, rulings in parser.parse_cards_by_set(set_.code):
+        artist = insert_artist(artist, update)
+        card = insert_card(card, update)
+        edition = insert_card_edition(set_, card, artist, edition,
+                                      update)
+        for ruling in rulings:
+            ruling = insert_ruling(ruling, update)
+            # Rulings already added to the card will be ignored.
+            card.rulings.add(ruling)
 
-    for mtgset in mtgsets:
-        for edition, card, dual_edition, dual_card, artist, rulings in engine.parse_set(mtgset.code):
-            # Order of processing: rulings -> artist -> card -> edition -> dual_card -> dual_edition
-            try:
-                update_mtg_card(mtgset, edition, card, dual_edition,
-                                dual_card, artist, rulings)
-            except Card.MultipleObjectsReturned:
-                logger.error("Multiple entries for Card '{0}'!".format(card))
-                continue
+        # All multi cards belonging together have the same edition
+        # number (as we are only looking at one set).
+        if (len(multi_cards) > 0 and
+            (multi_cards[0].edition.number != card.edition.number)):
+            multi_cards = []
+        if card.multi_type != Card.MULTI_NONE:
+            for mcard in multi_cards:
+                mcard.multi_cards.append(card)
+                card.multi_cards.append(mcard)
+            multi_cards.append(card)
+
+
+def insert_cards_from_parser(parser=MCIParser, update=True):
+    sets = Set.objects.all()
+    for set_ in sets:
+        insert_cards_by_set_from_parser(set_, parser, update)
+
+
+def inset_blocks_sets_cards_from_parser(parser=MCIParser, update=True):
+    insert_blocks_sets_from_parser(parser, update)
+    insert_cards_from_parser(parser, update)
