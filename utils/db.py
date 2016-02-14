@@ -98,12 +98,12 @@ def insert_set(block, set_, update=True):
             logger.info("Updating set '{0}'.".format(s))
             s.save()
         else:
-            logger.info("Skipping existing Set '{0}'."
+            logger.info("Skipping existing set '{0}'."
                         .format(s))
 
         set_ = s
     except Set.DoesNotExist:
-        logger.info("Creating new Set '{0}' in Block '{1}'."
+        logger.info("Creating new set '{0}' in block '{1}'."
                     .format(set_, block))
         set_.block = block
         set_.save()
