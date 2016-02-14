@@ -1,5 +1,5 @@
 [run]
 omit =
-    cardbox/tests/*
-    cardbox/migrations/*
-    cardbox/docs/*
+    mtgcardbox/tests/*
+    mtgcardbox/migrations/*
+    mtgcardbox/docs/*

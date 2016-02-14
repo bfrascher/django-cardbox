@@ -1,18 +1,18 @@
 import pytest
 
-from cardbox.models import (
+from mtgcardbox.models import (
     Artist,
-    MTGRuling,
-    MTGBlock,
-    MTGSet,
-    MTGCard,
-    MTGCardEdition,
-    MTGCollection,
-    MTGCollectionEntry,
+    Ruling,
+    Block,
+    Set,
+    Card,
+    CardEdition,
+    Collection,
+    CollectionEntry,
 )
 
 
-class TestMTGCard:
+class TestCard:
     @pytest.mark.parametrize("mana,mana_n,mana_w,mana_u,mana_b,mana_r,mana_g,mana_c,mana_special", [
         ('10RG', 10, None, None, None, 1, 1, None, ''),
         ('UWWGgg', None, 2, 1, None, None, 3, None, ''),
@@ -21,7 +21,7 @@ class TestMTGCard:
     ])
     def test_parse_mana(self, mana, mana_n, mana_w, mana_u, mana_b,
                         mana_r, mana_g, mana_c, mana_special):
-        n, w, u, b, r, g, c, special = MTGCard.parse_mana(mana)
+        n, w, u, b, r, g, c, special = Card.parse_mana(mana)
         print(n, w, u, b, r, g, c, special)
         assert (mana_n == n) if mana_n else (n is None)
         assert (mana_w == w) if mana_w else (w is None)

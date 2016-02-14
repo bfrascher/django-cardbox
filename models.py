@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Artist(models.Model):
-    """Simple model for an artist.  Referenced in `cardbox.models.MTGCard`"""
+    """Simple model for an artist.  Referenced in `mtgcardbox.models.Card`"""
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=100)
 
@@ -17,8 +17,8 @@ class Artist(models.Model):
         return '{0} {1}'.format(self.first_name, self.last_name)
 
 
-class MTGRuling(models.Model):
-    """Model for rulings that affect certain `cardbox.models.MTGCard`s."""
+class Ruling(models.Model):
+    """Model for rulings that affect certain `mtgcardbox.models.Card`s."""
     ruling = models.TextField(unique=True)
     date = models.DateField("date of the ruling")
 
@@ -26,24 +26,26 @@ class MTGRuling(models.Model):
         return '{0}: {1}'.format(self.date, self.ruling)
 
 
-class MTGBlock(models.Model):
+class Block(models.Model):
     """Model for a block in Magic The Gathering.  Used to group
-    `cardbox.models.MTGSet`.
+    `mtgcardbox.models.Set`.
 
     """
     name = models.CharField(max_length=100, unique=True)
 
+    CATEGORY_NONE = ''
     CATEGORY_EXPANSION = 'E'
     CATEGORY_CORE_SET = 'C'
-    CATEGORY_MTGO = 'O'
+    CATEGORY_MTGO = 'MTGO'
     CATEGORY_SPECIAL_SET = 'S'
     CATEGORY_PROMO_CARD = 'P'
     CATEGORIES = (
-        (CATEGORY_EXPANSION, 'Expansion'),
-        (CATEGORY_CORE_SET, 'Core Set'),
+        (CATEGORY_NONE, 'unknown'),
+        (CATEGORY_EXPANSION, 'Expansions'),
+        (CATEGORY_CORE_SET, 'Core Sets'),
         (CATEGORY_MTGO, 'MTGO'),
-        (CATEGORY_SPECIAL_SET, 'Special Set'),
-        (CATEGORY_PROMO_CARD, 'Promo Card'),
+        (CATEGORY_SPECIAL_SET, 'Special Sets'),
+        (CATEGORY_PROMO_CARD, 'Promo Cards'),
     )
     category = models.CharField(max_length=1, choices=CATEGORIES,
                                 default=CATEGORY_EXPANSION)
@@ -55,12 +57,12 @@ class MTGBlock(models.Model):
         return self.name
 
 
-class MTGSet(models.Model):
+class Set(models.Model):
     """Model for a Magic The Gathering set/expansion.  Used to group
-    `tcc.models.MTGCard`.
+    `tcc.models.Card`.
 
     """
-    block = models.ForeignKey(MTGBlock, on_delete=models.CASCADE)
+    block = models.ForeignKey(Block, on_delete=models.CASCADE)
     code = models.CharField("short form", max_length=10, primary_key=True)
     name = models.CharField("full name", max_length=100, unique=True)
     release_date = models.DateField(blank=True, null=True)
@@ -72,12 +74,12 @@ class MTGSet(models.Model):
         return self.name
 
 
-class MTGCard(models.Model):
+class Card(models.Model):
     """Model for a card in Magic The Gathering."""
     multiverseid = models.PositiveIntegerField(null=True, blank=True)
 
     # === set ========================================================
-    sets = models.ManyToManyField(MTGSet, through='MTGCardEdition')
+    sets = models.ManyToManyField(Set, through='CardEdition')
 
     # === card text ==================================================
     name = models.CharField(max_length=100)
@@ -142,23 +144,22 @@ class MTGCard(models.Model):
     rarity = models.CharField(max_length=1, choices=RARITIES,
                               default=RARITY_COMMON)
 
-    # === dual card ==================================================
-    DUAL_NONE = ''
-    DUAL_SPLIT = 'S'
-    DUAL_FLIP = 'F'
-    DUAL_TYPES = (
-        (DUAL_NONE, 'not a dual card'),
-        (DUAL_SPLIT, 'split-card'),
-        (DUAL_FLIP, 'flip-card'),
+    # === multi card ==================================================
+    MULTI_NONE = ''
+    MULTI_SPLIT = 'S'
+    MULTI_FLIP = 'F'
+    MULTI_TYPES = (
+        (MULTI_NONE, 'not a multi card'),
+        (MULTI_SPLIT, 'split-card'),
+        (MULTI_FLIP, 'flip-card'),
     )
-    dual_type = models.CharField(max_length=1, choices=DUAL_TYPES,
-                                 default=DUAL_NONE, blank=True)
-    dual_card = models.OneToOneField('self', on_delete=models.SET_NULL,
-                                     default=None, null=True, blank=True,
-                                     related_name='other_part')
+    multi_type = models.CharField(max_length=1, choices=MULTI_TYPES,
+                                  default=MULTI_NONE, blank=True)
+    multi_cards = models.ManyToManyField('self', blank=True,
+                                         related_name='other_parts')
 
     # === rulings ====================================================
-    rulings = models.ManyToManyField(MTGRuling, blank=True)
+    rulings = models.ManyToManyField(Ruling, blank=True)
 
     # === legality ===================================================
     LEGALITY_NONE = ''
@@ -213,12 +214,12 @@ class MTGCard(models.Model):
         mana_n_str = re.search(r'\d+', mana)
         mana_n = int(mana_n_str.group()) if mana_n_str else None
 
-        mana_w = MTGCard._count_mana(r'W+', mana)
-        mana_u = MTGCard._count_mana(r'U+', mana)
-        mana_b = MTGCard._count_mana(r'B+', mana)
-        mana_r = MTGCard._count_mana(r'R+', mana)
-        mana_g = MTGCard._count_mana(r'G+', mana)
-        mana_c = MTGCard._count_mana(r'C+', mana)
+        mana_w = Card._count_mana(r'W+', mana)
+        mana_u = Card._count_mana(r'U+', mana)
+        mana_b = Card._count_mana(r'B+', mana)
+        mana_r = Card._count_mana(r'R+', mana)
+        mana_g = Card._count_mana(r'G+', mana)
+        mana_c = Card._count_mana(r'C+', mana)
 
         return (mana_n, mana_w, mana_u, mana_b, mana_r,
                 mana_g, mana_c, mana_special)
@@ -226,7 +227,7 @@ class MTGCard(models.Model):
     def set_mana(self, mana):
         if mana is None:
             return
-        (n, w, u, b, r, g, c, special) = MTGCard.parse_mana(mana)
+        (n, w, u, b, r, g, c, special) = Card.parse_mana(mana)
         self.mana_n = n
         self.mana_w = w
         self.mana_u = u
@@ -255,15 +256,15 @@ class MTGCard(models.Model):
             self.loyalty_special = loyalty
 
 
-class MTGCardEdition(models.Model):
-    """Model linking `cardbox.models.MTGCard` with
-    `cardbox.models.MTGSet`.
+class CardEdition(models.Model):
+    """Model linking `mtgcardbox.models.Card` with
+    `mtgcardbox.models.Set`.
 
     """
     number = models.PositiveSmallIntegerField()
     number_suffix = models.CharField(max_length=10, blank=True)
-    mtgset = models.ForeignKey(MTGSet, on_delete=models.CASCADE)
-    card = models.ForeignKey(MTGCard, on_delete=models.CASCADE)
+    mtgset = models.ForeignKey(Set, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL,
                                null=True, blank=True)
 
@@ -288,25 +289,25 @@ class MTGCardEdition(models.Model):
         return number, number_suffix
 
     def set_number(self, number_str):
-        number, number_suffix = MTGCardEdition.parse_number(number_str)
+        number, number_suffix = CardEdition.parse_number(number_str)
         self.number = number
         self.number_suffix = number_suffix
 
 
-class MTGCollection(models.Model):
-    """Model of a shareable collection of `cardbox.models.MTGCard`s."""
+class Collection(models.Model):
+    """Model of a shareable collection of `mtgcardbox.models.Card`s."""
     name = models.CharField(max_length=100)
-    editions = models.ManyToManyField(MTGCardEdition,
-                                      through='MTGCollectionEntry',
+    editions = models.ManyToManyField(CardEdition,
+                                      through='CollectionEntry',
                                       blank=True)
     date_created = models.DateField()
 
     # === user =======================================================
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     viewers = models.ManyToManyField(User, blank=True,
-                                     related_name='viewable_mtgcollections')
+                                     related_name='viewable_collections')
     editors = models.ManyToManyField(User, blank=True,
-                                     related_name='editable_mtgcollections')
+                                     related_name='editable_collections')
 
     class Meta:
         ordering = ['date_created']
@@ -315,10 +316,10 @@ class MTGCollection(models.Model):
         return self.name
 
 
-class MTGCollectionEntry(models.Model):
-    """Model a single card entry of a `cardbox.models.MTGCollection`."""
-    collection = models.ForeignKey(MTGCollection, on_delete=models.CASCADE)
-    edition = models.ForeignKey(MTGCardEdition, on_delete=models.CASCADE)
+class CollectionEntry(models.Model):
+    """Model a single card entry of a `mtgcardbox.models.Collection`."""
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    edition = models.ForeignKey(CardEdition, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField("number of copies in the "
                                              "collection", default=1)
     foil_count = models.PositiveSmallIntegerField("number of foiled "
