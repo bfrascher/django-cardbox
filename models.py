@@ -36,7 +36,7 @@ class Block(models.Model):
     CATEGORY_NONE = ''
     CATEGORY_EXPANSION = 'E'
     CATEGORY_CORE_SET = 'C'
-    CATEGORY_MTGO = 'MTGO'
+    CATEGORY_MTGO = 'M'
     CATEGORY_SPECIAL_SET = 'S'
     CATEGORY_PROMO_CARD = 'P'
     CATEGORIES = (
