@@ -59,7 +59,7 @@ class Block(models.Model):
 
 class Set(models.Model):
     """Model for a Magic The Gathering set/expansion.  Used to group
-    `tcc.models.Card`.
+    `mtgcardbox.models.Card`.
 
     """
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
@@ -82,7 +82,7 @@ class Card(models.Model):
     sets = models.ManyToManyField(Set, through='CardEdition')
 
     # === card text ==================================================
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     types = models.CharField(max_length=200)
     rules = models.TextField(blank=True)
     flavour = models.TextField(blank=True)
@@ -267,6 +267,9 @@ class CardEdition(models.Model):
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL,
                                null=True, blank=True)
+
+    class Meta:
+        unique_together = ('number', 'number_suffix', 'mtgset',)
 
     def __str__(self):
         if self.card:
