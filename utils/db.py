@@ -21,7 +21,7 @@ from mtgcardbox.utils.parser import (
 logger = logging.getLogger(__name__)
 
 
-def insert_artist(artist, update=True):
+def insert_artist(artist, update=False):
     """Create/update a single artist."""
     try:
         a = Artist.objects.get(last_name=artist.last_name,
@@ -40,7 +40,7 @@ def insert_artist(artist, update=True):
     return artist
 
 
-def insert_ruling(ruling, update=True):
+def insert_ruling(ruling, update=False):
     """Create/update a single ruling."""
     try:
         r = Ruling.objects.get(ruling=ruling.ruling)
@@ -61,7 +61,7 @@ def insert_ruling(ruling, update=True):
     return ruling
 
 
-def insert_block(block, update=True):
+def insert_block(block, update=False):
     """Create/update a single block."""
     try:
         b = Block.objects.get(name=block.name)
@@ -79,7 +79,7 @@ def insert_block(block, update=True):
     return block
 
 
-def insert_set(block, set_, update=True):
+def insert_set(block, set_, update=False):
     """Create/update a single set.
 
     :type block: `mtgcardbox.models.Block`
@@ -111,7 +111,7 @@ def insert_set(block, set_, update=True):
     return set_
 
 
-def insert_card(card, update=True):
+def insert_card(card, update=False):
     """Create/update a single card.
 
     :type card: `mtgcardbox.models.Card`
@@ -165,7 +165,7 @@ def insert_card(card, update=True):
     return card
 
 
-def insert_card_edition(set_, card, artist, edition, update=True):
+def insert_card_edition(set_, card, artist, edition, update=False):
     """Create/update a single card edition."""
     try:
         e = CardEdition.objects.get(number=edition.number,
@@ -191,7 +191,7 @@ def insert_card_edition(set_, card, artist, edition, update=True):
     return edition
 
 
-def insert_blocks_sets_from_parser(parser=MCIParser, update=True):
+def insert_blocks_sets_from_parser(parser=MCIParser, update=False):
     """Create/update all blocks and sets.
 
     Existing blocks and sets will be skipped.
@@ -203,7 +203,7 @@ def insert_blocks_sets_from_parser(parser=MCIParser, update=True):
             insert_set(block, set_, update)
 
 
-def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=True):
+def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=False):
     """Create/update all  cards from all sets.
 
     Existing cards will be updated or skipped.
@@ -228,17 +228,17 @@ def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=True):
             multi_pairs = []
         if card.multi_type != Card.MULTI_NONE:
             for pair in multi_pairs:
-                pair.card.multi_cards.append(card)
-                card.multi_cards.append(pair.card)
+                pair.card.multi_cards.add(card)
+                card.multi_cards.add(pair.card)
             multi_pairs.append(ECPair(edition, card))
 
 
-def insert_cards_from_parser(parser=MCIParser, update=True):
+def insert_cards_from_parser(parser=MCIParser, update=False):
     sets = Set.objects.all()
     for set_ in sets:
         insert_cards_by_set_from_parser(set_, parser, update)
 
 
-def insert_blocks_sets_cards_from_parser(parser=MCIParser, update=True):
+def insert_blocks_sets_cards_from_parser(parser=MCIParser, update=False):
     insert_blocks_sets_from_parser(parser, update)
     insert_cards_from_parser(parser, update)
