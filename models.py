@@ -270,8 +270,7 @@ class CardEdition(models.Model):
                                null=True, blank=True)
 
     class Meta:
-        # unique_together = ('number', 'number_suffix', 'mtgset',)
-        pass
+        unique_together = ('number', 'number_suffix', 'mtgset',)
 
     def __str__(self):
         if self.card:
@@ -321,7 +320,7 @@ class Collection(models.Model):
         return self.name
 
 
-class CollectionEntry(models.Model):
+pclass CollectionEntry(models.Model):
     """Model a single card entry of a `mtgcardbox.models.Collection`."""
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
     edition = models.ForeignKey(CardEdition, on_delete=models.CASCADE)
