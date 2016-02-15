@@ -264,16 +264,18 @@ class CardEdition(models.Model):
     number = models.PositiveSmallIntegerField()
     number_suffix = models.CharField(max_length=10, blank=True)
     mtgset = models.ForeignKey(Set, on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE,
+                             related_name='editions')
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL,
                                null=True, blank=True)
 
     class Meta:
-        unique_together = ('number', 'number_suffix', 'mtgset',)
+        # unique_together = ('number', 'number_suffix', 'mtgset',)
+        pass
 
     def __str__(self):
         if self.card:
-            return '{0}{1} {0} in {1}'.format(self.number,
+            return '{0}{1} {2} in {3}'.format(self.number,
                                               self.number_suffix,
                                               self.card.name,
                                               self.mtgset.name)
