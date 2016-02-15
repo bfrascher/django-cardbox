@@ -50,7 +50,7 @@ class MCIParser:
             yield block, sets
 
     @staticmethod
-    def parse_all_blocks_sets():
+    def parse_blocks_sets():
         """Parse all MTG blocks and their sets."""
         html = requests.get('{0}/sitemap.html'.format(MCIParser.URL)).text
         soup = BeautifulSoup(html, 'html.parser')
