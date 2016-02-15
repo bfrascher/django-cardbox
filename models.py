@@ -82,7 +82,7 @@ class Card(models.Model):
     sets = models.ManyToManyField(Set, through='CardEdition')
 
     # === card text ==================================================
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     types = models.CharField(max_length=200)
     rules = models.TextField(blank=True)
     flavour = models.TextField(blank=True)
