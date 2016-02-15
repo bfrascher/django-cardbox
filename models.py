@@ -88,35 +88,35 @@ class Card(models.Model):
     flavour = models.TextField(blank=True)
 
     # === stats ======================================================
-    power = models.PositiveSmallIntegerField(default=None, null=True,
-                                             blank=True)
+    power = models.PositiveIntegerField(default=None, null=True,
+                                        blank=True)
     power_special = models.CharField(max_length=10, blank=True, default='')
-    toughness = models.PositiveSmallIntegerField(default=None, null=True,
-                                                 blank=True)
+    toughness = models.PositiveIntegerField(default=None, null=True,
+                                            blank=True)
     toughness_special = models.CharField(max_length=10, blank=True,
                                          default='')
-    loyalty = models.PositiveSmallIntegerField(default=None, null=True,
-                                               blank=True)
+    loyalty = models.PositiveIntegerField(default=None, null=True,
+                                          blank=True)
     loyalty_special = models.CharField(max_length=10, blank=True, default='')
 
     # === mana =======================================================
-    mana_n = models.PositiveSmallIntegerField("neutral mana", default=None,
-                                              null=True, blank=True)
-    mana_w = models.PositiveSmallIntegerField("white mana", default=None,
-                                              null=True, blank=True)
-    mana_u = models.PositiveSmallIntegerField("blue mana", default=None,
-                                              null=True, blank=True)
-    mana_b = models.PositiveSmallIntegerField("black mana", default=None,
-                                              null=True, blank=True)
-    mana_r = models.PositiveSmallIntegerField("red mana", default=None,
-                                              null=True, blank=True)
-    mana_g = models.PositiveSmallIntegerField("green mana", default=None,
-                                              null=True, blank=True)
-    mana_c = models.PositiveSmallIntegerField("colorless mana", default=None,
-                                              null=True, blank=True)
+    mana_n = models.PositiveIntegerField("neutral mana", default=None,
+                                         null=True, blank=True)
+    mana_w = models.PositiveIntegerField("white mana", default=None,
+                                         null=True, blank=True)
+    mana_u = models.PositiveIntegerField("blue mana", default=None,
+                                         null=True, blank=True)
+    mana_b = models.PositiveIntegerField("black mana", default=None,
+                                         null=True, blank=True)
+    mana_r = models.PositiveIntegerField("red mana", default=None,
+                                         null=True, blank=True)
+    mana_g = models.PositiveIntegerField("green mana", default=None,
+                                         null=True, blank=True)
+    mana_c = models.PositiveIntegerField("colorless mana", default=None,
+                                         null=True, blank=True)
     mana_special = models.CharField("special mana", max_length=50, blank=True)
-    cmc = models.PositiveSmallIntegerField("converted mana cost", default=None,
-                                              null=True, blank=True)
+    cmc = models.PositiveIntegerField("converted mana cost", default=None,
+                                      null=True, blank=True)
 
     # === multi card ==================================================
     MULTI_NONE = ''
@@ -235,7 +235,7 @@ class CardEdition(models.Model):
     `mtgcardbox.models.Set`.
 
     """
-    number = models.PositiveSmallIntegerField()
+    number = models.PositiveIntegerField()
     number_suffix = models.CharField(max_length=10, blank=True)
     mtgset = models.ForeignKey(Set, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE,
@@ -324,11 +324,11 @@ class CollectionEntry(models.Model):
     """Model a single card entry of a `mtgcardbox.models.Collection`."""
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
     edition = models.ForeignKey(CardEdition, on_delete=models.CASCADE)
-    count = models.PositiveSmallIntegerField("number of copies in the "
-                                             "collection", default=1)
-    foil_count = models.PositiveSmallIntegerField("number of foiled "
-                                                  "copies in the collection.",
-                                                  default=0)
+    count = models.PositiveIntegerField("number of copies in the "
+                                        "collection", default=1)
+    foil_count = models.PositiveIntegerField("number of foiled "
+                                             "copies in the collection.",
+                                             default=0)
 
     def __str__(self):
         return '{0} in {1}'.format(self.card.name, self.collection.name)
