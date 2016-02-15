@@ -320,7 +320,7 @@ class Collection(models.Model):
         return self.name
 
 
-pclass CollectionEntry(models.Model):
+class CollectionEntry(models.Model):
     """Model a single card entry of a `mtgcardbox.models.Collection`."""
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
     edition = models.ForeignKey(CardEdition, on_delete=models.CASCADE)
