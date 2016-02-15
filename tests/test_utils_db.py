@@ -19,7 +19,116 @@ from mtgcardbox.utils.db import (
     insert_card_edition,
     insert_blocks_sets_from_parser,
     insert_cards_by_set_from_parser,
+    insert_cards_from_parser,
 )
+
+
+class MockParser:
+    blocks = [
+        Block(name='The first block', category=Block.CATEGORY_MTGO),
+        Block(name='second block', category=Block.CATEGORY_SPECIAL_SET),
+        Block(name='final Block', category=Block.CATEGORY_CORE_SET),
+    ]
+
+    sets = {}
+    sets['The first block'] = [
+        Set(code='SMS', name='Some set'),
+        Set(code='SIFB', name='set in first block'),
+    ]
+    sets['second block'] = [
+        Set(code='SBS', name='second block set'),
+    ]
+    sets['final Block'] = [
+        Set(code='FBS', name='final block set'),
+    ]
+
+    setentries = {}
+    setentries['SMS'] = [
+        (
+            CardEdition(number=5, number_suffix='a'),
+            Card(name='Song (Song/Ice/Fire)', types='Sorcery',
+                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+            Artist(first_name='George R. R.', last_name='Martin'),
+            [
+                Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
+                Ruling(ruling='Starks rule!', date=datetime.date(2, 1, 1)),
+            ]
+        ),
+        (
+            CardEdition(number=5, number_suffix='b'),
+            Card(name='Ice (Song/Ice/Fire)', types='Sorcery',
+                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+            Artist(first_name='George R. R.', last_name='Martin'),
+            [
+                Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
+                Ruling(ruling='Starks rule!', date=datetime.date(2, 1, 1)),
+            ]
+        ),
+        (
+            CardEdition(number=5, number_suffix='c'),
+            Card(name='Fire (Song/Ice/Fire)', types='Sorcery',
+                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+            Artist(first_name='George R. R.', last_name='Martin'),
+            [
+                Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
+                Ruling(ruling='Starks rule!', date=datetime.date(2, 1, 1)),
+            ]
+        ),
+        (
+            CardEdition(number=13, number_suffix='a'),
+            Card(name='Wheel (Wheel/Time)', types='Legendary Creature',
+                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_FLIP),
+            Artist(first_name='Robert', last_name='Jordan'),
+            []
+        ),
+        (
+            CardEdition(number=13, number_suffix='b'),
+            Card(name='Time (Wheel/Time)', types='Legendary Creature',
+                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_FLIP),
+            Artist(first_name='Brandon', last_name='Sanderson'),
+            []
+        ),
+    ]
+    setentries['SIFB'] = [
+        (
+            CardEdition(number=1, number_suffix=''),
+            Card(name='Card with multiple editions', types='Reprint',
+                 rarity=Card.RARITY_COMMON),
+            Artist(first_name='Model', last_name='Artist'),
+            [
+                Ruling(ruling='This card has multiple editions.',
+                       date=datetime.date(1, 1, 1)),
+                Ruling(ruling='No really, check it out.',
+                       date=datetime.date(1, 1, 2)),
+            ]
+        ),
+    ]
+    setentries['SBS'] = [
+        (
+            CardEdition(number=1, number_suffix=''),
+            Card(name='Card with multiple editions', types='Reprint',
+                 rarity=Card.RARITY_COMMON),
+            Artist(first_name='Lone', last_name='Artist'),
+            []
+        ),
+    ]
+    setentries['FBS'] = [
+        (
+            CardEdition(number=3, number_suffix=''),
+            Card(name='Card with multiple editions', types='Reprint',
+                 rarity=Card.RARITY_COMMON),
+            Artist(first_name='Model', last_name='Artist'),
+            []
+        ),
+    ]
+
+    def parse_blocks_sets():
+        for block in MockParser.blocks:
+            yield block, MockParser.sets[block.name]
+
+    def parse_cards_by_set(setcode):
+        for edition, card, artist, rulings in MockParser.setentries[setcode]:
+            yield edition, card, artist, rulings
 
 
 @pytest.mark.django_db
@@ -37,27 +146,20 @@ class TestInsertArtist:
         a = insert_artist(artist)
         assert a.id is not None
 
-    @pytest.mark.parametrize('artist', artists)
-    def test_skip_artist(self, artist):
-        """Test skipping an existing artist."""
-        artist.save()
-        assert artist.id is not None
-        new_artist = Artist(last_name=artist.last_name,
-                            first_name='SomeThingDifferent')
-        a = insert_artist(new_artist, update=False)
-        assert a.id == artist.id
-        assert a.first_name == artist.first_name
+    # Currently there is no point to further test insert_artist, as
+    # it's too simple.
 
-    @pytest.mark.parametrize('artist', artists)
-    def test_update_artist(self, artist):
-        """Test updating an existing artist."""
-        artist.save()
-        assert artist.id is not None
-        new_artist = Artist(last_name=artist.last_name,
-                            first_name='SomeThingDifferent')
-        a = insert_artist(new_artist, update=True)
-        assert a.id == artist.id
-        assert a.first_name == new_artist.first_name
+    # @pytest.mark.parametrize('artist', artists)
+    # def test_skip_artist(self, artist):
+    #     """Test skipping an existing artist."""
+    #     artist.save()
+    #     assert artist.id is not None
+
+    # @pytest.mark.parametrize('artist', artists)
+    # def test_update_artist(self, artist):
+    #     """Test updating an existing artist."""
+    #     artist.save()
+    #     assert artist.id is not None
 
 
 @pytest.mark.django_db
@@ -207,27 +309,53 @@ class TestInsertSet:
 class TestInsertCard:
     """All tests for :func:`mtgcardbox.utils.db.insert_card`."""
     cards = [
-        Card(),
-        Card(),
-        Card(),
+        Card(name='First card', types='Token', rarity=Card.RARITY_TOKEN),
+        Card(name='Second card', types='Basic Land', rarity=Card.RARITY_LAND),
+        Card(name='Third card', types='Instant', rarity=Card.RARITY_RARE),
     ]
 
     @pytest.mark.parametrize('card', cards)
     def test_insert_card(self, card):
         """Test inserting a card."""
-        pass
+        c = insert_card(card)
+        assert c.id is not None
 
     @pytest.mark.parametrize('card', cards)
     def test_skip_card(self, card):
         """Test skipping an existing card."""
-        pass
+        card.save()
+        assert card.id is not None
+
+        new_card = Card(name=card.name, types='New',
+                        rarity=Card.RARITY_SPECIAL, cmc=5,
+                        legal_classic=Card.LEGALITY_BANNED)
+        c = insert_card(new_card, update=False)
+        assert c.id == card.id
+        assert c.name == card.name
+        assert c.types == card.types
+        assert c.rarity == card.rarity
+        assert c.cmc == card.cmc
+        assert c.legal_classic == card.legal_classic
 
     @pytest.mark.parametrize('card', cards)
     def test_update_card(self, card):
         """Test updating an existing card."""
-        pass
+        card.save()
+        assert card.id is not None
+
+        new_card = Card(name=card.name, types='New',
+                        rarity=Card.RARITY_SPECIAL, cmc=5,
+                        legal_classic=Card.LEGALITY_BANNED)
+        c = insert_card(new_card, update=True)
+        assert c.id == card.id
+        assert c.name == card.name
+        assert c.types == new_card.types
+        assert c.rarity == new_card.rarity
+        assert c.cmc == new_card.cmc
+        assert c.legal_classic == new_card.legal_classic
 
 
+# TODO(benedikt) Implement
 @pytest.mark.django_db
 class TestInsertCardEdition:
     """All tests for :func:`mtgcardbox.utils.db.insert_card_edition`."""
@@ -254,18 +382,128 @@ class TestInsertCardEdition:
 
 
 @pytest.mark.django_db
-class TestInsertBlcoksSetsFromParser:
+class TestInsertBlocksSetsFromParser:
+    """All tests for
+    :func:`mtgcardbox.utils.db.insert_blocks_sets_from_parser`.
+
+    """
     def test_with_mock_parser(self):
-        pass
+        """Test that blocks and sets are associated right."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        block = Block.objects.get(name='The first block')
+        assert block.category == MockParser.blocks[0].category
+
+        set_ = Set.objects.get(code='SMS')
+        assert set_.name == 'Some set'
+        assert set_.block_id == block.id
+
+        set_ = Set.objects.get(code='FBS')
+        assert set_.name == 'final block set'
+        assert set_.block_id is not None
+        assert set_.block_id != block.id
 
 
 @pytest.mark.django_db
 class TestInsertCardsBySetFromParser:
-    def test_with_mock_parser(self):
-        pass
+    """All tests for
+    :func:`mtgcardbox.utils.db.insert_cards_by_set_from_parser`.
+
+    """
+    def test_multi_cards(self):
+        """Test that multi cards are associated right."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        set_ = Set.objects.get(code='SMS')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+
+        card_song = Card.objects.get(name='Song (Song/Ice/Fire)')
+        card_ice = Card.objects.get(name='Ice (Song/Ice/Fire)')
+        card_fire = Card.objects.get(name='Fire (Song/Ice/Fire)')
+        card_wheel = Card.objects.get(name='Wheel (Wheel/Time)')
+        card_time = Card.objects.get(name='Time (Wheel/Time)')
+
+        assert len(card_song.multi_cards.all()) == 2
+        assert len(card_ice.multi_cards.all()) == 2
+        assert len(card_fire.multi_cards.all()) == 2
+        assert len(card_wheel.multi_cards.all()) == 1
+        assert len(card_time.multi_cards.all()) == 1
+
+    def test_rulings(self):
+        """Test that the rulings are reused."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        set_ = Set.objects.get(code='SMS')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+
+        card_song = Card.objects.get(name='Song (Song/Ice/Fire)')
+        card_ice = Card.objects.get(name='Ice (Song/Ice/Fire)')
+        card_fire = Card.objects.get(name='Fire (Song/Ice/Fire)')
+
+        assert len(Ruling.objects.all()) == 2
+        assert len(card_song.rulings.all()) == 2
+        assert len(card_ice.rulings.all()) == 2
+        assert len(card_fire.rulings.all()) == 2
+
+    def test_artists(self):
+        """Test that artists are reused."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        set_ = Set.objects.get(code='SMS')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+
+        card_song = Card.objects.get(name='Song (Song/Ice/Fire)')
+        card_fire = Card.objects.get(name='Fire (Song/Ice/Fire)')
+
+        assert (card_song.editions.all()[0].artist.id ==
+                card_fire.editions.all()[0].artist.id)
+
+    def test_editions(self):
+        """Test that editions are added correctly."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        set_ = Set.objects.get(code='SBS')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+
+        card = Card.objects.get(name='Card with multiple editions')
+        assert len(card.editions.all()) == 1
+        assert len(card.rulings.all()) == 0
+
+        set_ = Set.objects.get(code='SIFB')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+        set_ = Set.objects.get(code='FBS')
+        insert_cards_by_set_from_parser(set_, parser=MockParser)
+
+        card.refresh_from_db()
+        assert len(card.editions.all()) == 3
+        assert len(card.rulings.all()) == 2
+
+    def test_with_mci_parser(self):
+        insert_blocks_sets_from_parser()
+        set_ = Set.objects.get(code='DDJ')
+        insert_cards_by_set_from_parser(set_)
+
+        card_life = Card.objects.get(name='Life (Life/Death)')
+        card_death = Card.objects.get(name='Death (Life/Death)')
+        assert card_life.multi_cards.all()[0].id == card_death.id
+        assert card_death.multi_cards.all()[0].id == card_life.id
+        assert card_life.editions.get(mtgset_id=set_.id).number == 77
+
+        card_island = Card.objects.get(name='Island')
+        assert len(card_island.editions.all()) == 4
+
+        card_doomgape = Card.objects.get(name='Doomgape')
+        assert card_doomgape.mana_special == '{B/G}{B/G}{B/G}'
 
 
 @pytest.mark.django_db
 class TestInsertCardsFromParser:
+    """All tests for
+    :func:`mtgcardbox.utils.db.insert_cards_from_parser`.
+
+    """
     def test_with_mock_parser(self):
-        pass
+        """Test that the sets are read from the database correctly."""
+        insert_blocks_sets_from_parser(parser=MockParser)
+        insert_cards_from_parser(parser=MockParser)
+
+        card_ice = Card.objects.get(name='Ice (Song/Ice/Fire)')
+        card_mult = Card.objects.get(name='Card with multiple editions')
+
+        assert len(card_ice.editions.all()) == 1
+        assert len(card_mult.editions.all()) == 3
