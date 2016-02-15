@@ -156,17 +156,51 @@ class TestInsertSet:
         block.save()
         assert block.id is not None
         s = insert_set(block, set_)
-        assert s.code == set_.code
+        assert s.id is not None
 
     @pytest.mark.parametrize('block,set_', blocksets)
-    def test_skip_set(self, block,set_):
+    def test_skip_set(self, block, set_):
         """Test skipping an existing set."""
-        pass
+        block.save()
+        assert block.id is not None
+        set_ = insert_set(block, set_)
+        assert set_.id is not None
+
+        b = Block(name='New block', category=Block.CATEGORY_MTGO)
+        b.save()
+        assert b.id is not None
+
+        new_set = Set(code=set_.code, name='New set',
+                      release_date=datetime.date(1, 1, 1))
+        s = insert_set(b, new_set, update=False)
+
+        assert s.id == set_.id
+        assert s.code == set_.code
+        assert s.block.id == block.id
+        assert s.name == set_.name
+        assert s.release_date == set_.release_date
 
     @pytest.mark.parametrize('block,set_', blocksets)
     def test_update_set(self, block, set_):
         """Test updating an existing set."""
-        pass
+        block.save()
+        assert block.id is not None
+        set_ = insert_set(block, set_)
+        assert set_.id is not None
+
+        b = Block(name='New block', category=Block.CATEGORY_MTGO)
+        b.save()
+        assert b.id is not None
+
+        new_set = Set(code=set_.code, name='New set',
+                      release_date=datetime.date(1, 1, 1))
+        s = insert_set(b, new_set, update=True)
+
+        assert s.id == set_.id
+        assert s.code == set_.code
+        assert s.block.id == b.id
+        assert s.name == new_set.name
+        assert s.release_date == new_set.release_date
 
 
 @pytest.mark.django_db
@@ -216,4 +250,22 @@ class TestInsertCardEdition:
     @pytest.mark.parametrize('edition', editions)
     def test_update_card_edition(self, edition):
         """Test updating an existing edition."""
+        pass
+
+
+@pytest.mark.django_db
+class TestInsertBlcoksSetsFromParser:
+    def test_with_mock_parser(self):
+        pass
+
+
+@pytest.mark.django_db
+class TestInsertCardsBySetFromParser:
+    def test_with_mock_parser(self):
+        pass
+
+
+@pytest.mark.django_db
+class TestInsertCardsFromParser:
+    def test_with_mock_parser(self):
         pass
