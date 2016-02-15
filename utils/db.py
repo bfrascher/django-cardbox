@@ -89,7 +89,7 @@ def insert_set(block, set_, update=True):
 
     """
     try:
-        s = Set.objects.get(pk=set_.code)
+        s = Set.objects.get(code=set_.code)
         if update:
             s.release_date = set_.release_date
             s.name = set_.name
