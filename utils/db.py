@@ -170,7 +170,7 @@ def insert_card_edition(set_, card, artist, edition, update=False):
     try:
         e = CardEdition.objects.get(number=edition.number,
                                     number_suffix=edition.number_suffix,
-                                    mtgset_id=edition.mtgset_id)
+                                    mtgset_id=set_.id)
         if update:
             e.card = card
             e.artist = artist
