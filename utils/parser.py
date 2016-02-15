@@ -219,7 +219,7 @@ class MCIParser:
             card = Card()
 
         html = requests.get('{0}/{1}/en/{2}.html'.format(
-            MCIParser.URL, setcode, number)).text
+            MCIParser.URL, setcode.lower(), number)).text
         soup = BeautifulSoup(html, 'html.parser')
 
         a_multiverseid = soup.find('a', {'href': re.compile(r'.*\?multiverseid=.*')})
@@ -228,7 +228,7 @@ class MCIParser:
         card.multiverseid = int(multiverseid) if multiverseid else None
 
         a_name = soup.find('a', {'href':'/{0}/en/{1}.html'
-                                 .format(setcode, number)})
+                                 .format(setcode.lower(), number)})
         card.name = a_name.text
 
         p_types_stats = a_name.find_next('p')
@@ -292,7 +292,7 @@ class MCIParser:
         dual_card (if any), artist and all rulings (if any).
 
         """
-        url = '{0}/{1}/en.html'.format(MCIParser.URL, setcode)
+        url = '{0}/{1}/en.html'.format(MCIParser.URL, setcode.lower())
         html = requests.get(url)
         soup = BeautifulSoup(html.text, 'html.parser')
         table = soup.find('table', {'cellpadding': '3'})
@@ -305,7 +305,7 @@ class MCIParser:
             edition.set_number(number_str)
             card.rarity = MCIParser._parse_rarity(tds[4].text)
             card, artist, rulings = MCIParser.parse_card(
-                setcode, number_str, card=card)
+                setcode.lower(), number_str, card=card)
             yield edition, card, artist, rulings
 
     @staticmethod
