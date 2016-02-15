@@ -22,12 +22,11 @@ logger = logging.getLogger(__name__)
 def insert_artist(artist, update=True):
     """Create/update a single artist."""
     try:
-        a = Artist.objects.get(last_name=artist.last_name)
+        a = Artist.objects.get(last_name=artist.last_name,
+                               first_name=artist.first_name)
         if update:
-            a.first_name = artist.first_name
-
             logger.info("Updating artist '{0}'.".format(a))
-            a.save()
+            # a.save()
         else:
             logger.info("Skipping existing artist '{0}'.".format(a))
 
@@ -103,9 +102,9 @@ def insert_set(block, set_, update=True):
 
         set_ = s
     except Set.DoesNotExist:
+        set_.block = block
         logger.info("Creating new set '{0}' in block '{1}'."
                     .format(set_, block))
-        set_.block = block
         set_.save()
     return set_
 
@@ -169,7 +168,7 @@ def insert_card_edition(set_, card, artist, edition, update=True):
     try:
         e = CardEdition.objects.get(number=edition.number,
                                     number_suffix=edition.number_suffix,
-                                    mtgset=edition.mtgset)
+                                    mtgset_id=edition.mtgset_id)
         if update:
             e.card = card
             e.artist = artist
@@ -181,10 +180,10 @@ def insert_card_edition(set_, card, artist, edition, update=True):
 
         edition = e
     except CardEdition.DoesNotExist:
-        logger.info("Creating new edition '{0}'.".format(edition))
         edition.mtgset = set_
         edition.card = card
         edition.artist = artist
+        logger.info("Creating new edition '{0}'.".format(edition))
         edition.save()
 
     return edition
