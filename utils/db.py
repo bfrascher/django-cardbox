@@ -142,7 +142,6 @@ def insert_card(card, update=False):
             c.mana_g = card.mana_g
             c.mana_special = card.mana_special
             c.cmc = card.cmc
-            c.rarity = card.rarity
             c.multi_type = card.multi_type
             c.legal_vintage = card.legal_vintage
             c.legal_legacy = card.legal_legacy
@@ -174,6 +173,7 @@ def insert_card_edition(set_, card, artist, edition, update=False):
         if update:
             e.card = card
             e.artist = artist
+            e.rarity = edition.rarity
 
             logger.info("Updating edition '{0}'.".format(e))
             e.save()

@@ -534,12 +534,10 @@ Target creature gets -5/-5 until end of turn."""
         assert rulings[4].ruling == "Phyrexian mana is not a new color. Players can't add Phyrexian mana to their mana pools."
 
     def test_parse_card_jagged_scar_archers(self):
-        card = Card(rarity=Card.RARITY_UNCOMMON)
-        card, artist, rulings = MCIParser.parse_card('dpa', '72', card=card)
+        card, artist, rulings = MCIParser.parse_card('dpa', '72')
 
         # === card =========================================================
         assert card.multiverseid == 0
-        assert card.rarity == Card.RARITY_UNCOMMON
 
         assert card.name == "Jagged-Scar Archers"
         assert card.types == 'Creature — Elf Archer'
@@ -637,19 +635,19 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
     def test_parse_set_ogw(self):
         test_cards = {}
         test_cards[0] = {'name': "Deceiver of Form",
-                         'rarity': Card.RARITY_RARE,
+                         'rarity': CardEdition.RARITY_RARE,
                          'number': 1,
                          'number_suffix': ''}
         test_cards[3] = {'name': "Kozilek, the Great Distortion",
-                         'rarity': Card.RARITY_MYTHIC_RARE,
+                         'rarity': CardEdition.RARITY_MYTHIC_RARE,
                          'number': 4,
                          'number_suffix': ''}
         test_cards[5] = {'name': "Matter Reshaper",
-                         'rarity': Card.RARITY_RARE,
+                         'rarity': CardEdition.RARITY_RARE,
                          'number': 6,
                          'number_suffix': ''}
         test_cards[44] = {'name': "Gravity Negator",
-                          'rarity': Card.RARITY_COMMON,
+                          'rarity': CardEdition.RARITY_COMMON,
                           'number': 45,
                           'number_suffix': ''}
         max_index = 44
@@ -658,7 +656,7 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
             if i not in test_cards:
                 continue
             assert card.name == test_cards[i]['name']
-            assert card.rarity == test_cards[i]['rarity']
+            assert edition.rarity == test_cards[i]['rarity']
             assert edition.number == test_cards[i]['number']
             assert edition.number_suffix == test_cards[i]['number_suffix']
             # Speed up the process a little bit by not loading all cards.
@@ -668,23 +666,23 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
     def test_parse_set_pro(self):
         test_cards = {}
         test_cards[0] = {'name': "Eternal Dragon",
-                         'rarity': Card.RARITY_SPECIAL,
+                         'rarity': CardEdition.RARITY_SPECIAL,
                          'number': 1,
                          'number_suffix': ''}
         test_cards[1] = {'name': "Mirari's Wake",
-                         'rarity': Card.RARITY_SPECIAL,
+                         'rarity': CardEdition.RARITY_SPECIAL,
                          'number': 2,
                          'number_suffix': ''}
         test_cards[2] = {'name': "Treva, the Renewer",
-                         'rarity': Card.RARITY_SPECIAL,
+                         'rarity': CardEdition.RARITY_SPECIAL,
                          'number': 3,
                          'number_suffix': ''}
         test_cards[3] = {'name': "Avatar of Woe",
-                         'rarity': Card.RARITY_SPECIAL,
+                         'rarity': CardEdition.RARITY_SPECIAL,
                          'number': 4,
                          'number_suffix': ''}
         test_cards[4] = {'name': "Ajani Goldmane",
-                         'rarity': Card.RARITY_SPECIAL,
+                         'rarity': CardEdition.RARITY_SPECIAL,
                          'number': 5,
                          'number_suffix': ''}
         max_index = 4
@@ -693,7 +691,7 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
             if i not in test_cards:
                 continue
             assert card.name == test_cards[i]['name']
-            assert card.rarity == test_cards[i]['rarity']
+            assert edition.rarity == test_cards[i]['rarity']
             assert edition.number == test_cards[i]['number']
             assert edition.number_suffix == test_cards[i]['number_suffix']
             # Speed up the process a little bit by not loading all cards.
@@ -703,19 +701,19 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
     def test_parse_set_ddm(self):
         test_cards = {}
         test_cards[0] = {'name': "Jace, Architect of Thought",
-                         'rarity': Card.RARITY_MYTHIC_RARE,
+                         'rarity': CardEdition.RARITY_MYTHIC_RARE,
                          'number': 1,
                          'number_suffix': ''}
         test_cards[11] = {'name': "Æther Adept",
-                          'rarity': Card.RARITY_COMMON,
+                          'rarity': CardEdition.RARITY_COMMON,
                           'number': 12,
                           'number_suffix': ''}
         test_cards[34] = {'name': "Dread Statuary",
-                          'rarity': Card.RARITY_UNCOMMON,
+                          'rarity': CardEdition.RARITY_UNCOMMON,
                           'number': 35,
                           'number_suffix': ''}
         test_cards[38] = {'name': "Island",
-                          'rarity': Card.RARITY_LAND,
+                          'rarity': CardEdition.RARITY_LAND,
                           'number': 39,
                           'number_suffix': ''}
         max_index = 38
@@ -724,7 +722,7 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
             if i not in test_cards:
                 continue
             assert card.name == test_cards[i]['name']
-            assert card.rarity == test_cards[i]['rarity']
+            assert edition.rarity == test_cards[i]['rarity']
             assert edition.number == test_cards[i]['number']
             assert edition.number_suffix == test_cards[i]['number_suffix']
             # Speed up the process a little bit by not loading all cards.
@@ -734,19 +732,19 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
     def test_parse_set_ddj(self):
         test_cards = {}
         test_cards[0] = {'name': "Niv-Mizzet, the Firemind",
-                         'rarity': Card.RARITY_MYTHIC_RARE,
+                         'rarity': CardEdition.RARITY_MYTHIC_RARE,
                          'number': 1,
                          'number_suffix': ''}
         test_cards[16] = {'name': "Izzet Signet",
-                          'rarity': Card.RARITY_COMMON,
+                          'rarity': CardEdition.RARITY_COMMON,
                           'number': 17,
                           'number_suffix': ''}
         test_cards[31] = {'name': "Fire (Fire/Ice)",
-                          'rarity': Card.RARITY_UNCOMMON,
+                          'rarity': CardEdition.RARITY_UNCOMMON,
                           'number': 32,
                           'number_suffix': 'a'}
         test_cards[32] = {'name': "Ice (Fire/Ice)",
-                          'rarity': Card.RARITY_UNCOMMON,
+                          'rarity': CardEdition.RARITY_UNCOMMON,
                           'number': 32,
                           'number_suffix': 'b'}
         max_index = 32
@@ -755,7 +753,7 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
             if i not in test_cards:
                 continue
             assert card.name == test_cards[i]['name']
-            assert card.rarity == test_cards[i]['rarity']
+            assert edition.rarity == test_cards[i]['rarity']
             assert edition.number == test_cards[i]['number']
             assert edition.number_suffix == test_cards[i]['number_suffix']
             # Speed up the process a little bit by not loading all cards.

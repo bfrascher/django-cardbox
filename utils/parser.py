@@ -205,7 +205,7 @@ class MCIParser:
         return Card.MULTI_FLIP
 
     @staticmethod
-    def parse_card(setcode, number, card=None):
+    def parse_card(setcode, number):
         """Parse a card from it's detail page on magiccards.info.
 
         Returns a :class:`cardbox.models.Card` object that is
@@ -214,9 +214,7 @@ class MCIParser:
         (if any).
 
         """
-
-        if card is None:
-            card = Card()
+        card = Card()
 
         html = requests.get('{0}/{1}/en/{2}.html'.format(
             MCIParser.URL, setcode.lower(), number)).text
@@ -279,10 +277,10 @@ class MCIParser:
     def _parse_rarity(rarity_str):
         # We don't need to check for RARITY_NONE here since it's the
         # default return value.
-        for (rarity_code, rarity_full) in Card.RARITIES[1:]:
+        for (rarity_code, rarity_full) in CardEdition.RARITIES[1:]:
             if rarity_str == rarity_full:
                 return rarity_code
-        return Card.RARITY_NONE
+        return CardEdition.RARITY_NONE
 
     @staticmethod
     def parse_cards_by_set(setcode):
@@ -303,9 +301,9 @@ class MCIParser:
             number_str = tds[0].text
             edition = CardEdition()
             edition.set_number(number_str)
-            card.rarity = MCIParser._parse_rarity(tds[4].text)
+            edition.rarity = MCIParser._parse_rarity(tds[4].text)
             card, artist, rulings = MCIParser.parse_card(
-                setcode.lower(), number_str, card=card)
+                setcode.lower(), number_str)
             yield edition, card, artist, rulings
 
     @staticmethod

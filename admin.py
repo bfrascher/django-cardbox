@@ -46,7 +46,7 @@ class CardEditionInline(admin.TabularInline):
     extra = 1
     fieldsets = (
         ('Set', {
-            'fields': ('mtgset', 'number', 'number_suffix', 'artist'),
+            'fields': ('mtgset', 'number', 'number_suffix', 'rarity', 'artist'),
         }),
     )
 
@@ -70,9 +70,6 @@ class CardAdmin(admin.ModelAdmin):
                        ('power_special', 'toughness_special',
                         'loyalty_special',),),
         }),
-        ('Rarity', {
-            'fields': ('rarity',),
-        }),
         ('Multi Card', {
             'classes': ('collapse',),
             'fields': ('multi_type','multi_cards',),
@@ -89,8 +86,8 @@ class CardAdmin(admin.ModelAdmin):
         }),
     )
     filter_horizontal = ('rulings', 'multi_cards',)
-    list_display = ('name', 'types', 'cmc', 'power', 'toughness', 'rarity',)
-    list_filter = ('rarity', 'multi_type', 'sets',)
+    list_display = ('name', 'types', 'cmc', 'power', 'toughness',)
+    list_filter = ('multi_type', 'sets',)
     search_fields = ('name', 'types',)
 
 

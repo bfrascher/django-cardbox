@@ -45,9 +45,10 @@ class MockParser:
     setentries = {}
     setentries['SMS'] = [
         (
-            CardEdition(number=5, number_suffix='a'),
+            CardEdition(number=5, number_suffix='a',
+                        rarity=CardEdition.RARITY_RARE),
             Card(name='Song (Song/Ice/Fire)', types='Sorcery',
-                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+                 multi_type=Card.MULTI_SPLIT),
             Artist(first_name='George R. R.', last_name='Martin'),
             [
                 Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
@@ -55,9 +56,10 @@ class MockParser:
             ]
         ),
         (
-            CardEdition(number=5, number_suffix='b'),
+            CardEdition(number=5, number_suffix='b',
+                        rarity=CardEdition.RARITY_RARE),
             Card(name='Ice (Song/Ice/Fire)', types='Sorcery',
-                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+                 multi_type=Card.MULTI_SPLIT),
             Artist(first_name='George R. R.', last_name='Martin'),
             [
                 Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
@@ -65,9 +67,10 @@ class MockParser:
             ]
         ),
         (
-            CardEdition(number=5, number_suffix='c'),
+            CardEdition(number=5, number_suffix='c',
+                        rarity=CardEdition.RARITY_RARE),
             Card(name='Fire (Song/Ice/Fire)', types='Sorcery',
-                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_SPLIT),
+                 multi_type=Card.MULTI_SPLIT),
             Artist(first_name='George R. R.', last_name='Martin'),
             [
                 Ruling(ruling='Lannisters lose!', date=datetime.date(1, 1, 1)),
@@ -75,25 +78,27 @@ class MockParser:
             ]
         ),
         (
-            CardEdition(number=13, number_suffix='a'),
+            CardEdition(number=13, number_suffix='a',
+                        rarity=CardEdition.RARITY_RARE),
             Card(name='Wheel (Wheel/Time)', types='Legendary Creature',
-                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_FLIP),
+                 multi_type=Card.MULTI_FLIP),
             Artist(first_name='Robert', last_name='Jordan'),
             []
         ),
         (
-            CardEdition(number=13, number_suffix='b'),
+            CardEdition(number=13, number_suffix='b',
+                        rarity=CardEdition.RARITY_RARE),
             Card(name='Time (Wheel/Time)', types='Legendary Creature',
-                 rarity=Card.RARITY_RARE, multi_type=Card.MULTI_FLIP),
+                 multi_type=Card.MULTI_FLIP),
             Artist(first_name='Brandon', last_name='Sanderson'),
             []
         ),
     ]
     setentries['SIFB'] = [
         (
-            CardEdition(number=1, number_suffix=''),
-            Card(name='Card with multiple editions', types='Reprint',
-                 rarity=Card.RARITY_COMMON),
+            CardEdition(number=1, number_suffix='',
+                        rarity=CardEdition.RARITY_COMMON),
+            Card(name='Card with multiple editions', types='Reprint'),
             Artist(first_name='Model', last_name='Artist'),
             [
                 Ruling(ruling='This card has multiple editions.',
@@ -105,18 +110,18 @@ class MockParser:
     ]
     setentries['SBS'] = [
         (
-            CardEdition(number=1, number_suffix=''),
-            Card(name='Card with multiple editions', types='Reprint',
-                 rarity=Card.RARITY_COMMON),
+            CardEdition(number=1, number_suffix='',
+                        rarity=CardEdition.RARITY_COMMON),
+            Card(name='Card with multiple editions', types='Reprint'),
             Artist(first_name='Lone', last_name='Artist'),
             []
         ),
     ]
     setentries['FBS'] = [
         (
-            CardEdition(number=3, number_suffix=''),
-            Card(name='Card with multiple editions', types='Reprint',
-                 rarity=Card.RARITY_COMMON),
+            CardEdition(number=3, number_suffix='',
+                        rarity=CardEdition.RARITY_UNCOMMON),
+            Card(name='Card with multiple editions', types='Reprint'),
             Artist(first_name='Model', last_name='Artist'),
             []
         ),
@@ -309,9 +314,9 @@ class TestInsertSet:
 class TestInsertCard:
     """All tests for :func:`mtgcardbox.utils.db.insert_card`."""
     cards = [
-        Card(name='First card', types='Token', rarity=Card.RARITY_TOKEN),
-        Card(name='Second card', types='Basic Land', rarity=Card.RARITY_LAND),
-        Card(name='Third card', types='Instant', rarity=Card.RARITY_RARE),
+        Card(name='First card', types='Token'),
+        Card(name='Second card', types='Basic Land'),
+        Card(name='Third card', types='Instant'),
     ]
 
     @pytest.mark.parametrize('card', cards)
@@ -326,14 +331,12 @@ class TestInsertCard:
         card.save()
         assert card.id is not None
 
-        new_card = Card(name=card.name, types='New',
-                        rarity=Card.RARITY_SPECIAL, cmc=5,
+        new_card = Card(name=card.name, types='New', cmc=5,
                         legal_classic=Card.LEGALITY_BANNED)
         c = insert_card(new_card, update=False)
         assert c.id == card.id
         assert c.name == card.name
         assert c.types == card.types
-        assert c.rarity == card.rarity
         assert c.cmc == card.cmc
         assert c.legal_classic == card.legal_classic
 
@@ -343,14 +346,12 @@ class TestInsertCard:
         card.save()
         assert card.id is not None
 
-        new_card = Card(name=card.name, types='New',
-                        rarity=Card.RARITY_SPECIAL, cmc=5,
+        new_card = Card(name=card.name, types='New', cmc=5,
                         legal_classic=Card.LEGALITY_BANNED)
         c = insert_card(new_card, update=True)
         assert c.id == card.id
         assert c.name == card.name
         assert c.types == new_card.types
-        assert c.rarity == new_card.rarity
         assert c.cmc == new_card.cmc
         assert c.legal_classic == new_card.legal_classic
 
@@ -457,21 +458,24 @@ class TestInsertCardsBySetFromParser:
     def test_editions(self):
         """Test that editions are added correctly."""
         insert_blocks_sets_from_parser(parser=MockParser)
-        set_ = Set.objects.get(code='SBS')
+        set_ = Set.objects.get(code='FBS')
         insert_cards_by_set_from_parser(set_, parser=MockParser)
 
         card = Card.objects.get(name='Card with multiple editions')
         assert len(card.editions.all()) == 1
         assert len(card.rulings.all()) == 0
+        assert card.editions.all()[0].rarity == CardEdition.RARITY_UNCOMMON
 
         set_ = Set.objects.get(code='SIFB')
         insert_cards_by_set_from_parser(set_, parser=MockParser)
-        set_ = Set.objects.get(code='FBS')
+        set_ = Set.objects.get(code='SBS')
         insert_cards_by_set_from_parser(set_, parser=MockParser)
 
         card.refresh_from_db()
         assert len(card.editions.all()) == 3
         assert len(card.rulings.all()) == 2
+        assert (card.editions.get(mtgset_id=set_.id).rarity ==
+                CardEdition.RARITY_COMMON)
 
     def test_with_mci_parser(self):
         insert_blocks_sets_from_parser()

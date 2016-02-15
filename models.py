@@ -118,32 +118,6 @@ class Card(models.Model):
     cmc = models.PositiveSmallIntegerField("converted mana cost", default=None,
                                               null=True, blank=True)
 
-    # === rarity =====================================================
-    RARITY_NONE = ''
-    RARITY_MYTHIC_RARE = 'M'
-    RARITY_RARE = 'R'
-    RARITY_UNCOMMON = 'U'
-    RARITY_COMMON = 'C'
-    RARITY_SPECIAL = 'S'
-    RARITY_LAND = 'L'
-    RARITY_TOKEN = 'T'
-    RARITY_EMBLEM = 'E'
-    RARITY_OTHER = 'O'
-    RARITIES = (
-        (RARITY_NONE, 'No rarity'),
-        (RARITY_MYTHIC_RARE, 'Mythic Rare'),
-        (RARITY_RARE, 'Rare'),
-        (RARITY_UNCOMMON, 'Uncommon'),
-        (RARITY_COMMON, 'Common'),
-        (RARITY_SPECIAL, 'Special'),
-        (RARITY_LAND, 'Land'),
-        (RARITY_TOKEN, 'Token'),
-        (RARITY_EMBLEM, 'Emblem'),
-        (RARITY_OTHER, 'Other'),
-    )
-    rarity = models.CharField(max_length=1, choices=RARITIES,
-                              default=RARITY_COMMON)
-
     # === multi card ==================================================
     MULTI_NONE = ''
     MULTI_SPLIT = 'S'
@@ -268,6 +242,32 @@ class CardEdition(models.Model):
                              related_name='editions')
     artist = models.ForeignKey(Artist, on_delete=models.SET_NULL,
                                null=True, blank=True)
+
+    # === rarity =====================================================
+    RARITY_NONE = ''
+    RARITY_MYTHIC_RARE = 'M'
+    RARITY_RARE = 'R'
+    RARITY_UNCOMMON = 'U'
+    RARITY_COMMON = 'C'
+    RARITY_SPECIAL = 'S'
+    RARITY_LAND = 'L'
+    RARITY_TOKEN = 'T'
+    RARITY_EMBLEM = 'E'
+    RARITY_OTHER = 'O'
+    RARITIES = (
+        (RARITY_NONE, 'No rarity'),
+        (RARITY_MYTHIC_RARE, 'Mythic Rare'),
+        (RARITY_RARE, 'Rare'),
+        (RARITY_UNCOMMON, 'Uncommon'),
+        (RARITY_COMMON, 'Common'),
+        (RARITY_SPECIAL, 'Special'),
+        (RARITY_LAND, 'Land'),
+        (RARITY_TOKEN, 'Token'),
+        (RARITY_EMBLEM, 'Emblem'),
+        (RARITY_OTHER, 'Other'),
+    )
+    rarity = models.CharField(max_length=1, choices=RARITIES,
+                              default=RARITY_COMMON)
 
     class Meta:
         unique_together = ('number', 'number_suffix', 'mtgset',)
