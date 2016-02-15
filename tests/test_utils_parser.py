@@ -22,7 +22,7 @@ from mtgcardbox.utils.parser import (
 def blockset():
     blocks = []
     sets = []
-    for b, s in MCIParser.parse_all_blocks_sets():
+    for b, s in MCIParser.parse_blocks_sets():
         blocks.append(b)
         sets += s
     return blocks, sets
