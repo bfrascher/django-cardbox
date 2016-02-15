@@ -1,5 +1,7 @@
 import logging
 
+from collections import namedtuple
+
 from mtgcardbox.models import (
     Artist,
     Ruling,
@@ -195,7 +197,7 @@ def insert_blocks_sets_from_parser(parser=MCIParser, update=True):
     Existing blocks and sets will be skipped.
 
     """
-    for block, sets in parser.parse_all_blocks_sets():
+    for block, sets in parser.parse_blocks_sets():
         block = insert_block(block, update)
         for set_ in sets:
             insert_set(block, set_, update)
@@ -207,7 +209,8 @@ def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=True):
     Existing cards will be updated or skipped.
 
     """
-    multi_cards = []
+    ECPair = namedtuple('ECPair', 'edition card')
+    multi_pairs = []
     for edition, card, artist, rulings in parser.parse_cards_by_set(set_.code):
         artist = insert_artist(artist, update)
         card = insert_card(card, update)
@@ -220,14 +223,14 @@ def insert_cards_by_set_from_parser(set_, parser=MCIParser, update=True):
 
         # All multi cards belonging together have the same edition
         # number (as we are only looking at one set).
-        if (len(multi_cards) > 0 and
-            (multi_cards[0].edition.number != card.edition.number)):
-            multi_cards = []
+        if (len(multi_pairs) > 0 and
+            (multi_pairs[0].edition.number != edition.number)):
+            multi_pairs = []
         if card.multi_type != Card.MULTI_NONE:
-            for mcard in multi_cards:
-                mcard.multi_cards.append(card)
-                card.multi_cards.append(mcard)
-            multi_cards.append(card)
+            for pair in multi_pairs:
+                pair.card.multi_cards.append(card)
+                card.multi_cards.append(pair.card)
+            multi_pairs.append(ECPair(edition, card))
 
 
 def insert_cards_from_parser(parser=MCIParser, update=True):
@@ -236,6 +239,6 @@ def insert_cards_from_parser(parser=MCIParser, update=True):
         insert_cards_by_set_from_parser(set_, parser, update)
 
 
-def inset_blocks_sets_cards_from_parser(parser=MCIParser, update=True):
+def insert_blocks_sets_cards_from_parser(parser=MCIParser, update=True):
     insert_blocks_sets_from_parser(parser, update)
     insert_cards_from_parser(parser, update)
