@@ -63,7 +63,7 @@ class Set(models.Model):
 
     """
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
-    code = models.CharField("short form", max_length=10, primary_key=True)
+    code = models.CharField("short form", max_length=10, unique=True)
     name = models.CharField("full name", max_length=100, unique=True)
     release_date = models.DateField(blank=True, null=True)
 
