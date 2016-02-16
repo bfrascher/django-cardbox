@@ -13,7 +13,6 @@ class MCIDownloader:
     URL = 'http://magiccards.info/scans/en'
 
     @staticmethod
-    # TODO(benedikt) log information
     def get_card_edition_image(edition, outfile):
         """Download a single card image."""
         image_url = '{0}/{1}/{2}.jpg'.format(MCIDownloader.URL,
