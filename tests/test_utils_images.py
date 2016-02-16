@@ -86,6 +86,13 @@ class MockParser:
             Artist(first_name='', last_name='Izzy'),
             [],
         ),
+        (
+            CardEdition(number=3457, number_suffix='no',
+                        rarity=CardEdition.RARITY_SPECIAL),
+            Card(name='No card', types='None'),
+            Artist(first_name='', last_name='Izzy'),
+            [],
+        ),
     ]
 
     def parse_blocks_sets():
@@ -97,34 +104,34 @@ class MockParser:
             yield edition, card, artist, rulings
 
 
+@pytest.fixture(scope='module')
+@pytest.mark.django_db
+def imagedir(tmpdir_factory):
+    insert_blocks_sets_cards_from_parser(parser=MockParser)
+    image_dir = tmpdir_factory.mktemp('images')
+    MCIDownloader.get_card_edition_images(str(image_dir))
+    return image_dir
+
+
 @pytest.mark.django_db
 class TestMCIDownloader_GetCardEditionImages:
     """Tests for
     :func:`mtgcardbox.utils.images.MCIDownloader.get_card_edition_images`.
 
     """
-    def test_multi_jace(self, tmpdir):
-        insert_blocks_sets_cards_from_parser(parser=MockParser)
-        MCIDownloader.get_card_edition_images(str(tmpdir))
+    def test_multi_jace(self, imagedir):
+        assert os.path.isdir(str(imagedir.join('ORI')))
+        assert os.path.isfile(str(imagedir.join('ORI', '60a.jpg')))
+        assert os.path.isfile(str(imagedir.join('ORI', '60b.jpg')))
 
-        assert os.path.isdir(str(tmpdir.join('ORI')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '60a.jpg')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '60b.jpg')))
+    def test_multi_edition_tower_geist(self, imagedir):
+        assert os.path.isdir(str(imagedir.join('ORI')))
+        assert os.path.isfile(str(imagedir.join('ORI', '80.jpg')))
+        assert os.path.isdir(str(imagedir.join('DKA')))
+        assert os.path.isfile(str(imagedir.join('DKA', '53.jpg')))
 
-    def test_multi_edition_tower_geist(self, tmpdir):
-        insert_blocks_sets_cards_from_parser(parser=MockParser)
-        MCIDownloader.get_card_edition_images(str(tmpdir))
-
-        assert os.path.isdir(str(tmpdir.join('ORI')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '80.jpg')))
-        assert os.path.isdir(str(tmpdir.join('DKA')))
-        assert os.path.isfile(str(tmpdir.join('DKA', '53.jpg')))
-
-    def test_multi_edition_swamp(self, tmpdir):
-        insert_blocks_sets_cards_from_parser(parser=MockParser)
-        MCIDownloader.get_card_edition_images(str(tmpdir))
-
-        assert os.path.isdir(str(tmpdir.join('ORI')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '261.jpg')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '262.jpg')))
-        assert os.path.isfile(str(tmpdir.join('ORI', '264.jpg')))
+    def test_multi_edition_swamp(self, imagedir):
+        assert os.path.isdir(str(imagedir.join('ORI')))
+        assert os.path.isfile(str(imagedir.join('ORI', '261.jpg')))
+        assert os.path.isfile(str(imagedir.join('ORI', '262.jpg')))
+        assert os.path.isfile(str(imagedir.join('ORI', '264.jpg')))
