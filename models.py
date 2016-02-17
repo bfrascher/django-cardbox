@@ -239,6 +239,8 @@ class Card(models.Model):
             spacing = '' if ptl == '' else ' '
             ptl += '{0}(Loyalty: {1})'.format(spacing, l)
 
+        return ptl
+
     def set_power(self, power):
         try:
             self.power = int(power) if power else None
