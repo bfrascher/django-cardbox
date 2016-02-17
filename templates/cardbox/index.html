@@ -8,5 +8,23 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>P/T/L</th>
+        <th>Mana</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for card in card_list %}
+      <tr>
+        <td>{{ card.name }}</td>
+        <td>{{ card.types }}</td>
+        <td>{{ card.get_ptl }}</td>
+        <td>{{ card.get_mana }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% endblock %}

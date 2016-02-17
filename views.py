@@ -4,9 +4,16 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+from cardbox.models import (
+    Card,
+)
+
 
 def index(request):
-    return render(request, 'cardbox/index.html')
+    cards = Card.objects.all()[:10]
+    return render(request, 'cardbox/index.html', {
+        'card_list': cards,
+    })
 
 
 def login_view(request):
