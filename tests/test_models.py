@@ -42,5 +42,18 @@ class TestCard:
         card = Card(mana_n=mana_n, mana_w=mana_w, mana_u=mana_u, mana_b=mana_b,
                     mana_r=mana_r, mana_g=mana_g, mana_c=mana_c,
                     mana_special=mana_special)
-        m = card.get_mana()
-        assert m == mana
+        assert card.get_mana() == mana
+
+    @pytest.mark.parametrize("ptl,p,ps,t,ts,l,ls", [
+        ('*/3', None, '*', 3, '', None, ''),
+        ('(Loyalty: 7)', None, '', None, '', 7, ''),
+        ('*/2*', None, '*', None, '2*', None, ''),
+        ('4/5 (Loyalty: *)', 4, '', 5, '', None, '*'),
+        ('4*/8', 4, '*', 8, '', None, ''),
+        ('(Loyalty: 2*)', None, '', None, '', 2, '*'),
+    ])
+    def test_get_ptl(self, ptl, p, ps, t, ts, l, ls):
+        card = Card(power=p, power_special=ps,
+                    toughness=t, toughness_special=ts,
+                    loyalty=l, loyalty_special=ls)
+        assert card.get_ptl() == ptl
