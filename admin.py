@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Ruling,
     Block,

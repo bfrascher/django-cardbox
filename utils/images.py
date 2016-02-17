@@ -3,7 +3,7 @@ import os
 import requests
 import shutil
 
-from mtgcardbox.models import CardEdition
+from cardbox.models import CardEdition
 
 logger = logging.getLogger(__name__)
 

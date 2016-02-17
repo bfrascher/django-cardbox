@@ -5,7 +5,7 @@ import pytest
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Ruling,
     Block,
@@ -14,7 +14,7 @@ from mtgcardbox.models import (
     CardEdition,
 )
 
-from mtgcardbox.utils.parser import (
+from cardbox.utils.parser import (
     MCIParser,
 )
 

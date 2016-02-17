@@ -1,7 +1,7 @@
 import datetime
 import pytest
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Ruling,
     Block,
@@ -10,7 +10,7 @@ from mtgcardbox.models import (
     CardEdition,
 )
 
-from mtgcardbox.utils.db import (
+from cardbox.utils.db import (
     insert_artist,
     insert_ruling,
     insert_block,
@@ -138,7 +138,7 @@ class MockParser:
 
 @pytest.mark.django_db
 class TestInsertArtist:
-    """All tests for :func:`mtgcardbox.utils.db.insert_artist`."""
+    """All tests for :func:`cardbox.utils.db.insert_artist`."""
     artists = [
         Artist(first_name='', last_name='NoFirstName'),
         Artist(first_name='Test', last_name='Testerson'),
@@ -169,7 +169,7 @@ class TestInsertArtist:
 
 @pytest.mark.django_db
 class TestInsertRuling:
-    """All tests for :func:`mtgcardbox.utils.db.insert_ruling`."""
+    """All tests for :func:`cardbox.utils.db.insert_ruling`."""
     rulings = [
         Ruling(ruling='Some things.', date=datetime.date(2015, 1, 1)),
         Ruling(ruling='You win!', date=datetime.date(1999, 5, 27)),
@@ -209,7 +209,7 @@ class TestInsertRuling:
 
 @pytest.mark.django_db
 class TestInsertBlock:
-    """All tests for :func:`mtgcardbox.utils.db.insert_block`."""
+    """All tests for :func:`cardbox.utils.db.insert_block`."""
     blocks = [
         Block(name='First Block', category=Block.CATEGORY_NONE),
         Block(name='A block with five words', category=Block.CATEGORY_MTGO),
@@ -247,7 +247,7 @@ class TestInsertBlock:
 
 @pytest.mark.django_db
 class TestInsertSet:
-    """All tests for :func:`mtgcardbox.utils.db.insert_set`."""
+    """All tests for :func:`cardbox.utils.db.insert_set`."""
     blocksets = [
         (Block(name='A block', category=Block.CATEGORY_EXPANSION),
          Set(code='A', name='A set', release_date=datetime.date(1587, 3, 8))),
@@ -312,7 +312,7 @@ class TestInsertSet:
 
 @pytest.mark.django_db
 class TestInsertCard:
-    """All tests for :func:`mtgcardbox.utils.db.insert_card`."""
+    """All tests for :func:`cardbox.utils.db.insert_card`."""
     cards = [
         Card(name='First card', types='Token'),
         Card(name='Second card', types='Basic Land'),
@@ -359,7 +359,7 @@ class TestInsertCard:
 # TODO(benedikt) Implement
 @pytest.mark.django_db
 class TestInsertCardEdition:
-    """All tests for :func:`mtgcardbox.utils.db.insert_card_edition`."""
+    """All tests for :func:`cardbox.utils.db.insert_card_edition`."""
     editions = [
         CardEdition(),
         CardEdition(),
@@ -385,7 +385,7 @@ class TestInsertCardEdition:
 @pytest.mark.django_db
 class TestInsertBlocksSetsFromParser:
     """All tests for
-    :func:`mtgcardbox.utils.db.insert_blocks_sets_from_parser`.
+    :func:`cardbox.utils.db.insert_blocks_sets_from_parser`.
 
     """
     def test_with_mock_parser(self):
@@ -407,7 +407,7 @@ class TestInsertBlocksSetsFromParser:
 @pytest.mark.django_db
 class TestInsertCardsBySetFromParser:
     """All tests for
-    :func:`mtgcardbox.utils.db.insert_cards_by_set_from_parser`.
+    :func:`cardbox.utils.db.insert_cards_by_set_from_parser`.
 
     """
     def test_multi_cards(self):
@@ -498,7 +498,7 @@ class TestInsertCardsBySetFromParser:
 @pytest.mark.django_db
 class TestInsertCardsFromParser:
     """All tests for
-    :func:`mtgcardbox.utils.db.insert_cards_from_parser`.
+    :func:`cardbox.utils.db.insert_cards_from_parser`.
 
     """
     def test_with_mock_parser(self):

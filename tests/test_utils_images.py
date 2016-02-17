@@ -3,7 +3,7 @@
 import os
 import pytest
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Block,
     Set,
@@ -11,11 +11,11 @@ from mtgcardbox.models import (
     CardEdition,
 )
 
-from mtgcardbox.utils.db import (
+from cardbox.utils.db import (
     insert_blocks_sets_cards_from_parser,
 )
 
-from mtgcardbox.utils.images import (
+from cardbox.utils.images import (
     MCIDownloader,
 )
 
@@ -116,7 +116,7 @@ def imagedir(tmpdir_factory):
 @pytest.mark.django_db
 class TestMCIDownloader_GetCardEditionImages:
     """Tests for
-    :func:`mtgcardbox.utils.images.MCIDownloader.get_card_edition_images`.
+    :func:`cardbox.utils.images.MCIDownloader.get_card_edition_images`.
 
     """
     def test_multi_jace(self, imagedir):

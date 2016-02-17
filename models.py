@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Artist(models.Model):
-    """Simple model for an artist.  Referenced in `mtgcardbox.models.Card`"""
+    """Simple model for an artist.  Referenced in `cardbox.models.Card`"""
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=100)
 
@@ -18,7 +18,7 @@ class Artist(models.Model):
 
 
 class Ruling(models.Model):
-    """Model for rulings that affect certain `mtgcardbox.models.Card`s."""
+    """Model for rulings that affect certain `cardbox.models.Card`s."""
     ruling = models.TextField(unique=True)
     date = models.DateField("date of the ruling")
 
@@ -28,7 +28,7 @@ class Ruling(models.Model):
 
 class Block(models.Model):
     """Model for a block in Magic The Gathering.  Used to group
-    `mtgcardbox.models.Set`.
+    `cardbox.models.Set`.
 
     """
     name = models.CharField(max_length=100, unique=True)
@@ -59,7 +59,7 @@ class Block(models.Model):
 
 class Set(models.Model):
     """Model for a Magic The Gathering set/expansion.  Used to group
-    `mtgcardbox.models.Card`.
+    `cardbox.models.Card`.
 
     """
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
@@ -211,6 +211,18 @@ class Card(models.Model):
         self.mana_c = c
         self.mana_special = special
 
+    def get_mana(self):
+        """Return the mana cost of this card as a string."""
+        mana = str(self.mana_n) if self.mana_n is not None else ''
+        mana += self.mana_w*'W' if self.mana_w is not None else ''
+        mana += self.mana_b*'B' if self.mana_b is not None else ''
+        mana += self.mana_u*'U' if self.mana_u is not None else ''
+        mana += self.mana_r*'R' if self.mana_r is not None else ''
+        mana += self.mana_g*'G' if self.mana_g is not None else ''
+        mana += self.mana_c*'C' if self.mana_c is not None else ''
+        mana += self.mana_special
+        return mana
+
     def set_power(self, power):
         try:
             self.power = int(power) if power else None
@@ -231,8 +243,8 @@ class Card(models.Model):
 
 
 class CardEdition(models.Model):
-    """Model linking `mtgcardbox.models.Card` with
-    `mtgcardbox.models.Set`.
+    """Model linking `cardbox.models.Card` with
+    `cardbox.models.Set`.
 
     """
     number = models.PositiveIntegerField()
@@ -299,7 +311,7 @@ class CardEdition(models.Model):
 
 
 class Collection(models.Model):
-    """Model of a shareable collection of `mtgcardbox.models.Card`s."""
+    """Model of a shareable collection of `cardbox.models.Card`s."""
     name = models.CharField(max_length=100)
     editions = models.ManyToManyField(CardEdition,
                                       through='CollectionEntry',
@@ -321,7 +333,7 @@ class Collection(models.Model):
 
 
 class CollectionEntry(models.Model):
-    """Model a single card entry of a `mtgcardbox.models.Collection`."""
+    """Model a single card entry of a `cardbox.models.Collection`."""
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
     edition = models.ForeignKey(CardEdition, on_delete=models.CASCADE)
     count = models.PositiveIntegerField("number of copies in the "

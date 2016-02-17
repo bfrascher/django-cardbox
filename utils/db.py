@@ -2,7 +2,7 @@ import logging
 
 from collections import namedtuple
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Ruling,
     Block,
@@ -13,7 +13,7 @@ from mtgcardbox.models import (
 #    CollectionEntry,
 )
 
-from mtgcardbox.utils.parser import (
+from cardbox.utils.parser import (
     MCIParser,
 )
 
@@ -82,10 +82,10 @@ def insert_block(block, update=False):
 def insert_set(block, set_, update=False):
     """Create/update a single set.
 
-    :type block: `mtgcardbox.models.Block`
+    :type block: `cardbox.models.Block`
     :param block: A valid block from the database.
 
-    :type set_: `mtgcardbox.models.Set`
+    :type set_: `cardbox.models.Set`
     :param set_: The set to create or update.
 
     """
@@ -114,10 +114,10 @@ def insert_set(block, set_, update=False):
 def insert_card(card, update=False):
     """Create/update a single card.
 
-    :type card: `mtgcardbox.models.Card`
+    :type card: `cardbox.models.Card`
     :param set_: The card to create/update.
 
-    :rtype: `mtgcardbox.models.Card`
+    :rtype: `cardbox.models.Card`
     :returns: The created/updated card with a valid id.
 
     """

@@ -6,7 +6,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from mtgcardbox.models import (
+from cardbox.models import (
     Artist,
     Ruling,
     Block,

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MtgcardboxConfig(AppConfig):
-    name = 'mtgcardbox'
+class CardboxConfig(AppConfig):
+    name = 'cardbox'
