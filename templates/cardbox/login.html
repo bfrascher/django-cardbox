@@ -1,0 +1,35 @@
+{% extends 'cardbox/base.html' %}
+
+{% block content %}
+
+{% if error_message %}
+<div class="alert alert-danger" role="alert">
+  {{ error_message }}
+</div>
+{% endif %}
+
+{% if next %}
+  {% if user.is_authenticated %}
+  <p>Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
+  {% else %}
+  <p>Please login to see this page.</p>
+  {% endif %}
+{% endif %}
+
+<form class="form-signin" action="{% url 'cardbox:login' %}" method="post">
+  {% csrf_token %}
+  <h2 class="form-signin-heading">Please sign in</h2>
+  <label for="username" class="sr-only">Username</label>
+  <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+  <label for="password" class="sr-only">Password</label>
+  <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" value="remember-me"> Remember me
+    </label>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  <input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
