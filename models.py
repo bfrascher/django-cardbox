@@ -223,6 +223,22 @@ class Card(models.Model):
         mana += self.mana_special
         return mana
 
+    def get_ptl(self):
+        """Return power/toughness/loyalty as a string."""
+        ptl = ''
+        p = str(self.power) if self.power is not None else ''
+        p += self.power_special
+        t = str(self.toughness) if self.toughness is not None else ''
+        t += self.toughness_special
+        if p != '' or t != '':
+            ptl += '{0}/{1}'.format(p, t)
+
+        if self.loyalty is not None or self.loyalty_special != '':
+            l = str(self.loyalty) if self.loyalty is not None else ''
+            l += self.loyalty_special
+            spacing = '' if ptl == '' else ' '
+            ptl += '{0}(Loyalty: {1})'.format(spacing, l)
+
     def set_power(self, power):
         try:
             self.power = int(power) if power else None
