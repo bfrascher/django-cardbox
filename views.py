@@ -53,9 +53,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse('cardbox:index'))
         else:
-            return render(request, 'cardbox/login.html', {'error_message': 'User not active!'})
+            messages.add_message(request, messages.WARNING, 'User not active!')
+            return render(request, 'cardbox/login.html')
     else:
-        return render(request, 'cardbox/login.html', {'error_message': 'User not found!'})
+        messages.add_message(request, messages.WARNING, 'User not found!')
+        return render(request, 'cardbox/login.html')
 
 
 def logout_view(request):
@@ -133,7 +135,7 @@ def edit_collection(request, collection_id):
             viewers.append(user)
         except User.DoesNotExist:
             # data['error_message'] = 'User {0} not found!'.format(editor)
-            messages.add_message(request, messages.ERROR,
+            messages.add_message(request, messages.WARNING,
                                  'No user with name {0}.'.format(viewer))
             return render(request, 'cardbox/edit_collection', data)
 
