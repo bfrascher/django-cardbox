@@ -1,0 +1,32 @@
+{% extends 'cardbox/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<table>
+  <tbody>
+    <tr>
+      <td><img src="{% static card.get_image_url %}" alt="{{ card.name }}"></td>
+      <td>
+        <h3>{{ card.name }}</h3>
+        <p><b>Types:</b> {{ card.types }}</p>
+        <p><b>P/T/L:</b> {{ card.get_ptl }}</p>
+        <p><b>Mana:</b> {{ card.get_mana }} ({{ card.cmc }})</p>
+        <p><b>Rules:</b> {{ card.rules }}</p>
+        <p><b>Flavour:</b> <emph>{{ card.flavour }}</emph></p>
+        <p><b>Editions:</b>
+          {% for edition in card.editions.all %}
+          <p>{{ edition.mtgset.code }}</p>
+          {% endfor %}
+        </p>
+        <p><b>Rulings:</b>
+          {% for ruling in card.rulings.all %}
+          <p><b>{{ ruling.date }}:</b> {{ ruling.ruling }}</p>
+          {% endfor %}
+      </td>
+    <tr>
+  </tbody>
+</table>
+
+{% endblock %}
