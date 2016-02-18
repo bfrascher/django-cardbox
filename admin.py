@@ -33,6 +33,7 @@ class BlockAdmin(admin.ModelAdmin):
 class SetAdmin(admin.ModelAdmin):
     search_fields = ('name', '^code',)
     list_display = ('name', 'code', 'release_date', 'block',)
+    list_filter = ('block',)
 
 
 @admin.register(Ruling)
@@ -103,7 +104,6 @@ class CollectionEntryInline(admin.TabularInline):
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    inlines = (CollectionEntryInline,)
     fieldsets = (
         (None, {
             'fields': ('name', 'owner', 'date_created',),
