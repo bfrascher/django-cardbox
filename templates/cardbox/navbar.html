@@ -10,6 +10,36 @@
       <a class="navbar-brand" href="#">Cardbox</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="{% url 'cardbox:cards' 'list' %}">Cards</a></li>
+        {% if request.user.is_authenticated %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Collections<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {% if user.collection_set.all.count > 0 %}
+            <li class="dropdown-header">Your collections</li>
+            {% endif %}
+            {% for collection in user.collection_set.all %}
+            <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+            {% endfor %}
+            {% if user.editable_collections.count > 0 %}
+            <li class="dropdown-header">Editable collections</li>
+            {% endif %}
+            {% for collection in user.editable_collections.all %}
+            <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+            {% endfor %}
+            {% if user.viewable_collections.all.count > 0 %}
+            <li class="dropdown-header">Viewable collections</li>
+            {% endif %}
+            {% for collection in user.viewable_collections.all %}
+            <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+            {% endfor %}
+            <li role="seperator" class="divider"></li>
+            <li><a href="{% url 'cardbox:edit_collection' 0 %}">New collection</a></li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
         <li><a href="{% url 'cardbox:logout' %}">Logout</a></li>
