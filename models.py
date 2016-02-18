@@ -259,6 +259,15 @@ class Card(models.Model):
         except ValueError:
             self.loyalty_special = loyalty
 
+    def get_newest_edition(self):
+        return self.editions.select_related('mtgset').order_by('-mtgset__release_date')[0]
+
+    def get_image_url(self):
+        edition = self.get_newest_edition()
+        return 'cardbox/images/cards/{0}/{1}{2}.jpg'.format(
+            edition.mtgset.code.upper(),
+            edition.number, edition.number_suffix)
+
 
 class CardEdition(models.Model):
     """Model linking `cardbox.models.Card` with
