@@ -1,0 +1,19 @@
+{% extends 'cardbox/base.html' %}
+
+{% load staticfiles %}
+{% load bootstrap_pagination %}
+
+{% block content %}
+
+<div class="row">
+  {% for card in cards %}
+  <div class="col-xs-6 col-md-3">
+    <a href="{% url 'cardbox:card' card.id %}" class="thumbnail">
+      <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
+    </a>
+  </div>
+  {% endfor %}
+  {% bootstrap_paginate cards range=10 show_first_last="true" %}
+</div>
+
+{% endblock %}
