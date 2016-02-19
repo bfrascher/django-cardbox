@@ -35,7 +35,7 @@
             <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
             {% endfor %}
             <li role="seperator" class="divider"></li>
-            <li><a href="{% url 'cardbox:edit_collection' 0 %}">New collection</a></li>
+            <li><a href="{% url 'cardbox:new_collection' %}">New collection</a></li>
           </ul>
         </li>
         {% endif %}
