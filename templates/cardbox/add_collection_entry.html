@@ -1,0 +1,20 @@
+{% extends 'cardbox/base.html' %}
+
+{% block content %}
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Add card to {{ collection.name }}</h3>
+  </div>
+  <div class="panel-body">
+    <form action="{% url 'cardbox:add_collection_entry' collection.id %}" method="post">
+      {% csrf_token %}
+      <input id="set" name="set" class="form-control" placeholder="Set code or name" required autofocus>
+      <input id="number" name="number" class="form-control" placeholder="Number in set (with suffix)" required>
+      <button class="btn btn-lg btn-info btn-block" type="submit" name="button" value="addanother">Save and add another</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit" name="button" value="save">Save</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
