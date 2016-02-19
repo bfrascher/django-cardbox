@@ -104,9 +104,9 @@ def card(request, card_id):
 @login_required(login_url=LOGIN_URL)
 def collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
-    if (not request.user == collection.owner or
-        request.user in collection.editors.all() or
-        request.user in collection.viewers.all()):
+    if (request.user != collection.owner and
+        request.user not in collection.editors.all() and
+        request.user not in collection.viewers.all()):
         raise PermissionDenied
     return render(request, 'cardbox/collection.html', {
         'collection': collection
