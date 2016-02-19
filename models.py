@@ -370,4 +370,4 @@ class CollectionEntry(models.Model):
                                              default=0)
 
     def __str__(self):
-        return '{0} in {1}'.format(self.card.name, self.collection.name)
+        return '{0} in {1}'.format(self.edition, self.collection.name)
