@@ -2,6 +2,7 @@ import re
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 
 
 class Artist(models.Model):
@@ -263,10 +264,28 @@ class Card(models.Model):
         return self.editions.select_related('mtgset').order_by('-mtgset__release_date')[0]
 
     def get_image_url(self):
+        """Return URL to the newest image of this card.
+
+        The URL is designed to be used with `static` in templates.
+
+        """
         edition = self.get_newest_edition()
         return 'cardbox/images/cards/{0}/{1}{2}.jpg'.format(
             edition.mtgset.code.upper(),
             edition.number, edition.number_suffix)
+
+    def get_count_in_collection(self, collection):
+        """Return the number of copies in the collection.
+
+        :rtype int:
+        :returns: The count and foiled count (in this order) of this
+            card in `collection` over all editions.
+
+        """
+        sum = (CollectionEntry.objects.filter(
+            collection=collection, edition__card=self)
+               .aggregate(count=Sum('count'), foil_count=Sum('foil_count')))
+        return sum['count'], sum['foil_count']
 
 
 class CardEdition(models.Model):
