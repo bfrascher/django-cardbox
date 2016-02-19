@@ -51,7 +51,7 @@ class MockParser:
         (
             CardEdition(number=60, number_suffix='b',
                         rarity=CardEdition.RARITY_MYTHIC_RARE),
-            Card(name='Fire (Song/Ice/Fire)', types='Planeswalker — Jace',
+            Card(name='Jace, Telepath Unbound', types='Planeswalker — Jace',
                  multi_type=Card.MULTI_FLIP),
             Artist(first_name='Jaime', last_name='Jones'),
             [],
