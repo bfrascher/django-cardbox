@@ -188,7 +188,7 @@ def edit_collection(request, collection_id=None):
         if editor == '':
             continue
         try:
-            user = User.objects.get(username=editor)
+            user = User.objects.get(username=editor.strip())
             editors.append(user)
         except User.DoesNotExist:
             messages.add_message(request, messages.WARNING,
@@ -200,7 +200,7 @@ def edit_collection(request, collection_id=None):
         if viewer == '':
             continue
         try:
-            user = User.objects.get(username=viewer)
+            user = User.objects.get(username=viewer.strip())
             viewers.append(user)
         except User.DoesNotExist:
             messages.add_message(request, messages.WARNING,
