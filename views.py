@@ -136,8 +136,8 @@ def collection(request, collection_id):
 def edit_collection(request, collection_id=None):
     """Update or create a collection.
 
-    :param int collection_id: The ID of the collection to edit.  Use 0
-        to create a new collection.
+    :param int collection_id: (optional) The ID of the collection to
+        edit.  Use ``None`` to create a new collection.
 
     """
     data = {}
@@ -177,10 +177,9 @@ def edit_collection(request, collection_id=None):
             user = User.objects.get(username=viewer)
             viewers.append(user)
         except User.DoesNotExist:
-            # data['error_message'] = 'User {0} not found!'.format(editor)
             messages.add_message(request, messages.WARNING,
                                  'No user with name {0}.'.format(viewer))
-            return render(request, 'cardbox/edit_collection', data)
+            return render(request, 'cardbox/edit_collection.html', data)
 
     collection.name = name
     collection.save()
@@ -191,8 +190,14 @@ def edit_collection(request, collection_id=None):
     messages.add_message(request, messages.SUCCESS,
                          'Collection {0} successfully {1}.'
                          .format(collection.name, action))
-    return HttpResponseRedirect(reverse('cardbox:collection',
-                                        args=[collection.id]))
+
+    # Redirect the user to the newly created collection.
+    if collection_id is None:
+        return HttpResponseRedirect(reverse('cardbox:collection',
+                                            args=[collection.id]))
+    else:
+        # Otherwise allow him to review his settings.
+        return render(request, 'cardbox/edit_collection.html', data)
 
 
 @login_required(login_url=LOGIN_URL)
