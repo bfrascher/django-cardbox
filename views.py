@@ -54,9 +54,8 @@ def login_view(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            try:
-                next_url = request.POST['next']
-            except KeyError:
+            next_url = request.POST.get('next', '')
+            if next_url == '':
                 return HttpResponseRedirect(reverse('cardbox:index'))
             return HttpResponseRedirect(next_url)
         else:
