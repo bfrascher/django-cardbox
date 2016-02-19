@@ -1,0 +1,12 @@
+{% extends 'cardbox/base.html' %}
+
+{% load staticfiles %}
+{% load bootstrap_pagination %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{{ collection.name }} <small class="collection-subheader">{{ collection.date_created }} <a href="{% url 'cardbox:add_collection_entry' collection.id %}">Add Card</a> &#8226; <a href="{% url 'cardbox:edit_collection' collection.id %}">Edit</a></small></h1>
+</div>
+
+{% endblock %}
