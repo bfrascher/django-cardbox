@@ -21,12 +21,20 @@ from cardbox.models import (
 LOGIN_URL = '/cardbox/login/'
 
 
-def _update_many_to_many_field(entries, m2m_field):
-    for entry in m2m_field.all():
+def _update_many_to_many_field(entries, m2m_manager):
+    """Update the entries for a ManyToManyField.
+
+    :param list entries: The entries the ManyToManyField should have
+        after the update.
+
+    :param m2m_manager: The model manager.
+
+    """
+    for entry in m2m_manager.all():
         if entry not in entries:
-            m2m_field.remove(entry)
+            m2m_manager.remove(entry)
     for entry in entries:
-        m2m_field.add(entry)
+        m2m_manager.add(entry)
 
 
 def index(request):
