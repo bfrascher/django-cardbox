@@ -37,6 +37,20 @@ def _update_many_to_many_field(entries, m2m_manager):
         m2m_manager.add(entry)
 
 
+def _filter_cards(request, manager):
+    """Filter a list of cards.
+
+    :param request: A request object whose POST dictionary contains
+        card filters.
+
+    :param manager: The manager for the cards.
+
+    :returns: A manager for the filtered cards.
+
+    """
+    filtered = manager
+
+
 def index(request):
     card_list = Card.objects.all()
     paginator = Paginator(card_list, 50)
