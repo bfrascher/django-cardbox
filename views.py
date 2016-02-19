@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
@@ -102,7 +103,14 @@ def card(request, card_id):
 
 @login_required(login_url=LOGIN_URL)
 def collection(request, collection_id):
-    return render(request, 'cardbox/welcome.html')
+    collection = get_object_or_404(Collection, pk=collection_id)
+    if (not request.user == collection.owner or
+        request.user in collection.editors.all() or
+        request.user in collection.viewers.all()):
+        raise PermissionDenied
+    return render(request, 'cardbox/collection.html', {
+        'collection': collection
+    })
 
 
 @login_required(login_url=LOGIN_URL)
@@ -121,8 +129,9 @@ def edit_collection(request, collection_id=None):
     else:
         action = 'updated'
         try:
-            collection = Collection.objects.filter(
-                owner=request.user).get(pk=collection_id)
+            collection = Collection.objects.get(pk=collection_id)
+            if request.user != collection.owner:
+                raise PermissionDenied
             data['collection'] = collection
         except Collection.DoesNotExist:
             raise Http404('Collection not found.')
@@ -177,7 +186,7 @@ def delete_collection(request, collection_id):
                              .format(collection.name))
         return HttpResponseRedirect(reverse('cardbox:index'))
     else:
-        raise Http404('Collection not found.')
+        raise PermissionDenied
 
 
 
@@ -186,6 +195,6 @@ def add_collection_entry(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if (not request.user == collection.creator or
         not request.user in collection.editors):
-        raise Http404('Collection not found.')
+        raise PermissionDenied
 
     return render(request, 'cardbox/welcome.html')
