@@ -21,7 +21,6 @@ from cardbox.models import (
 LOGIN_URL = '/cardbox/login/'
 
 
-# TODO(benedikt) Fix entries not being removed
 def _update_many_to_many_field(entries, m2m_field):
     for entry in m2m_field.all():
         if entry not in entries:
