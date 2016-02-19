@@ -5,13 +5,17 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
+from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from cardbox.models import (
+    Set,
     Card,
+    CardEdition,
     Collection,
+    CollectionEntry,
 )
 
 LOGIN_URL = '/cardbox/login/'
@@ -193,8 +197,59 @@ def delete_collection(request, collection_id):
 @login_required(login_url=LOGIN_URL)
 def add_collection_entry(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
-    if (not request.user == collection.creator or
-        not request.user in collection.editors):
+    data = {'collection': collection}
+    if (request.user != collection.owner and
+        request.user not in collection.editors.all()):
         raise PermissionDenied
 
-    return render(request, 'cardbox/welcome.html')
+    try:
+        set_str = request.POST['set']
+        number_str = request.POST['number']
+    except KeyError:
+        return render(request, 'cardbox/add_collection_entry.html', data)
+
+    try:
+        set_ = Set.objects.get(code=set_str.upper())
+    except Set.DoesNotExist:
+        try:
+            set_ = Set.objects.get(name=set_str)
+        except Set.DoesNotExist:
+            messages.add_message(request, messages.WARNING,
+                                 "Set '{0}' not found.".format(set_str))
+            return render(request, 'cardbox/add_collection_entry.html', data)
+
+    try:
+        number, number_suffix = CardEdition.parse_number(number_str)
+    except ValueError:
+        messages.add_message(request, messages.WARNING,
+                             "'{0}' is not a valid set number."
+                             .format(number_str))
+        return render(request, 'cardbox/add_collection_entry.html', data)
+
+    try:
+        edition = CardEdition.objects.get(mtgset=set_, number=number,
+                                          number_suffix=number_suffix)
+    except CardEdition.DoesNotExist:
+        messages.add_message(request, messages.WARNING,
+                             "No card with number '{0}' in set '{1}'."
+                             .format(number_str, set_))
+        return render(request, 'cardbox/add_collection_entry.html', data)
+
+    # If there already exists an entry for this edition we just have
+    # to update it.
+    try:
+        entry = CollectionEntry.objects.get(collection=collection,
+                                            edition=edition)
+        entry.count = F('count') + 1
+    except CollectionEntry.DoesNotExist:
+        entry = CollectionEntry(collection=collection, edition=edition, count=1)
+
+    entry.save()
+    messages.add_message(request, messages.SUCCESS,
+                         "'{0}' added to '{1}'.".format(edition, collection))
+    if 'addanother' == request.POST['button']:
+        return HttpResponseRedirect(reverse('cardbox:add_collection_entry',
+                                            args=[collection.id]))
+    else:
+        return HttpResponseRedirect(reverse('cardbox:collection',
+                                            args=[collection.id]))
