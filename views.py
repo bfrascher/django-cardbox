@@ -108,12 +108,27 @@ def card(request, card_id):
 @login_required(login_url=LOGIN_URL)
 def collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
+    card_list = Card.objects.filter(editions__collection__id=collection_id)
+    list_entries = [(*card.get_count_in_collection(collection_id),
+                     card) for card in card_list]
+
+    paginator = Paginator(list_entries, 50)
+
+    page = request.GET.get('page')
+    try:
+        entries = paginator.page(page)
+    except PageNotAnInteger:
+        entries = paginator.page(1)
+    except EmptyPage:
+        entries = paginator.page(paginator.num_pages)
+
     if (request.user != collection.owner and
         request.user not in collection.editors.all() and
         request.user not in collection.viewers.all()):
         raise PermissionDenied
     return render(request, 'cardbox/collection.html', {
-        'collection': collection
+        'collection': collection,
+        'entries': entries,
     })
 
 
