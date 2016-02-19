@@ -164,15 +164,20 @@ def edit_collection(request, collection_id=None):
 
     editors = []
     for editor in editor_list:
+        if editor == '':
+            continue
         try:
             user = User.objects.get(username=editor)
             editors.append(user)
         except User.DoesNotExist:
-            data['error_message'] = 'User {0} not found!'.format(editor)
+            messages.add_message(request, messages.WARNING,
+                                 'No user with name {0}.'.format(editor))
             return render(request, 'cardbox/edit_collection.html', data)
 
     viewers = []
     for viewer in viewer_list:
+        if viewer == '':
+            continue
         try:
             user = User.objects.get(username=viewer)
             viewers.append(user)
@@ -197,7 +202,8 @@ def edit_collection(request, collection_id=None):
                                             args=[collection.id]))
     else:
         # Otherwise allow him to review his settings.
-        return render(request, 'cardbox/edit_collection.html', data)
+        return HttpResponseRedirect(reverse('cardbox:edit_collection',
+                                            args=[collection_id]))
 
 
 @login_required(login_url=LOGIN_URL)
