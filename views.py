@@ -13,6 +13,8 @@ from cardbox.models import (
     Collection,
 )
 
+LOGIN_URL = '/cardbox/login/'
+
 
 # TODO(benedikt) Fix entries not being removed
 def _update_many_to_many_field(entries, m2m_field):
@@ -41,23 +43,28 @@ def index(request):
 
 
 def login_view(request):
+    data = {'next': request.GET.get('next', '')}
     try:
         username = request.POST['username']
         password = request.POST['password']
     except KeyError:
-        return render(request, 'cardbox/login.html')
+        return render(request, 'cardbox/login.html', data)
 
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect(reverse('cardbox:index'))
+            try:
+                next_url = request.POST['next']
+            except KeyError:
+                return HttpResponseRedirect(reverse('cardbox:index'))
+            return HttpResponseRedirect(next_url)
         else:
             messages.add_message(request, messages.WARNING, 'User not active!')
-            return render(request, 'cardbox/login.html')
+            return render(request, 'cardbox/login.html', data)
     else:
         messages.add_message(request, messages.WARNING, 'User not found!')
-        return render(request, 'cardbox/login.html')
+        return render(request, 'cardbox/login.html', data)
 
 
 def logout_view(request):
@@ -67,7 +74,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('cardbox:index'))
 
 
-def cards(request, layout):
+def cards(request, layout='list'):
     if layout not in ['list', 'grid']:
         layout = 'list'
 
@@ -94,23 +101,32 @@ def card(request, card_id):
     })
 
 
-@login_required(login_url='/cardbox/login/')
+@login_required(login_url=LOGIN_URL)
 def collection(request, collection_id):
     return render(request, 'cardbox/welcome.html')
 
 
-@login_required(login_url='/cardbox/login')
-def edit_collection(request, collection_id):
-    data = {}
-    try:
-        collection = Collection.objects.get(pk=collection_id)
-        data['collection'] = collection
+@login_required(login_url=LOGIN_URL)
+def edit_collection(request, collection_id=None):
+    """Update or create a collection.
 
-        if request.user != collection.owner:
-            raise Http404('Collection not found.')
-    except Collection.DoesNotExist:
-        collection = Collection(date_created=timezone.now(), owner=request.user)
+    :param int collection_id: The ID of the collection to edit.  Use 0
+        to create a new collection.
+
+    """
+    data = {}
+    if collection_id is None:
+        action = 'created'
+        collection = Collection(owner=request.user, date_created=timezone.now())
         data['collection'] = None
+    else:
+        action = 'updated'
+        try:
+            collection = Collection.objects.filter(
+                owner=request.user).get(pk=collection_id)
+            data['collection'] = collection
+        except Collection.DoesNotExist:
+            raise Http404('Collection not found.')
 
     try:
         name = request.POST['name']
@@ -145,11 +161,6 @@ def edit_collection(request, collection_id):
     _update_many_to_many_field(editors, collection.editors)
     _update_many_to_many_field(viewers, collection.viewers)
 
-    # A new collection was created
-    if collection_id != collection.id:
-        action = 'created'
-    else:
-        action = 'updated'
     messages.add_message(request, messages.SUCCESS,
                          'Collection {0} successfully {1}.'
                          .format(collection.name, action))
@@ -157,7 +168,7 @@ def edit_collection(request, collection_id):
                                         args=[collection.id]))
 
 
-@login_required(login_url='/cardbox/login')
+@login_required(login_url=LOGIN_URL)
 def delete_collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if request.user == collection.owner:
@@ -171,7 +182,7 @@ def delete_collection(request, collection_id):
 
 
 
-@login_required(login_url='/cardbox/login')
+@login_required(login_url=LOGIN_URL)
 def add_collection_entry(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if (not request.user == collection.creator or
