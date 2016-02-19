@@ -6,13 +6,15 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>{{ collection.name }} <small>{{ collection.date_created }}
-      {% if request.user == collection.owner or request.user in collection.editors.all %}
-      <a href="{% url 'cardbox:add_collection_entry' collection.id %}">Add Card</a>
+  <h1>{{ collection.name }} <small>
       {% if request.user == collection.owner %}
-      &#8226;
-      <a href="{% url 'cardbox:edit_collection' collection.id %}">Edit</a>
+      <a href="{% url 'cardbox:edit_collection' collection.id %}"><img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Edit" title="Edit"></a>
       {% endif %}
+      {{ collection.date_created }}
+      {% if request.user == collection.owner or request.user in collection.editors.all %}
+      <a href="{% url 'cardbox:add_collection_entry' collection.id %}">
+        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card">
+      </a>
       {% endif %}
   </small></h1>
 </div>

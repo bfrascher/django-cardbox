@@ -1,4 +1,6 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
+{% load staticfiles %}
+
+<nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -42,9 +44,9 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
-        <li><a href="{% url 'cardbox:logout' %}">Logout</a></li>
+        <li><a href="{% url 'cardbox:logout' %}"><img src="{% static 'cardbox/images/icons/16px/277-exit.png' %}" alt="Logout" title="Logout"></a></li>
         {% else %}
-        <li><a href="{% url 'cardbox:login' %}">Login</a></li>
+        <li><a href="{% url 'cardbox:login' %}"><img src="{% static 'cardbox/images/icons/16px/276-enter.png' %}" alt="Login" title="Login"></a></li>
         {% endif %}
       </ul>
     </div><!--/.navbar-collapse -->
