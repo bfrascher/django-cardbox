@@ -6,7 +6,43 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>{{ collection.name }} <small class="collection-subheader">{{ collection.date_created }} <a href="{% url 'cardbox:add_collection_entry' collection.id %}">Add Card</a> &#8226; <a href="{% url 'cardbox:edit_collection' collection.id %}">Edit</a></small></h1>
+  <h1>{{ collection.name }} <small>{{ collection.date_created }}
+      {% if request.user == collection.owner or request.user in collection.editors.all %}
+      <a href="{% url 'cardbox:add_collection_entry' collection.id %}">Add Card</a>
+      {% if request.user == collection.owner %}
+      &#8226;
+      <a href="{% url 'cardbox:edit_collection' collection.id %}">Edit</a>
+      {% endif %}
+      {% endif %}
+  </small></h1>
+</div>
+
+<div class="content">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Count</th>
+        <th>Foiled</th>
+        <th>Name</th>
+        <th>Types</th>
+        <th>P/T/L</th>
+        <th>Mana</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for count, fcount, card in entries %}
+      <tr>
+        <td>{{ count }}</td>
+        <td>{{ fcount }}</td>
+        <td>{{ card.name }}</td>
+        <td>{{ card.types }}</td>
+        <td>{{ card.get_ptl }}</td>
+        <td>{{ card.get_mana }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% bootstrap_paginate entries range=10 show_first_last="true" %}
 </div>
 
 {% endblock %}
