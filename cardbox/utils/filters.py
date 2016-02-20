@@ -36,6 +36,25 @@ def _tokenise_special_mana(special_mana):
     return tokens
 
 
+def _guess_cmc(n, w, u, b, r, g, c, tokens):
+    cmc = n + w + u + b + r + g + c
+    if tokens is not None and len(tokens) > 0:
+        regex = re.compile(r'\d+')
+        for token in tokens:
+            # - X does not contribute to cmc
+            # - {[WUBRGC]P} counts as 1 mana
+            # - {\d+/[WUBRGC]} counts as \d+ mana
+            # - {[WUBRGC/WUBRGC]} counts as 1 mana
+            if token == 'X':
+                continue
+            match = regex.search(token)
+            if match:
+                cmc += int(match.group(0))*tokens[token]
+            else:
+                cmc += tokens[token]
+    return cmc
+
+
 def filter_cards_by_name(queryset, name, method='icontains'):
     """Filter cards by name.
 
@@ -118,13 +137,13 @@ def filter_cards_by_artist(queryset, artist):
     return queryset
 
 
-def filter_cards_by_mana(queryset, mana, cmc, op='='):
+def filter_cards_by_mana(queryset, mana, op='='):
     if mana is None or mana == '':
         return queryset
 
     n, w, u, b, r, g, c, s = Card.parse_mana(mana)
-    print(n, w, u, b, r, g, c, s)
     tokens = _tokenise_special_mana(s)
+    cmc = _guess_cmc(n, w, u, b, r, g, c, tokens)
     q = Q()
     if '>' in op:
         for token in tokens:
