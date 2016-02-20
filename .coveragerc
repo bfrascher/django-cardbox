@@ -1,5 +1,3 @@
 [run]
 omit =
-    mtgcardbox/tests/*
     mtgcardbox/migrations/*
-    mtgcardbox/docs/*
