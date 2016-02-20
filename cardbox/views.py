@@ -84,7 +84,7 @@ def _filter_cards(request, queryset):
     filter_rarity = request.GET.get('filterRarity', '')
     filter_format = request.GET.get('filterFormat', '')
     filter_multi_type = request.GET.get('filterMultiType', '')
-    filter_sets = request.GET.getlist('filterSets', [])
+    filter_sets = request.GET.getlist('filterSet', [])
 
     try:
         filter_power = int(filter_power)
@@ -107,11 +107,11 @@ def _filter_cards(request, queryset):
     filtered = filter_cards_by_types(filtered, filter_types)
     filtered = filter_cards_by_rules(filtered, filter_rules)
     filtered = filter_cards_by_flavour(filtered, filter_flavour)
-    filtered = filter_cards_by_mana(filtered, filter_mana, 0, op=filter_mana_op)
+    filtered = filter_cards_by_mana(filtered, filter_mana, op=filter_mana_op)
     filtered = filter_cards_by_power(filtered, filter_power, op=filter_power_op)
     filtered = filter_cards_by_toughness(filtered, filter_toughness, op=filter_toughness_op)
     filtered = filter_cards_by_loyalty(filtered, filter_loyalty, op=filter_loyalty_op)
-    filtered = filter_cards_by_cmc(filtered, filter_cmc, op=filter_loyalty_op)
+    filtered = filter_cards_by_cmc(filtered, filter_cmc, op=filter_cmc_op)
     filtered = filter_cards_by_artist(filtered, filter_artist)
     filtered = filter_cards_by_rarity(filtered, filter_rarity)
     filtered = filter_cards_by_format(filtered, filter_format)
@@ -192,6 +192,7 @@ def cards(request, layout='list'):
         'sets': sets,
         'post': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
+        'filter_sets': request.GET.getlist('filterSet', []),
     })
 
 
@@ -233,6 +234,7 @@ def collection(request, collection_id):
         'sets': sets,
         'post': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
+        'filter_sets': request.GET.getlist('filterSet', []),
     })
 
 
