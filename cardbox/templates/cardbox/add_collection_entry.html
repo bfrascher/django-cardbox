@@ -9,8 +9,14 @@
   <div class="panel-body">
     <form action="{% url 'cardbox:add_collection_entry' collection.id %}" method="post">
       {% csrf_token %}
+      <label for="set" class="sr-only">Set code or name</label>
       <input id="set" name="set" class="form-control" placeholder="Set code or name" required autofocus>
+      <label for="number" class="sr-only">Number in set (with suffix)</label>
       <input id="number" name="number" class="form-control" placeholder="Number in set (with suffix)" required>
+      <label for="count" class="sr-only">Number of copies to add</label>
+      <input id="count" name="count" class="form-control" placeholder="Number of copies to add" value="1">
+      <label for="fcount" class="sr-only">Number of foiled copied to add</label>
+      <input id="fcount" name="fcount" class="form-control" placeholder="Number of foiled copies to add">
       <button class="btn btn-lg btn-info btn-block" type="submit" name="button" value="addanother">Save and add another</button>
       <button class="btn btn-lg btn-primary btn-block" type="submit" name="button" value="save">Save</button>
     </form>
