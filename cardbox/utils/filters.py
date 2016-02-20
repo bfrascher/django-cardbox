@@ -86,31 +86,35 @@ def filter_cards_by_types(queryset, types, op_and=True):
 
 def filter_cards_by_rules(queryset, rules):
     """Filter cards by rules text."""
+    if rules is None or rules == '':
+        return queryset
     return queryset.filter(rules__icontains=rules)
 
 
 def filter_cards_by_flavour(queryset, flavour):
     """Filter cards by flavour text."""
+    if flavour is None or flavour == '':
+        return queryset
     return queryset.filter(rules__icontains=flavour)
 
 
 # TODO(benedikt) Implement
-def filter_cards_by_multi_type(queryset):
+def filter_cards_by_multi_type(queryset, multi_type):
     return queryset
 
 
 # TODO(benedikt) Implement
-def filter_cards_by_colour(queryset):
+def filter_cards_by_colour(queryset, colours):
     return queryset
 
 
 # TODO(benedikt) Implement
-def filter_cards_by_format(queryset):
+def filter_cards_by_format(queryset, formats):
     return queryset
 
 
 # TODO(benedikt) Implement
-def filter_cards_by_artist(queryset):
+def filter_cards_by_artist(queryset, artist):
     return queryset
 
 
@@ -167,7 +171,7 @@ def filter_cards_by_cmc(queryset, cmc, op='='):
     raise ValueError("Unknown operator '{0}'.".format(op))
 
 
-def filter_cards_by_rarity(queryset):
+def filter_cards_by_rarity(queryset, rarities):
     return queryset
 
 
