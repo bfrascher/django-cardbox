@@ -28,7 +28,7 @@
             <li class="dropdown-header">Editable collections</li>
             {% endif %}
             {% for collection in user.editable_collections.all %}
-            <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+            <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }} ({{ collection.owner.username }})</a></li>
             {% endfor %}
             {% if user.viewable_collections.all.count > 0 %}
             <li class="dropdown-header">Viewable collections</li>
