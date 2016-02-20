@@ -60,4 +60,4 @@ docs/_build/
 target/
 
 # Cardbox
-static/cardbox/images
+cardbox/static/cardbox/images/*
