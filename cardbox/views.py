@@ -18,6 +18,23 @@ from cardbox.models import (
     CollectionEntry,
 )
 
+from cardbox.utils.filters import (
+    filter_cards_by_name,
+    filter_cards_by_types,
+    filter_cards_by_rules,
+    filter_cards_by_flavour,
+    filter_cards_by_mana,
+    filter_cards_by_power,
+    filter_cards_by_toughness,
+    filter_cards_by_loyalty,
+    filter_cards_by_cmc,
+    filter_cards_by_artist,
+    filter_cards_by_rarity,
+    filter_cards_by_format,
+    filter_cards_by_multi_type,
+    filter_cards_by_sets,
+)
+
 LOGIN_URL = '/cardbox/login/'
 
 
@@ -37,18 +54,71 @@ def _update_many_to_many_field(entries, m2m_manager):
         m2m_manager.add(entry)
 
 
-def _filter_cards(request, manager):
+def _filter_cards(request, queryset):
     """Filter a list of cards.
 
     :param request: A request object whose POST dictionary contains
         card filters.
 
-    :param manager: The manager for the cards.
+    :param queryset: The query set for the cards.
 
-    :returns: A manager for the filtered cards.
+    :returns: A query set for the filtered cards.
 
     """
-    filtered = manager
+    filtered = queryset
+    filter_name = request.GET.get('filterName', '')
+    filter_types = request.GET.get('filterTypes', '')
+    filter_rules = request.GET.get('filterRules', '')
+    filter_flavour = request.GET.get('filterFlavour', '')
+    filter_mana = request.GET.get('filterMana', '')
+    filter_mana_op = request.GET.get('filterManaOp', '=')
+    filter_power = request.GET.get('filterPower', '')
+    filter_power_op = request.GET.get('filterPowerOp', '=')
+    filter_toughness = request.GET.get('filterToughness', '')
+    filter_toughness_op = request.GET.get('filterToughnessOp', '=')
+    filter_loyalty = request.GET.get('filterLoyalty', '')
+    filter_loyalty_op = request.GET.get('filterLoyaltyOp', '=')
+    filter_cmc = request.GET.get('filterCMC', '')
+    filter_cmc_op = request.GET.get('filterCMCOp', '=')
+    filter_artist = request.GET.get('filterArtist', '')
+    filter_rarity = request.GET.get('filterRarity', '')
+    filter_format = request.GET.get('filterFormat', '')
+    filter_multi_type = request.GET.get('filterMultiType', '')
+    filter_sets = request.GET.getlist('filterSets', [])
+
+    try:
+        filter_power = int(filter_power)
+    except ValueError:
+        filter_power = None
+    try:
+        filter_toughness = int(filter_toughness)
+    except ValueError:
+        filter_toughness = None
+    try:
+        filter_loyalty = int(filter_loyalty)
+    except ValueError:
+        filter_loyalty = None
+    try:
+        filter_cmc = int(filter_cmc)
+    except ValueError:
+        filter_cmc = None
+
+    filtered = filter_cards_by_name(filtered, filter_name)
+    filtered = filter_cards_by_types(filtered, filter_types)
+    filtered = filter_cards_by_rules(filtered, filter_rules)
+    filtered = filter_cards_by_flavour(filtered, filter_flavour)
+    filtered = filter_cards_by_mana(filtered, filter_mana, 0, op=filter_mana_op)
+    filtered = filter_cards_by_power(filtered, filter_power, op=filter_power_op)
+    filtered = filter_cards_by_toughness(filtered, filter_toughness, op=filter_toughness_op)
+    filtered = filter_cards_by_loyalty(filtered, filter_loyalty, op=filter_loyalty_op)
+    filtered = filter_cards_by_cmc(filtered, filter_cmc, op=filter_loyalty_op)
+    filtered = filter_cards_by_artist(filtered, filter_artist)
+    filtered = filter_cards_by_rarity(filtered, filter_rarity)
+    filtered = filter_cards_by_format(filtered, filter_format)
+    filtered = filter_cards_by_multi_type(filtered, filter_multi_type)
+    filtered = filter_cards_by_sets(filtered, filter_sets)
+
+    return filtered
 
 
 def index(request):
@@ -104,6 +174,7 @@ def cards(request, layout='list'):
         layout = 'list'
 
     card_list = Card.objects.all()
+    card_list = _filter_cards(request, card_list)
     paginator = Paginator(card_list, 50, request=request)
 
     page = request.GET.get('page', 1)
@@ -114,8 +185,13 @@ def cards(request, layout='list'):
     except EmptyPage:
         cards = paginator.page(paginator.num_pages)
 
+    sets = Set.objects.order_by('-release_date').all()
+
     return render(request, 'cardbox/cards_{0}.html'.format(layout), {
         'cards': cards,
+        'sets': sets,
+        'post': request.GET,
+        'ops': ['=', '>=', '<=', '>', '<'],
     })
 
 
@@ -129,7 +205,13 @@ def card(request, card_id):
 @login_required(login_url=LOGIN_URL)
 def collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
+    if (request.user != collection.owner and
+        request.user not in collection.editors.all() and
+        request.user not in collection.viewers.all()):
+        raise PermissionDenied
+
     card_list = Card.objects.filter(editions__collection__id=collection_id)
+    card_list = _filter_cards(request, card_list)
     list_entries = [(*card.get_count_in_collection(collection_id),
                      card) for card in card_list]
 
@@ -143,13 +225,14 @@ def collection(request, collection_id):
     except EmptyPage:
         entries = paginator.page(paginator.num_pages)
 
-    if (request.user != collection.owner and
-        request.user not in collection.editors.all() and
-        request.user not in collection.viewers.all()):
-        raise PermissionDenied
+    sets = Set.objects.all()
+
     return render(request, 'cardbox/collection.html', {
         'collection': collection,
         'entries': entries,
+        'sets': sets,
+        'post': request.GET,
+        'ops': ['=', '>=', '<=', '>', '<'],
     })
 
 
