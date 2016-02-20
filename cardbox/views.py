@@ -389,7 +389,8 @@ def add_collection_entry(request, collection_id):
 
     entry.save()
     messages.add_message(request, messages.SUCCESS,
-                         "'{0}' added to '{1}'.".format(edition, collection))
+                         "{0} ({1}) copies of '{2}' added to '{3}'."
+                         .format(count, fcount, edition, collection))
     if 'addanother' == request.POST['button']:
         return HttpResponseRedirect(reverse('cardbox:add_collection_entry',
                                             args=[collection.id]))
