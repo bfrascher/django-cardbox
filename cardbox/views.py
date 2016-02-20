@@ -335,8 +335,19 @@ def add_collection_entry(request, collection_id):
     try:
         set_str = request.POST['set']
         number_str = request.POST['number']
+        count = request.POST.get('count', 0)
+        fcount = request.POST.get('fcount', 0)
     except KeyError:
         return render(request, 'cardbox/add_collection_entry.html', data)
+
+    try:
+        count = int(count)
+    except ValueError:
+        count = 0
+    try:
+        fcount = int(fcount)
+    except ValueError:
+        fcount = 0
 
     try:
         set_ = Set.objects.get(code=set_str.upper())
@@ -370,9 +381,11 @@ def add_collection_entry(request, collection_id):
     try:
         entry = CollectionEntry.objects.get(collection=collection,
                                             edition=edition)
-        entry.count = F('count') + 1
+        entry.count = F('count') + count
+        entry.foil_count = F('foil_count') + fcount
     except CollectionEntry.DoesNotExist:
-        entry = CollectionEntry(collection=collection, edition=edition, count=1)
+        entry = CollectionEntry(collection=collection, edition=edition,
+                                count=count, foil_count=fcount)
 
     entry.save()
     messages.add_message(request, messages.SUCCESS,
