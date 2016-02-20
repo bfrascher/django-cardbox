@@ -101,7 +101,7 @@
     <label for="filterSet" class="sr-only">Sets</label>
     <select multiple id="filterSet" name="filterSet" class="form-control">
       {% for set_ in sets %}
-      {% if set_.code in post.filterSets %}
+      {% if set_.code in filter_sets %}
       <option value="{{ set_.code }}" selected="selected">{{ set_.name }} ({{ set_.code }})</option>
       {% else %}
       <option value="{{ set_.code }}">{{ set_.name }} ({{ set_.code }})</option>
