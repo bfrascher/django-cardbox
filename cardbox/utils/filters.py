@@ -1,10 +1,39 @@
-import collections
+import re
 
 from django.db.models import Q
 
 from cardbox.models import (
     Card
 )
+
+
+def _tokenise_special_mana(special_mana):
+    """Return the different mana symbols and their count.
+
+    This function expects all mana of the same symbol to be in one
+    block (as is the standard with MTG):
+
+       good: XX{BP}, {2/W}{2/W}{B/W}X
+       bad: X{BP}X, {2/W}X{2/W}{B/W}
+
+    :param str special_mana: A string containing special mana symbols.
+
+    :rtype: dict
+    :returns: A dictionary whose keys are a single mana symbols at the
+        value of that key is the number of occurances of this mana
+        symbol in `special_mana`.
+
+    """
+    regex = re.compile(r'(X|\{.*?\})\1*')
+    tokens = {}
+    while special_mana != '':
+        match = regex.search(special_mana)
+        if match is None:
+            # TODO(benedikt) Better error handling
+            break
+        tokens[match.group(1)] = match.group(0).count(match.group(1))
+        special_mana = special_mana[match.end():]
+    return tokens
 
 
 def filter_cards_by_name(queryset, name, method='icontains'):
@@ -75,16 +104,51 @@ def filter_cards_by_colour(queryset):
     return queryset
 
 
+# TODO(benedikt) Implement
 def filter_cards_by_format(queryset):
     return queryset
 
 
+# TODO(benedikt) Implement
 def filter_cards_by_artist(queryset):
     return queryset
 
 
-def filter_cards_by_mana(queryset, mana, op='='):
-    return queryset
+def filter_cards_by_mana(queryset, mana, cmc, op='='):
+    if mana is None or mana == '':
+        return queryset
+
+    n, w, u, b, r, g, c, s = Card.parse_mana(mana)
+    print(n, w, u, b, r, g, c, s)
+    tokens = _tokenise_special_mana(s)
+    q = Q()
+    if '>' in op:
+        for token in tokens:
+            q = q & Q(mana_special__icontains=tokens[token]*token)
+    elif '<' in op:
+        for token in tokens:
+            q = q & ~Q(mana_special__icontains=(tokens[token]+1)*token)
+
+    if op == '=':
+        return queryset.filter(mana_n=n, mana_w=w, mana_u=u, mana_b=b,
+                               mana_r=r, mana_g=g, mana_c=c, mana_special=s)
+    if op == '>=':
+        return queryset.filter(q, mana_n__gte=n, mana_w__gte=w, mana_u__gte=u,
+                               mana_b__gte=b, mana_r__gte=r, mana_g__gte=g,
+                               mana_c__gte=c)
+    if op == '<=':
+        return queryset.filter(q, mana_n__lte=n, mana_w__lte=w, mana_u__lte=u,
+                               mana_b__lte=b, mana_r__lte=r, mana_g__lte=g,
+                               mana_c__lte=c)
+    if op == '>':
+        return queryset.filter(q, mana_n__gte=n, mana_w__gte=w, mana_u__gte=u,
+                               mana_b__gte=b, mana_r__gte=r, mana_g__gte=g,
+                               mana_c__gte=c, cmc__gt=cmc)
+    if op == '<':
+        return queryset.filter(q, mana_n__lte=n, mana_w__lte=w, mana_u__lte=u,
+                               mana_b__lte=b, mana_r__lte=r, mana_g__lte=g,
+                               mana_c__lte=c, cmc__lt=cmc)
+    raise ValueError("Unknown operator '{0}'.".format(op))
 
 
 def filter_cards_by_cmc(queryset, cmc, op='='):
