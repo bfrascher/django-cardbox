@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
@@ -53,9 +53,9 @@ def _filter_cards(request, manager):
 
 def index(request):
     card_list = Card.objects.all()
-    paginator = Paginator(card_list, 50)
+    paginator = Paginator(card_list, 50, request=request)
 
-    page = request.GET.get('page')
+    page = request.GET.get('page', 1)
     try:
         cards = paginator.page(page)
     except PageNotAnInteger:
@@ -104,9 +104,9 @@ def cards(request, layout='list'):
         layout = 'list'
 
     card_list = Card.objects.all()
-    paginator = Paginator(card_list, 50)
+    paginator = Paginator(card_list, 50, request=request)
 
-    page = request.GET.get('page')
+    page = request.GET.get('page', 1)
     try:
         cards = paginator.page(page)
     except PageNotAnInteger:
@@ -133,9 +133,9 @@ def collection(request, collection_id):
     list_entries = [(*card.get_count_in_collection(collection_id),
                      card) for card in card_list]
 
-    paginator = Paginator(list_entries, 50)
+    paginator = Paginator(list_entries, 50, request=request)
 
-    page = request.GET.get('page')
+    page = request.GET.get('page', 1)
     try:
         entries = paginator.page(page)
     except PageNotAnInteger:

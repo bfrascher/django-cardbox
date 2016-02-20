@@ -1,0 +1,21 @@
+<nav>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li><a href="?{{ page.previous_page_number.querystring }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+    {% endif %}
+    {% for page in page_obj.pages %}
+    {% if page %}
+    {% ifequal page page_obj.number %}
+    <li class="active"><a href="#">{{ page }}<span class="sr-only">(current)</span></a></li>
+    {% else %}
+    <li><a href="?{{ page.querystring }}">{{ page }}</a></li>
+    {% endifequal %}
+    {% else %}
+    <li class="disabled"><a href="#" aria-label="...">...</a></li>
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li><a href="?{{ page.next_page.number.querystring }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+    {% endif %}
+  </ul>
+</nav>

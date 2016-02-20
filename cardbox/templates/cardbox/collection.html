@@ -1,7 +1,6 @@
 {% extends 'cardbox/base.html' %}
 
 {% load staticfiles %}
-{% load bootstrap_pagination %}
 
 {% block content %}
 
@@ -19,32 +18,46 @@
   </small></h1>
 </div>
 
-<div class="content">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Count</th>
-        <th>Foiled</th>
-        <th>Name</th>
-        <th>Types</th>
-        <th>P/T/L</th>
-        <th>Mana</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for count, fcount, card in entries %}
-      <tr>
-        <td>{{ count }}</td>
-        <td>{{ fcount }}</td>
-        <td>{{ card.name }}</td>
-        <td>{{ card.types }}</td>
-        <td>{{ card.get_ptl }}</td>
-        <td>{{ card.get_mana }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% bootstrap_paginate entries range=10 show_first_last="true" %}
-</div>
+<table>
+  <tbody>
+    <tr>
+      <td width="75%">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Count</th>
+              <th>Foiled</th>
+              <th>Name</th>
+              <th>Types</th>
+              <th>P/T/L</th>
+              <th>Mana</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for count, fcount, card in entries.object_list %}
+            <tr>
+              <td>{{ count }}</td>
+              <td>{{ fcount }}</td>
+              <td>{{ card.name }}</td>
+              <td>{{ card.types }}</td>
+              <td>{{ card.get_ptl }}</td>
+              <td>{{ card.get_mana }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% with entries as page_obj %}
+        {% include 'cardbox/pagination.html' %}
+        {% endwith %}
+      </td>
+      <td width="25%">
+        <div class="content">
+          <h3>Filter</h3>
+          <p>This is where all filters will be shown</p>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 {% endblock %}

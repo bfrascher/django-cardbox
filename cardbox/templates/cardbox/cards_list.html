@@ -1,7 +1,5 @@
 {% extends 'cardbox/base.html' %}
 
-{% load bootstrap_pagination %}
-
 {% block content %}
 <div class="content">
   <table class="table table-striped">
@@ -14,7 +12,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for card in cards %}
+      {% for card in cards.object_list %}
       <tr>
         <td>{{ card.name }}</td>
         <td>{{ card.types }}</td>
@@ -24,7 +22,9 @@
       {% endfor %}
     </tbody>
   </table>
-  {% bootstrap_paginate cards range=10 show_first_last="true" %}
+  {% with cards as page_obj %}
+  {% include 'cardbox/pagination.html' %}
+  {% endwith %}
 </div>
 
 {% endblock %}
