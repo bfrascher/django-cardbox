@@ -1,0 +1,112 @@
+<form class="form-filter-sidebar" method="get">
+  <h2 class="form-filter-sidebar-heading">Filter</h2>
+  <div class="form-group">
+    <label for="filterName" class="sr-only">Card name</label>
+    <input type="text" id="filterName" name="filterName" class="form-control" placeholder="Card name" value="{{ post.filterName }}">
+  </div>
+  <div class="form-group">
+    <label for="filterTypes" class="sr-only">Types</label>
+    <input type="text" id="filterTypes" name="filterTypes" class="form-control" placeholder="Types" value="{{ post.filterTypes }}">
+  </div>
+  <div class="form-group">
+    <label for="filterRules" class="sr-only">Rules</label>
+    <input type="text" id="filterRules" name="filterRules" class="form-control" placeholder="Rules" value="{{ post.filterRules }}">
+  </div>
+  <div class="form-group">
+    <label for="filterFlavour" class="sr-only">Flavour</label>
+    <input type="text" id="filterFlavour" name="filterFlavour" class="form-control" placeholder="Flavour" value="{{ post.filterFlavour }}">
+  </div>
+  <div class="form-group">
+    <label for="filterMana" class="sr-only">Mana</label>
+    <select id="filterManaOp" name="filterManaOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterManaOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterMana" name="filterMana" class="form-control" placeholder="Mana" value="{{ post.filterMana }}">
+  </div>
+  <div class="form-group">
+    <label for="filterPower" class="sr-only">Power</label>
+    <select id="filterPowerOp" name="filterPowerOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterPowerOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterPower" name="filterPower" class="form-control" placeholder="Power" value="{{ post.filterPower }}">
+  </div>
+  <div class="form-group">
+    <label for="filterToughness" class="sr-only">Toughness</label>
+    <select id="filterToughnessOp" name="filterToughnessOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterToughnessOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterToughness" name="filterToughness" class="form-control" placeholder="Toughness" value="{{ post.filterToughness }}">
+  </div>
+  <div class="form-group">
+    <label for="filterLoyalty" class="sr-only">Loyalty</label>
+    <select id="filterLoyaltyOp" name="filterLoyaltyOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterLoyaltyOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterLoyalty" name="filterLoyalty" class="form-control" placeholder="Loyalty" value="{{ post.filterLoyalty }}">
+  </div>
+  <div class="form-group">
+    <label for="filterCMC" class="sr-only">Converted mana cost</label>
+    <select id="filterCMCOp" name="filterCMCOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterCMCOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterCMC" name="filterCMC" class="form-control" placeholder="Converted mana cost" value="{{ post.filterCMC }}">
+  </div>
+  <div class="form-group">
+    <label for="filterArtist" class="sr-only">Artist</label>
+    <input type="text" id="filterArtist" name="filterArtist" class="form-control" placeholder="Artist" value="{{ post.filterArtist }}">
+  </div>
+  <div class="form-group">
+    <label for="filterRarity" class="sr-only">Rarity</label>
+    <input type="text" id="filterRarity" name="filterRarity" class="form-control" placeholder="Rarity" value="{{ post.filterRarity }}">
+  </div>
+  <div class="form-group">
+    <label for="filterFormat" class="sr-only">Format</label>
+    <input type="text" id="filterFormat" name="filterFormat" class="form-control" placeholder="Format" value="{{ post.filterFormat }}">
+  </div>
+  <div class="form-group">
+    <label for="filterMulitType" class="sr-only">Multi type</label>
+    <input type="text" id="filterMultiType" name="filterMultiType" class="form-control" placeholder="Multi type" value="{{ post.filterMultiType }}">
+  </div>
+  <div class="form-group">
+    <label for="filterSet" class="sr-only">Sets</label>
+    <select multiple id="filterSet" name="filterSet" class="form-control">
+      {% for set_ in sets %}
+      {% if set_.code in post.filterSets %}
+      <option value="{{ set_.code }}" selected="selected">{{ set_.name }} ({{ set_.code }})</option>
+      {% else %}
+      <option value="{{ set_.code }}">{{ set_.name }} ({{ set_.code }})</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
+  </div>
