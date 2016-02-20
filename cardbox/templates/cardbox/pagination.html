@@ -1,7 +1,7 @@
 <nav>
   <ul class="pagination">
     {% if page_obj.has_previous %}
-    <li><a href="?{{ page.previous_page_number.querystring }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+    <li><a href="?{{ page_obj.previous_page_number.querystring }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
     {% endif %}
     {% for page in page_obj.pages %}
     {% if page %}
@@ -15,7 +15,7 @@
     {% endif %}
     {% endfor %}
     {% if page_obj.has_next %}
-    <li><a href="?{{ page.next_page.number.querystring }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+    <li><a href="?{{ page_obj.next_page_number.querystring }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
     {% endif %}
   </ul>
 </nav>
