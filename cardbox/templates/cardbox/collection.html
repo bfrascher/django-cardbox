@@ -21,7 +21,7 @@
 <table>
   <tbody>
     <tr>
-      <td width="75%">
+      <td width="70%" valign="top">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -50,11 +50,8 @@
         {% include 'cardbox/pagination.html' %}
         {% endwith %}
       </td>
-      <td width="25%">
-        <div class="content">
-          <h3>Filter</h3>
-          <p>This is where all filters will be shown</p>
-        </div>
+      <td width="30%" valign="top">
+        {% include 'cardbox/filter_sidebar.html' %}
       </td>
     </tr>
   </tbody>
