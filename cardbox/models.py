@@ -101,20 +101,20 @@ class Card(models.Model):
     loyalty_special = models.CharField(max_length=10, blank=True, default='')
 
     # === mana =======================================================
-    mana_n = models.PositiveIntegerField("neutral mana", default=None,
-                                         null=True, blank=True)
-    mana_w = models.PositiveIntegerField("white mana", default=None,
-                                         null=True, blank=True)
-    mana_u = models.PositiveIntegerField("blue mana", default=None,
-                                         null=True, blank=True)
-    mana_b = models.PositiveIntegerField("black mana", default=None,
-                                         null=True, blank=True)
-    mana_r = models.PositiveIntegerField("red mana", default=None,
-                                         null=True, blank=True)
-    mana_g = models.PositiveIntegerField("green mana", default=None,
-                                         null=True, blank=True)
-    mana_c = models.PositiveIntegerField("colorless mana", default=None,
-                                         null=True, blank=True)
+    mana_n = models.PositiveIntegerField("neutral mana", default=0,
+                                         blank=True)
+    mana_w = models.PositiveIntegerField("white mana", default=0,
+                                         blank=True)
+    mana_u = models.PositiveIntegerField("blue mana", default=0,
+                                         blank=True)
+    mana_b = models.PositiveIntegerField("black mana", default=0,
+                                         blank=True)
+    mana_r = models.PositiveIntegerField("red mana", default=0,
+                                         blank=True)
+    mana_g = models.PositiveIntegerField("green mana", default=0,
+                                         blank=True)
+    mana_c = models.PositiveIntegerField("colorless mana", default=0,
+                                         blank=True)
     mana_special = models.CharField("special mana", max_length=50, blank=True)
     cmc = models.PositiveIntegerField("converted mana cost", default=None,
                                       null=True, blank=True)
@@ -172,7 +172,7 @@ class Card(models.Model):
     @staticmethod
     def _count_mana(regex, mana):
         color_str = ''.join(re.findall(regex, mana))
-        return len(color_str) if color_str else None
+        return len(color_str)
 
     @staticmethod
     def parse_mana(mana):
@@ -182,12 +182,12 @@ class Card(models.Model):
         list_special = re.findall(r'(\{.*?\}|X+)', mana)
         mana_special = ''.join(list_special)
 
-        # Remove special strings, so we don't accidentally parse it later.
+        # Remove special strings, so we don't accidentally parse them later.
         for s in list_special:
             mana = mana.replace(s, '')
 
         mana_n_str = re.search(r'\d+', mana)
-        mana_n = int(mana_n_str.group()) if mana_n_str else None
+        mana_n = int(mana_n_str.group(0)) if mana_n_str else 0
 
         mana_w = Card._count_mana(r'W+', mana)
         mana_u = Card._count_mana(r'U+', mana)
@@ -214,13 +214,13 @@ class Card(models.Model):
 
     def get_mana(self):
         """Return the mana cost of this card as a string."""
-        mana = str(self.mana_n) if self.mana_n is not None else ''
-        mana += self.mana_w*'W' if self.mana_w is not None else ''
-        mana += self.mana_b*'B' if self.mana_b is not None else ''
-        mana += self.mana_u*'U' if self.mana_u is not None else ''
-        mana += self.mana_r*'R' if self.mana_r is not None else ''
-        mana += self.mana_g*'G' if self.mana_g is not None else ''
-        mana += self.mana_c*'C' if self.mana_c is not None else ''
+        mana = str(self.mana_n) if self.mana_n != 0 else ''
+        mana += self.mana_w*'W'
+        mana += self.mana_b*'B'
+        mana += self.mana_u*'U'
+        mana += self.mana_r*'R'
+        mana += self.mana_g*'G'
+        mana += self.mana_c*'C'
         mana += self.mana_special
         return mana
 
