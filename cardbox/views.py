@@ -185,14 +185,9 @@ def cards(request):
     except EmptyPage:
         cards = paginator.page(paginator.num_pages)
 
-    sets = Set.objects.order_by('-release_date').all()
-
     return render(request, 'cardbox/cards.html', {
         'cards': cards,
-        'sets': sets,
         'get': request.GET,
-        'ops': ['=', '>=', '<=', '>', '<'],
-        'fsets': request.GET.getlist('fse', []),
         'layout': layout,
     })
 
@@ -227,8 +222,6 @@ def collection(request, collection_id):
     except EmptyPage:
         entries = paginator.page(paginator.num_pages)
 
-    sets = Set.objects.all()
-
     layout = request.GET.get('layout', 'list')
     if layout not in ['list', 'grid']:
         layout = 'list'
@@ -236,10 +229,7 @@ def collection(request, collection_id):
     return render(request, 'cardbox/collection.html', {
         'collection': collection,
         'entries': entries,
-        'sets': sets,
         'get': request.GET,
-        'ops': ['=', '>=', '<=', '>', '<'],
-        'fsets': request.GET.getlist('fse', []),
         'layout': layout,
     })
 
