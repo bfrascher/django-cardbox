@@ -1,5 +1,15 @@
 <form class="form-filter-sidebar" method="get">
-  <h2 class="form-filter-sidebar-heading">Filter</h2>
+  <h2 class="form-filter-sidebar-heading">Filter
+    <small>
+      <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapsedHelp" aria-expanded="false" aria-controls="collapsedHelp">Show help</button>
+      <a class="btn btn-warning form-filter-sidebar-reset" href="#">Reset</a>
+    </small>
+  </h2>
+  <div class="collapse" id="collapsedHelp">
+    <div class="well">
+      TODO
+    </div>
+  </div>
   <div class="form-group">
     <label for="fna" class="sr-only">Card name</label>
     <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
@@ -16,69 +26,24 @@
     <label for="fra" class="sr-only">Rarity</label>
     <input type="text" id="fra" name="fra" class="form-control" placeholder="Rarity" value="{{ get.fra }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group form-inline">
+  <div class="form-group">
     <label for="fma" class="sr-only">Mana</label>
-    <select id="filterManaOp" name="filterManaOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterManaOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
     <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group form-inline">
+  <div class="form-group">
     <label for="fcm" class="sr-only">Converted mana cost</label>
-    <select id="filterCMCOp" name="filterCMCOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterCMCOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
     <input type="text" id="fcm" name="fcm" class="form-control" placeholder="Converted mana cost" value="{{ get.fcm }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group form-inline">
+  <div class="form-group">
     <label for="fpo" class="sr-only">Power</label>
-    <select id="filterPowerOp" name="filterPowerOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterPowerOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
     <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group form-inline">
+  <div class="form-group">
     <label for="fto" class="sr-only">Toughness</label>
-    <select id="filterToughnessOp" name="filterToughnessOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterToughnessOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
     <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group form-inline">
+  <div class="form-group">
     <label for="flo" class="sr-only">Loyalty</label>
-    <select id="filterLoyaltyOp" name="filterLoyaltyOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterLoyaltyOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
     <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
@@ -99,15 +64,7 @@
   </div>
   <div class="form-group">
     <label for="fse" class="sr-only">Sets</label>
-    <select multiple id="fse" name="fse" class="form-control">
-      {% for set_ in sets %}
-      {% if set_.code in fsets %}
-      <option value="{{ set_.code }}" selected="selected">{{ set_.name }} ({{ set_.code }})</option>
-      {% else %}
-      <option value="{{ set_.code }}">{{ set_.name }} ({{ set_.code }})</option>
-      {% endif %}
-      {% endfor %}
-    </select>
+    <input type="text" id="fse" name="fse" class="form-control" placeholder="Sets" value="{{ get.fse }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <input type="hidden" id="layout" name="layout" value="{{ layout }}">
   <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
