@@ -13,8 +13,7 @@
       {{ collection.date_created }}
       {% if request.user == collection.owner or request.user in collection.editors.all %}
       <a href="{% url 'cardbox:add_collection_entry' collection.id %}">
-        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card">
-      </a>
+        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card"></a>
       {% endif %}
 
       <a href="{% append_to_get layout='list' %}">list</a> /
