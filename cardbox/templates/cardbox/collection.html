@@ -51,7 +51,6 @@
           </tbody>
         </table>
         {% else %}
-        {% endif %}
         <div class="container-fluid">
           <div class="row">
             {% for count, fcount, card in entries.object_list %}
@@ -64,6 +63,7 @@
             {% endfor %}
           </div>
         </div>
+        {% endif %}
         {% with entries as page_obj %}
         {% include 'cardbox/pagination.html' %}
         {% endwith %}
