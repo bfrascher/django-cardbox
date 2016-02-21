@@ -22,6 +22,7 @@
   <tbody>
     <tr>
       <td width="65%" valign="top">
+        {% if layout == 'list' %}
         <table class="table table-striped">
           <thead>
             <tr>
@@ -46,6 +47,19 @@
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        {% endif %}
+        <div class="container-fluid">
+          <div class="row">
+            {% for count, fcount, card in entries.object_list %}
+            <div class="col-xs-6 col-md-4">
+              <a href="#" class="thumbnail">
+                <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
         {% with entries as page_obj %}
         {% include 'cardbox/pagination.html' %}
         {% endwith %}
