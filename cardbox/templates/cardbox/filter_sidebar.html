@@ -1,23 +1,23 @@
 <form class="form-filter-sidebar" method="get">
   <h2 class="form-filter-sidebar-heading">Filter</h2>
   <div class="form-group">
-    <label for="filterName" class="sr-only">Card name</label>
-    <input type="text" id="filterName" name="filterName" class="form-control" placeholder="Card name" value="{{ post.filterName }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="A ! in front of a word searches only for cards whose name fits exactly that word. You can combine multiple words together using & (and, default) or | (or). To search for cards which do not contain a word, prefix it with a ~. You can group words together with (). If you want to search for a phrase spanning more than one word, group them with ''.">
+    <label for="fna" class="sr-only">Card name</label>
+    <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterTypes" class="sr-only">Types</label>
-    <input type="text" id="filterTypes" name="filterTypes" class="form-control" placeholder="Types" value="{{ post.filterTypes }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="Enter super- and subtypes to filter for. By default a card has to have all specified types. You can also use & (and) or | (or) between types explicitly and group them with ().">
+    <label for="fty" class="sr-only">Types</label>
+    <input type="text" id="fty" name="fty" class="form-control" placeholder="Types" value="{{ get.fty }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterRules" class="sr-only">Rules</label>
-    <input type="text" id="filterRules" name="filterRules" class="form-control" placeholder="Rules" value="{{ post.filterRules }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <label for="fru" class="sr-only">Rules</label>
+    <input type="text" id="fru" name="fru" class="form-control" placeholder="Rules" value="{{ get.fru }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterRarity" class="sr-only">Rarity</label>
-    <input type="text" id="filterRarity" name="filterRarity" class="form-control" placeholder="Rarity" value="{{ post.filterRarity }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <label for="fra" class="sr-only">Rarity</label>
+    <input type="text" id="fra" name="fra" class="form-control" placeholder="Rarity" value="{{ get.fra }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group form-inline">
-    <label for="filterMana" class="sr-only">Mana</label>
+    <label for="fma" class="sr-only">Mana</label>
     <select id="filterManaOp" name="filterManaOp" class="form-control">
       {% for op in ops %}
           {% if op == post.filterManaOp %}
@@ -27,10 +27,10 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterMana" name="filterMana" class="form-control" placeholder="Mana" value="{{ post.filterMana }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group form-inline">
-    <label for="filterCMC" class="sr-only">Converted mana cost</label>
+    <label for="fcm" class="sr-only">Converted mana cost</label>
     <select id="filterCMCOp" name="filterCMCOp" class="form-control">
       {% for op in ops %}
           {% if op == post.filterCMCOp %}
@@ -40,10 +40,10 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterCMC" name="filterCMC" class="form-control" placeholder="Converted mana cost" value="{{ post.filterCMC }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fcm" name="fcm" class="form-control" placeholder="Converted mana cost" value="{{ get.fcm }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group form-inline">
-    <label for="filterPower" class="sr-only">Power</label>
+    <label for="fpo" class="sr-only">Power</label>
     <select id="filterPowerOp" name="filterPowerOp" class="form-control">
       {% for op in ops %}
           {% if op == post.filterPowerOp %}
@@ -53,10 +53,10 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterPower" name="filterPower" class="form-control" placeholder="Power" value="{{ post.filterPower }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group form-inline">
-    <label for="filterToughness" class="sr-only">Toughness</label>
+    <label for="fto" class="sr-only">Toughness</label>
     <select id="filterToughnessOp" name="filterToughnessOp" class="form-control">
       {% for op in ops %}
           {% if op == post.filterToughnessOp %}
@@ -66,10 +66,10 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterToughness" name="filterToughness" class="form-control" placeholder="Toughness" value="{{ post.filterToughness }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-groupform-inline">
-    <label for="filterLoyalty" class="sr-only">Loyalty</label>
+  <div class="form-group form-inline">
+    <label for="flo" class="sr-only">Loyalty</label>
     <select id="filterLoyaltyOp" name="filterLoyaltyOp" class="form-control">
       {% for op in ops %}
           {% if op == post.filterLoyaltyOp %}
@@ -79,29 +79,29 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterLoyalty" name="filterLoyalty" class="form-control" placeholder="Loyalty" value="{{ post.filterLoyalty }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterFormat" class="sr-only">Format</label>
-    <input type="text" id="filterFormat" name="filterFormat" class="form-control" placeholder="Format" value="{{ post.filterFormat }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <label for="ffo" class="sr-only">Format</label>
+    <input type="text" id="ffo" name="ffo" class="form-control" placeholder="Format" value="{{ get.ffo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterMultiType" class="sr-only">Multi type</label>
-    <input type="text" id="filterMultiType" name="filterMultiType" class="form-control" placeholder="Multi type" value="{{ post.filterMultiType }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="Enter super- and subtypes to filter for. By default a card has to have all specified types. You can also use & (and) or | (or) between types explicitly and group them with ().">
+    <label for="fmt" class="sr-only">Multi type</label>
+    <input type="text" id="fmt" name="fmt" class="form-control" placeholder="Multi type" value="{{ get.fmt }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterArtist" class="sr-only">Artist</label>
-    <input type="text" id="filterArtist" name="filterArtist" class="form-control" placeholder="Artist" value="{{ post.filterArtist }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <label for="far" class="sr-only">Artist</label>
+    <input type="text" id="far" name="far" class="form-control" placeholder="Artist" value="{{ get.far }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterFlavour" class="sr-only">Flavour</label>
-    <input type="text" id="filterFlavour" name="filterFlavour" class="form-control" placeholder="Flavour" value="{{ post.filterFlavour }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <label for="ffl" class="sr-only">Flavour</label>
+    <input type="text" id="ffl" name="ffl" class="form-control" placeholder="Flavour" value="{{ get.ffl }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterSet" class="sr-only">Sets</label>
-    <select multiple id="filterSet" name="filterSet" class="form-control">
+    <label for="fse" class="sr-only">Sets</label>
+    <select multiple id="fse" name="fse" class="form-control">
       {% for set_ in sets %}
-      {% if set_.code in filter_sets %}
+      {% if set_.code in fsets %}
       <option value="{{ set_.code }}" selected="selected">{{ set_.name }} ({{ set_.code }})</option>
       {% else %}
       <option value="{{ set_.code }}">{{ set_.name }} ({{ set_.code }})</option>

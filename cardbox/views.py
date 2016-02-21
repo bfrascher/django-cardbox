@@ -66,25 +66,25 @@ def _filter_cards(request, queryset):
 
     """
     filtered = queryset
-    filter_name = request.GET.get('filterName', '')
-    filter_types = request.GET.get('filterTypes', '')
-    filter_rules = request.GET.get('filterRules', '')
-    filter_flavour = request.GET.get('filterFlavour', '')
-    filter_mana = request.GET.get('filterMana', '')
+    filter_name = request.GET.get('fna', '')
+    filter_types = request.GET.get('fty', '')
+    filter_rules = request.GET.get('fru', '')
+    filter_flavour = request.GET.get('ffl', '')
+    filter_mana = request.GET.get('fma', '')
     filter_mana_op = request.GET.get('filterManaOp', '=')
-    filter_power = request.GET.get('filterPower', '')
+    filter_power = request.GET.get('fpo', '')
     filter_power_op = request.GET.get('filterPowerOp', '=')
-    filter_toughness = request.GET.get('filterToughness', '')
+    filter_toughness = request.GET.get('fto', '')
     filter_toughness_op = request.GET.get('filterToughnessOp', '=')
-    filter_loyalty = request.GET.get('filterLoyalty', '')
+    filter_loyalty = request.GET.get('flo', '')
     filter_loyalty_op = request.GET.get('filterLoyaltyOp', '=')
-    filter_cmc = request.GET.get('filterCMC', '')
+    filter_cmc = request.GET.get('fcm', '')
     filter_cmc_op = request.GET.get('filterCMCOp', '=')
-    filter_artist = request.GET.get('filterArtist', '')
-    filter_rarity = request.GET.get('filterRarity', '')
-    filter_format = request.GET.get('filterFormat', '')
-    filter_multi_type = request.GET.get('filterMultiType', '')
-    filter_sets = request.GET.getlist('filterSet', [])
+    filter_artist = request.GET.get('far', '')
+    filter_rarity = request.GET.get('fra', '')
+    filter_format = request.GET.get('ffo', '')
+    filter_multi_type = request.GET.get('fmt', '')
+    filter_sets = request.GET.getlist('fse', [])
 
     try:
         filter_power = int(filter_power)
@@ -190,9 +190,9 @@ def cards(request):
     return render(request, 'cardbox/cards.html', {
         'cards': cards,
         'sets': sets,
-        'post': request.GET,
+        'get': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
-        'filter_sets': request.GET.getlist('filterSet', []),
+        'fsets': request.GET.getlist('fse', []),
         'layout': layout,
     })
 
@@ -237,9 +237,9 @@ def collection(request, collection_id):
         'collection': collection,
         'entries': entries,
         'sets': sets,
-        'post': request.GET,
+        'get': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
-        'filter_sets': request.GET.getlist('filterSet', []),
+        'fsets': request.GET.getlist('fse', []),
         'layout': layout,
     })
 
