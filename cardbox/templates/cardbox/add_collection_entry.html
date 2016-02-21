@@ -2,10 +2,13 @@
 
 {% block content %}
 
+<div class="page-header">
+  <h1>Add cards to {{ collection.name }}
+    <small><a href="{% url 'cardbox:collection' collection.id %}">Back to collection</a></small>
+  </h1>
+</div>
+
 <div class="panel panel-primary">
-  <div class="panel-heading">
-    <h3 class="panel-title">Add card to {{ collection.name }}</h3>
-  </div>
   <div class="panel-body">
     <form action="{% url 'cardbox:add_collection_entry' collection.id %}" method="post">
       {% csrf_token %}
