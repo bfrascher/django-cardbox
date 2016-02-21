@@ -169,12 +169,12 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('cardbox:index'))
 
 
-def cards(request, layout='list'):
+def cards(request):
+    layout = request.GET.get('layout', 'list')
     if layout not in ['list', 'grid']:
         layout = 'list'
 
-    card_list = Card.objects.all()
-    card_list = _filter_cards(request, card_list)
+    card_list = _filter_cards(request, Card.objects)
     paginator = Paginator(card_list, 50, request=request)
 
     page = request.GET.get('page', 1)
