@@ -181,12 +181,12 @@ class TestMCIParser:
         assert card.loyalty_special == ''
 
         assert card.mana_n == 1
-        assert card.mana_w is None
+        assert card.mana_w == 0
         assert card.mana_u == 1
-        assert card.mana_b is None
-        assert card.mana_r is None
-        assert card.mana_g is None
-        assert card.mana_c is None
+        assert card.mana_b == 0
+        assert card.mana_r == 0
+        assert card.mana_g == 0
+        assert card.mana_c == 0
         assert card.mana_special == ''
         assert card.cmc == 2
 
@@ -219,15 +219,15 @@ class TestMCIParser:
         assert dual_card.loyalty == 5
         assert dual_card.loyalty_special == ''
 
-        assert dual_card.mana_n is None
-        assert dual_card.mana_w is None
-        assert dual_card.mana_u is None
-        assert dual_card.mana_b is None
-        assert dual_card.mana_r is None
-        assert dual_card.mana_g is None
-        assert dual_card.mana_c is None
+        assert dual_card.mana_n == 0
+        assert dual_card.mana_w == 0
+        assert dual_card.mana_u == 0
+        assert dual_card.mana_b == 0
+        assert dual_card.mana_r == 0
+        assert dual_card.mana_g == 0
+        assert dual_card.mana_c == 0
         assert dual_card.mana_special == ''
-        assert dual_card.cmc is None
+        assert dual_card.cmc == 0
 
         assert dual_card.multi_type == Card.MULTI_FLIP
 
@@ -272,12 +272,12 @@ Fuse (You may cast one or both halves of this card from your hand.)"""
         assert card.loyalty_special == ''
 
         assert card.mana_n == 3
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
-        assert card.mana_r is None
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
+        assert card.mana_r == 0
         assert card.mana_g == 1
-        assert card.mana_c is None
+        assert card.mana_c == 0
         assert card.mana_special == ''
         assert card.cmc == 4
 
@@ -308,13 +308,13 @@ Fuse (You may cast one or both halves of this card from your hand.)"""
         assert dual_card.loyalty is None
         assert dual_card.loyalty_special == ''
 
-        assert dual_card.mana_n is None
+        assert dual_card.mana_n == 0
         assert dual_card.mana_w == 1
-        assert dual_card.mana_u is None
-        assert dual_card.mana_b is None
-        assert dual_card.mana_r is None
-        assert dual_card.mana_g is None
-        assert dual_card.mana_c is None
+        assert dual_card.mana_u == 0
+        assert dual_card.mana_b == 0
+        assert dual_card.mana_r == 0
+        assert dual_card.mana_g == 0
+        assert dual_card.mana_c == 0
         assert dual_card.mana_special == ''
         assert dual_card.cmc == 1
 
@@ -360,12 +360,12 @@ Fuse (You may cast one or both halves of this card from your hand.)"""
         assert card.loyalty_special == ''
 
         assert card.mana_n == 3
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
         assert card.mana_r == 1
-        assert card.mana_g is None
-        assert card.mana_c is None
+        assert card.mana_g == 0
+        assert card.mana_c == 0
         assert card.mana_special == ''
         assert card.cmc == 4
 
@@ -396,15 +396,15 @@ At the beginning of each upkeep, if a player cast two or more spells last turn, 
         assert dual_card.loyalty is None
         assert dual_card.loyalty_special == ''
 
-        assert dual_card.mana_n is None
-        assert dual_card.mana_w is None
-        assert dual_card.mana_u is None
-        assert dual_card.mana_b is None
-        assert dual_card.mana_r is None
-        assert dual_card.mana_g is None
-        assert dual_card.mana_c is None
+        assert dual_card.mana_n == 0
+        assert dual_card.mana_w == 0
+        assert dual_card.mana_u == 0
+        assert dual_card.mana_b == 0
+        assert dual_card.mana_r == 0
+        assert dual_card.mana_g == 0
+        assert dual_card.mana_c == 0
         assert dual_card.mana_special == ''
-        assert dual_card.cmc is None
+        assert dual_card.cmc == 0
 
         assert dual_card.multi_type == Card.MULTI_FLIP
 
@@ -448,13 +448,13 @@ Look at the top five cards of your library. If you control more creatures than e
         assert card.loyalty is None
         assert card.loyalty_special == ''
 
-        assert card.mana_n is None
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
-        assert card.mana_r is None
-        assert card.mana_g is None
-        assert card.mana_c is None
+        assert card.mana_n == 0
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
+        assert card.mana_r == 0
+        assert card.mana_g == 0
+        assert card.mana_c == 0
         assert card.mana_special == '{2/U}{2/U}{2/U}'
         assert card.cmc == 6
 
@@ -502,12 +502,12 @@ Target creature gets -5/-5 until end of turn."""
         assert card.loyalty_special == ''
 
         assert card.mana_n == 1
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
-        assert card.mana_r is None
-        assert card.mana_g is None
-        assert card.mana_c is None
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
+        assert card.mana_r == 0
+        assert card.mana_g == 0
+        assert card.mana_c == 0
         assert card.mana_special == '{BP}{BP}'
         assert card.cmc == 3
 
@@ -554,12 +554,12 @@ Target creature gets -5/-5 until end of turn."""
         assert card.loyalty_special == ''
 
         assert card.mana_n == 1
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
-        assert card.mana_r is None
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
+        assert card.mana_r == 0
         assert card.mana_g == 2
-        assert card.mana_c is None
+        assert card.mana_c == 0
         assert card.mana_special == ''
         assert card.cmc == 3
 
@@ -601,12 +601,12 @@ Allosaurus Rider's power and toughness are each equal to 1 plus the number of la
         assert card.loyalty_special == ''
 
         assert card.mana_n == 5
-        assert card.mana_w is None
-        assert card.mana_u is None
-        assert card.mana_b is None
-        assert card.mana_r is None
+        assert card.mana_w == 0
+        assert card.mana_u == 0
+        assert card.mana_b == 0
+        assert card.mana_r == 0
         assert card.mana_g == 2
-        assert card.mana_c is None
+        assert card.mana_c == 0
         assert card.mana_special == ''
         assert card.cmc == 7
 
