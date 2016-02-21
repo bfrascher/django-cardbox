@@ -106,7 +106,7 @@ class MCIParser:
             end += match.end()
 
         match_cmc = regex_cmc.search(text[end:])
-        cmc = int(match_cmc.group(1)) if match_cmc else None
+        cmc = int(match_cmc.group(1)) if match_cmc else 0
 
         return types, power, toughness, loyalty, mana, cmc
 
