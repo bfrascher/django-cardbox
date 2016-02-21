@@ -1,6 +1,7 @@
 {% extends 'cardbox/base.html' %}
 
 {% load staticfiles %}
+{% load cardbox_tags %}
 
 {% block content %}
 
@@ -15,6 +16,9 @@
         <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card">
       </a>
       {% endif %}
+
+      <a href="{% append_to_get layout='list' %}">list</a> /
+      <a href="{% append_to_get layout='grid' %}">grid</a>
   </small></h1>
 </div>
 

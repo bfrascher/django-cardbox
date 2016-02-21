@@ -229,6 +229,10 @@ def collection(request, collection_id):
 
     sets = Set.objects.all()
 
+    layout = request.GET.get('layout', 'list')
+    if layout not in ['list', 'grid']:
+        layout = 'list'
+
     return render(request, 'cardbox/collection.html', {
         'collection': collection,
         'entries': entries,
@@ -236,6 +240,7 @@ def collection(request, collection_id):
         'post': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
         'filter_sets': request.GET.getlist('filterSet', []),
+        'layout': layout,
     })
 
 
