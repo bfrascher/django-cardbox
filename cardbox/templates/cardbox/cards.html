@@ -1,0 +1,66 @@
+{% extends 'cardbox/base.html' %}
+
+{% load staticfiles %}
+{% load cardbox_tags %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Cards <small>
+      <a href="{% append_to_get layout='list' %}">list</a>/
+      <a href="{% append_to_get layout='grid' %}">grid</a>
+  </small></h1>
+</div>
+
+<div class="content">
+  <table>
+    <tbody>
+      <tr>
+        <td width="65%" valign="top">
+          {% if layout == 'list' %}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>P/T/L</th>
+                <th>Mana</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for card in cards.object_list %}
+              <tr>
+                <td><a href="{% url 'cardbox:card' card.id %}">{{ card.name }}</a></td>
+                <td>{{ card.types }}</td>
+                <td>{{ card.get_ptl }}</td>
+                <td>{{ card.get_mana }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="container-fluid">
+          <div class="row">
+            {% for card in cards.object_list %}
+            <div class="col-xs-6 col-md-4">
+              <a href="{% url 'cardbox:card' card.id %}" class="thumbnail">
+                <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+          {% endif %}
+          {% with cards as page_obj %}
+          {% include 'cardbox/pagination.html' %}
+          {% endwith %}
+        </td>
+        <td width="35%" valign="top">
+          {% include 'cardbox/filter_sidebar.html' %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

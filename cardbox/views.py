@@ -175,7 +175,7 @@ def cards(request):
         layout = 'list'
 
     card_list = _filter_cards(request, Card.objects)
-    paginator = Paginator(card_list, 50, request=request)
+    paginator = Paginator(card_list, 60, request=request)
 
     page = request.GET.get('page', 1)
     try:
@@ -187,12 +187,13 @@ def cards(request):
 
     sets = Set.objects.order_by('-release_date').all()
 
-    return render(request, 'cardbox/cards_{0}.html'.format(layout), {
+    return render(request, 'cardbox/cards.html', {
         'cards': cards,
         'sets': sets,
         'post': request.GET,
         'ops': ['=', '>=', '<=', '>', '<'],
         'filter_sets': request.GET.getlist('filterSet', []),
+        'layout': layout,
     })
 
 
