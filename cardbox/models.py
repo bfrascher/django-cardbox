@@ -1,3 +1,4 @@
+import datetime
 import re
 
 from django.contrib.auth.models import User
@@ -66,7 +67,7 @@ class Set(models.Model):
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     code = models.CharField("short form", max_length=10, unique=True)
     name = models.CharField("full name", max_length=100, unique=True)
-    release_date = models.DateField(blank=True, null=True)
+    release_date = models.DateField(blank=True, default=datetime.date(1, 1, 1))
 
     class Meta:
         ordering = ['-release_date']
