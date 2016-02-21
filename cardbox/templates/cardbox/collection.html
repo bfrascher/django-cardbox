@@ -57,6 +57,7 @@
           <div class="row">
             {% for count, fcount, card in entries.object_list %}
             <div class="col-xs-6 col-md-4">
+              <div>Copies: {{ count }}, Foils: {{ fcount }}</div>
               <a href="#" class="thumbnail">
                 <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
               </a>
