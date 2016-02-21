@@ -2,21 +2,21 @@
   <h2 class="form-filter-sidebar-heading">Filter</h2>
   <div class="form-group">
     <label for="filterName" class="sr-only">Card name</label>
-    <input type="text" id="filterName" name="filterName" class="form-control" placeholder="Card name" value="{{ post.filterName }}">
+    <input type="text" id="filterName" name="filterName" class="form-control" placeholder="Card name" value="{{ post.filterName }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="A ! in front of a word searches only for cards whose name fits exactly that word. You can combine multiple words together using & (and, default) or | (or). To search for cards which do not contain a word, prefix it with a ~. You can group words together with (). If you want to search for a phrase spanning more than one word, group them with ''.">
   </div>
   <div class="form-group">
     <label for="filterTypes" class="sr-only">Types</label>
-    <input type="text" id="filterTypes" name="filterTypes" class="form-control" placeholder="Types" value="{{ post.filterTypes }}">
+    <input type="text" id="filterTypes" name="filterTypes" class="form-control" placeholder="Types" value="{{ post.filterTypes }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="Enter super- and subtypes to filter for. By default a card has to have all specified types. You can also use & (and) or | (or) between types explicitly and group them with ().">
   </div>
   <div class="form-group">
     <label for="filterRules" class="sr-only">Rules</label>
-    <input type="text" id="filterRules" name="filterRules" class="form-control" placeholder="Rules" value="{{ post.filterRules }}">
+    <input type="text" id="filterRules" name="filterRules" class="form-control" placeholder="Rules" value="{{ post.filterRules }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterFlavour" class="sr-only">Flavour</label>
-    <input type="text" id="filterFlavour" name="filterFlavour" class="form-control" placeholder="Flavour" value="{{ post.filterFlavour }}">
+    <label for="filterRarity" class="sr-only">Rarity</label>
+    <input type="text" id="filterRarity" name="filterRarity" class="form-control" placeholder="Rarity" value="{{ post.filterRarity }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group form-inline">
     <label for="filterMana" class="sr-only">Mana</label>
     <select id="filterManaOp" name="filterManaOp" class="form-control">
       {% for op in ops %}
@@ -27,48 +27,9 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterMana" name="filterMana" class="form-control" placeholder="Mana" value="{{ post.filterMana }}">
+    <input type="text" id="filterMana" name="filterMana" class="form-control" placeholder="Mana" value="{{ post.filterMana }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group">
-    <label for="filterPower" class="sr-only">Power</label>
-    <select id="filterPowerOp" name="filterPowerOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterPowerOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
-    <input type="text" id="filterPower" name="filterPower" class="form-control" placeholder="Power" value="{{ post.filterPower }}">
-  </div>
-  <div class="form-group">
-    <label for="filterToughness" class="sr-only">Toughness</label>
-    <select id="filterToughnessOp" name="filterToughnessOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterToughnessOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
-    <input type="text" id="filterToughness" name="filterToughness" class="form-control" placeholder="Toughness" value="{{ post.filterToughness }}">
-  </div>
-  <div class="form-group">
-    <label for="filterLoyalty" class="sr-only">Loyalty</label>
-    <select id="filterLoyaltyOp" name="filterLoyaltyOp" class="form-control">
-      {% for op in ops %}
-          {% if op == post.filterLoyaltyOp %}
-          <option value="{{ op }}" selected="selected">{{ op }}</option>
-          {% else %}
-          <option value="{{ op }}">{{ op }}</option>
-          {% endif %}
-      {% endfor %}
-    </select>
-    <input type="text" id="filterLoyalty" name="filterLoyalty" class="form-control" placeholder="Loyalty" value="{{ post.filterLoyalty }}">
-  </div>
-  <div class="form-group">
+  <div class="form-group form-inline">
     <label for="filterCMC" class="sr-only">Converted mana cost</label>
     <select id="filterCMCOp" name="filterCMCOp" class="form-control">
       {% for op in ops %}
@@ -79,23 +40,62 @@
           {% endif %}
       {% endfor %}
     </select>
-    <input type="text" id="filterCMC" name="filterCMC" class="form-control" placeholder="Converted mana cost" value="{{ post.filterCMC }}">
+    <input type="text" id="filterCMC" name="filterCMC" class="form-control" placeholder="Converted mana cost" value="{{ post.filterCMC }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group">
-    <label for="filterArtist" class="sr-only">Artist</label>
-    <input type="text" id="filterArtist" name="filterArtist" class="form-control" placeholder="Artist" value="{{ post.filterArtist }}">
+  <div class="form-group form-inline">
+    <label for="filterPower" class="sr-only">Power</label>
+    <select id="filterPowerOp" name="filterPowerOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterPowerOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterPower" name="filterPower" class="form-control" placeholder="Power" value="{{ post.filterPower }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
-  <div class="form-group">
-    <label for="filterRarity" class="sr-only">Rarity</label>
-    <input type="text" id="filterRarity" name="filterRarity" class="form-control" placeholder="Rarity" value="{{ post.filterRarity }}">
+  <div class="form-group form-inline">
+    <label for="filterToughness" class="sr-only">Toughness</label>
+    <select id="filterToughnessOp" name="filterToughnessOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterToughnessOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterToughness" name="filterToughness" class="form-control" placeholder="Toughness" value="{{ post.filterToughness }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+  </div>
+  <div class="form-groupform-inline">
+    <label for="filterLoyalty" class="sr-only">Loyalty</label>
+    <select id="filterLoyaltyOp" name="filterLoyaltyOp" class="form-control">
+      {% for op in ops %}
+          {% if op == post.filterLoyaltyOp %}
+          <option value="{{ op }}" selected="selected">{{ op }}</option>
+          {% else %}
+          <option value="{{ op }}">{{ op }}</option>
+          {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" id="filterLoyalty" name="filterLoyalty" class="form-control" placeholder="Loyalty" value="{{ post.filterLoyalty }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
     <label for="filterFormat" class="sr-only">Format</label>
-    <input type="text" id="filterFormat" name="filterFormat" class="form-control" placeholder="Format" value="{{ post.filterFormat }}">
+    <input type="text" id="filterFormat" name="filterFormat" class="form-control" placeholder="Format" value="{{ post.filterFormat }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
-    <label for="filterMulitType" class="sr-only">Multi type</label>
-    <input type="text" id="filterMultiType" name="filterMultiType" class="form-control" placeholder="Multi type" value="{{ post.filterMultiType }}">
+    <label for="filterMultiType" class="sr-only">Multi type</label>
+    <input type="text" id="filterMultiType" name="filterMultiType" class="form-control" placeholder="Multi type" value="{{ post.filterMultiType }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="Enter super- and subtypes to filter for. By default a card has to have all specified types. You can also use & (and) or | (or) between types explicitly and group them with ().">
+  </div>
+  <div class="form-group">
+    <label for="filterArtist" class="sr-only">Artist</label>
+    <input type="text" id="filterArtist" name="filterArtist" class="form-control" placeholder="Artist" value="{{ post.filterArtist }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+  </div>
+  <div class="form-group">
+    <label for="filterFlavour" class="sr-only">Flavour</label>
+    <input type="text" id="filterFlavour" name="filterFlavour" class="form-control" placeholder="Flavour" value="{{ post.filterFlavour }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
   </div>
   <div class="form-group">
     <label for="filterSet" class="sr-only">Sets</label>
@@ -108,5 +108,7 @@
       {% endif %}
       {% endfor %}
     </select>
-    <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
   </div>
+  <input type="hidden" id="layout" name="layout" value="{{ layout }}">
+  <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
+</div>
