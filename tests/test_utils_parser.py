@@ -73,10 +73,10 @@ class TestMCIParser:
 
     @pytest.mark.parametrize("text,types_e,power_e,toughness_e,loyalty_e,mana_e,cmc_e", [
         ('Sorcery, 4G (5)', 'Sorcery', None, None, None, '4G', 5),
-        ('Instant,\n        1W', 'Instant', None, None, None, '1W', None),
+        ('Instant,\n        1W', 'Instant', None, None, None, '1W', 0),
         ('Creature — Efreet Shaman 0/5,\n       2R (3)      \n', 'Creature — Efreet Shaman', 0, 5, None, '2R', 3),
         ('Creature — Elemental Spellshaper      1/3,   \n\n\n  (3)', 'Creature — Elemental Spellshaper', 1, 3, None, None, 3),
-        ('Legendary Land\n     ', 'Legendary Land', None, None, None, None, None),
+        ('Legendary Land\n     ', 'Legendary Land', None, None, None, None, 0),
         ('Sorcery,  \n    XUUU (3)', 'Sorcery', None, None, None, 'XUUU', 3),
         ('Planeswalker — Bolas (Loyalty: 5), 4UBBR (8)', 'Planeswalker — Bolas', None, None, 5, '4UBBR', 8)
     ])
