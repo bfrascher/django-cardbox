@@ -117,7 +117,7 @@ def test__q_builder_choice(fstr, fieldname, unop, binop_default,
 
 
 @pytest.mark.parametrize("fstr,fieldname,unop,binop_default,unop_default,q_e", [
-    ("='2+*'", 'power', None, '&', '', Q(power='2+*') | Q(power_special='2+*')),
+    ("='2+*'", 'power', None, '&', '', Q(power_special='2+*')),
 ])
 def test__q_builder_ptl(fstr, fieldname, unop, binop_default,
                         unop_default, q_e):
