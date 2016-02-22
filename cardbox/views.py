@@ -66,59 +66,51 @@ def _filter_cards(request, queryset):
 
     """
     filtered = queryset
-    filter_name = request.GET.get('fna', '')
-    filter_types = request.GET.get('fty', '')
-    filter_rules = request.GET.get('fru', '')
-    filter_flavour = request.GET.get('ffl', '')
-    filter_mana = request.GET.get('fma', '')
-    filter_mana_op = request.GET.get('filterManaOp', '=')
-    filter_power = request.GET.get('fpo', '')
-    filter_power_op = request.GET.get('filterPowerOp', '=')
-    filter_toughness = request.GET.get('fto', '')
-    filter_toughness_op = request.GET.get('filterToughnessOp', '=')
-    filter_loyalty = request.GET.get('flo', '')
-    filter_loyalty_op = request.GET.get('filterLoyaltyOp', '=')
-    filter_cmc = request.GET.get('fcm', '')
-    filter_cmc_op = request.GET.get('filterCMCOp', '=')
-    filter_artist = request.GET.get('far', '')
-    filter_rarity = request.GET.get('fra', '')
-    filter_format = request.GET.get('ffo', '')
-    filter_multi_type = request.GET.get('fmt', '')
-    filter_sets = request.GET.getlist('fse', [])
+    errors = {}
+    fstr_name = request.GET.get('fna', '')
+    fstr_types = request.GET.get('fty', '')
+    fstr_rules = request.GET.get('fru', '')
+    fstr_flavour = request.GET.get('ffl', '')
+    fstr_mana = request.GET.get('fma', '')
+    fstr_power = request.GET.get('fpo', '')
+    fstr_toughness = request.GET.get('fto', '')
+    fstr_loyalty = request.GET.get('flo', '')
+    fstr_cmc = request.GET.get('fcm', '')
+    fstr_artist = request.GET.get('far', '')
+    fstr_rarity = request.GET.get('fra', '')
+    fstr_format = request.GET.get('ffo', '')
+    fstr_multi_type = request.GET.get('fmt', '')
+    fstr_sets = request.GET.get('fse', '')
 
     try:
-        filter_power = int(filter_power)
+        fstr_power = int(fstr_power)
     except ValueError:
-        filter_power = None
+        fstr_power = None
     try:
-        filter_toughness = int(filter_toughness)
+        fstr_toughness = int(fstr_toughness)
     except ValueError:
-        filter_toughness = None
+        fstr_toughness = None
     try:
-        filter_loyalty = int(filter_loyalty)
+        fstr_loyalty = int(fstr_loyalty)
     except ValueError:
-        filter_loyalty = None
-    try:
-        filter_cmc = int(filter_cmc)
-    except ValueError:
-        filter_cmc = None
+        fstr_loyalty = None
 
-    filtered = filter_cards_by_name(filtered, filter_name)
-    filtered = filter_cards_by_types(filtered, filter_types)
-    filtered = filter_cards_by_rules(filtered, filter_rules)
-    filtered = filter_cards_by_flavour(filtered, filter_flavour)
-    filtered = filter_cards_by_mana(filtered, filter_mana, op=filter_mana_op)
-    filtered = filter_cards_by_power(filtered, filter_power, op=filter_power_op)
-    filtered = filter_cards_by_toughness(filtered, filter_toughness, op=filter_toughness_op)
-    filtered = filter_cards_by_loyalty(filtered, filter_loyalty, op=filter_loyalty_op)
-    filtered = filter_cards_by_cmc(filtered, filter_cmc, op=filter_cmc_op)
-    filtered = filter_cards_by_artist(filtered, filter_artist)
-    filtered = filter_cards_by_rarity(filtered, filter_rarity)
-    filtered = filter_cards_by_format(filtered, filter_format)
-    filtered = filter_cards_by_multi_type(filtered, filter_multi_type)
-    filtered = filter_cards_by_sets(filtered, filter_sets)
+    filtered, errors['fna'] = filter_cards_by_name(filtered, fstr_name)
+    filtered, errors['fty'] = filter_cards_by_types(filtered, fstr_types)
+    filtered, errors['fru'] = filter_cards_by_rules(filtered, fstr_rules)
+    filtered, errors['ffl'] = filter_cards_by_flavour(filtered, fstr_flavour)
+    filtered, errors['fma'] = filter_cards_by_mana(filtered, fstr_mana)
+    filtered, errors['fpo'] = filter_cards_by_power(filtered, fstr_power)
+    filtered, errors['fto'] = filter_cards_by_toughness(filtered, fstr_toughness)
+    filtered, errors['flo'] = filter_cards_by_loyalty(filtered, fstr_loyalty)
+    filtered, errors['fcm'] = filter_cards_by_cmc(filtered, fstr_cmc)
+    filtered, errors['far'] = filter_cards_by_artist(filtered, fstr_artist)
+    filtered, errors['fra'] = filter_cards_by_rarity(filtered, fstr_rarity)
+    filtered, errors['ffo'] = filter_cards_by_format(filtered, fstr_format)
+    filtered, errors['fmt'] = filter_cards_by_multi_type(filtered, fstr_multi_type)
+    filtered, errors['fse'] = filter_cards_by_sets(filtered, fstr_sets)
 
-    return filtered
+    return filtered, errors
 
 
 def index(request):
@@ -174,7 +166,7 @@ def cards(request):
     if layout not in ['list', 'grid']:
         layout = 'list'
 
-    card_list = _filter_cards(request, Card.objects)
+    card_list, ferrors = _filter_cards(request, Card.objects.all())
     paginator = Paginator(card_list, 60, request=request)
 
     page = request.GET.get('page', 1)
@@ -189,6 +181,7 @@ def cards(request):
         'cards': cards,
         'get': request.GET,
         'layout': layout,
+        'ferrors': ferrors,
     })
 
 
@@ -208,7 +201,7 @@ def collection(request, collection_id):
         raise PermissionDenied
 
     card_list = Card.objects.filter(editions__collection__id=collection_id)
-    card_list = _filter_cards(request, card_list)
+    card_list, ferrors = _filter_cards(request, card_list)
     list_entries = [(*card.get_count_in_collection(collection_id),
                      card) for card in card_list]
 
@@ -231,6 +224,7 @@ def collection(request, collection_id):
         'entries': entries,
         'get': request.GET,
         'layout': layout,
+        'ferrors': ferrors,
     })
 
 
