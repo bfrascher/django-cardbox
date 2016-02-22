@@ -51,6 +51,7 @@ body {
 .form-filter-sidebar {
     padding: 15px;
     margin: 0 auto;
+    width: 400px;
 }
 
 .form-filter-sidebar .form-filter-sidebar-heading {
