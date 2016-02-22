@@ -322,8 +322,62 @@ def filter_cards_by_rarity(queryset, fstr):
     return filtered, None
 
 
+# TODO(benedikt) Fix this function
+def _q_builder_mana(ft, fieldname, unop, binop_default, unop_default):
+    """Build a Q object to filter mana."""
+    if 'word' in ft.keys():
+        mana = {}
+        (mana['n'], mana['w'], mana['u'], mana['b'], mana['r'],
+         mana['g'], mana['c'], s) = Card.parse_mana(ft.word)
+        mts = _tokenise_special_mana(s)
+        cmc = _guess_cmc(mana['n'], mana['w'], mana['u'], mana['b'],
+                         mana['r'], mana['g'], mana['c'], mts)
+
+        p = Q()
+        if '>' in unop:
+            for mt in mts:
+                p = p & Q(mana_special__icontains=mts[mt]*mt)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour + '__lte': mana[colour]})
+        elif '<' in unop:
+            for mt in mts:
+                p = p & ~Q(mana_special__icontains=(mts[mt]+1)*mt)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour + '__gte': mana[colour]})
+        else:
+            p = Q(mana_special=s)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour: mana[colour]})
+
+        lookup = UNOPS[unop]
+        # __icontains is not supported for an IntegerField.
+        if lookup == '__icontains':
+            lookup = ''
+        p = p & Q(**{'cmc' + lookup: cmc})
+    elif 'literal' in ft.keys():
+        raise KeyError('literals are not supported for filtering mana.')
+    elif 'regex' in ft.keys():
+        raise KeyError('regex are not supported for filtering mana.')
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_mana,
+                          binop_default, unop_default)
+    return p
+
+
 def filter_cards_by_mana(queryset, fstr):
-    return queryset, None
+    if fstr is None or fstr == '':
+        return queryset, None
+    ftokens, error = _tokenise_filter_string(fstr)
+    if error:
+        return queryset, error
+    q = _build_q_expr(ftokens, None, _q_builder_mana, unop_default='=')
+    try:
+        filtered = queryset.filter(q)
+    except (ValueError, DataError):
+        return queryset, 'has-error'
+    return filtered, None
 
     # n, w, u, b, r, g, c, s = Card.parse_mana(mana)
     # tokens = _tokenise_special_mana(s)
@@ -468,9 +522,42 @@ def filter_cards_by_blocks_sets(queryset, fstr):
     return filtered, None
 
 
-# TODO(benedikt) Implement
+def _q_builder_format(ft, fieldname, unop, binop_default,
+                           unop_default):
+    """Build a Q object to filter formats."""
+    if 'word' in ft.keys():
+        if ft.word.lower() not in ['vintage', 'legacy', 'extended',
+                           'standard', 'classic', 'commander', 'modern']:
+            raise ValueError("Unknown format '{0}'.".format(ft.word))
+        p = Q(**{'legal_' + ft.word.lower(): Card.LEGALITY_LEGAL})
+    elif 'literal' in ft.keys():
+        raise KeyError('literals are not supported by this filter.')
+    elif 'regex' in ft.keys():
+        raise KeyError('regex are not supported by this filter.')
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_format,
+                          binop_default, unop_default)
+    return p
+
+
 def filter_cards_by_format(queryset, fstr):
-    return queryset, None
+    if fstr is None or fstr == '':
+        return queryset, None
+    ftokens, error = _tokenise_filter_string(fstr)
+    if error:
+        return queryset, error
+    try:
+        q = _build_q_expr(ftokens, None, _q_builder_format,
+                          binop_default='|', unop_default='=')
+    except (KeyError):
+        return queryset, 'has-warning'
+    try:
+        filtered = queryset.filter(q)
+    except (ValueError, DataError):
+        return queryset, 'has-error'
+    return filtered, None
 
 
 def filter_cards_by_artist(queryset, fstr):
