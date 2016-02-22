@@ -1,29 +1,36 @@
 <form class="form-filter-sidebar" method="get">
   <h2 class="form-filter-sidebar-heading">Filter
     <small>
-      <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapsedHelp" aria-expanded="false" aria-controls="collapsedHelp">Show help</button>
+      <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapsedHelp" aria-expanded="false" aria-controls="collapsedHelp">Advanced usage</button>
       <a class="btn btn-warning form-filter-sidebar-reset" href="?layout={{ layout }}">Reset</a>
     </small>
   </h2>
   <div class="collapse" id="collapsedHelp">
     <div class="well">
-      Unary:
+      You can prefix any expression with a ~ to negate it.<br />
+
+      By default all cards will be returned that contain the given
+      expression.  To override that behaviour you can use the
+      following prefixes (following after the ~ if you use it):
       <ul>
-        <li><strong>!</strong>: exact</li>
-        <li><strong>~</strong>: not</li>
-        <li><strong>=</strong>: equals</li>
+        <li><strong>=</strong>: equals/exact</li>
         <li><strong><=</strong>: lesser equals</li>
         <li><strong>>=</strong>: greater equals</li>
         <li><strong><</strong>: lesser</li>
         <li><strong>></strong>: greater</li>
       </ul>
 
-      Binary:
-      <ul>
-        <li><strong>&</strong>: and</li>
-        <li><strong>|</strong>: or</li>
-        <li><strong>^</strong>: xor</li>
-      </ul>
+      If you use multiple expressions in the same filter only cards
+      matching all expressions will be returned (with the exception of
+      the set filter which will return all cards that are in any of
+      the specified sets).  You can also use & (and) and | (or)
+      explicitly as well as group the expressions using ( and ).<br />
+
+      If you have an expression you want to search for that is longer
+      than a single word, surround it with " or '.  The expression
+      will be matched case sensitive.  Using r" or r' as the opening
+      quote will interpret the contained expression as a regular
+      expression.
     </div>
   </div>
   <div class="form-group">
