@@ -2,17 +2,33 @@
   <h2 class="form-filter-sidebar-heading">Filter
     <small>
       <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapsedHelp" aria-expanded="false" aria-controls="collapsedHelp">Show help</button>
-      <a class="btn btn-warning form-filter-sidebar-reset" href="#">Reset</a>
+      <a class="btn btn-warning form-filter-sidebar-reset" href="?layout={{ layout }}">Reset</a>
     </small>
   </h2>
   <div class="collapse" id="collapsedHelp">
     <div class="well">
-      TODO
+      Unary:
+      <ul>
+        <li><strong>!</strong>: exact</li>
+        <li><strong>~</strong>: not</li>
+        <li><strong>=</strong>: equals</li>
+        <li><strong><=</strong>: lesser equals</li>
+        <li><strong>>=</strong>: greater equals</li>
+        <li><strong><</strong>: lesser</li>
+        <li><strong>></strong>: greater</li>
+      </ul>
+
+      Binary:
+      <ul>
+        <li><strong>&</strong>: and</li>
+        <li><strong>|</strong>: or</li>
+        <li><strong>^</strong>: xor</li>
+      </ul>
     </div>
   </div>
   <div class="form-group">
     <label for="fna" class="sr-only">Card name</label>
-    <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-placement="top" data-trigger="focus" title="Example: Sphinx " data-content="TODO">
   </div>
   <div class="form-group">
     <label for="fty" class="sr-only">Types</label>
