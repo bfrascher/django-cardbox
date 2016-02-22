@@ -1,7 +1,8 @@
 import pyparsing as pp
 import re
 
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.utils import DataError
 
 from cardbox.models import (
     Card
@@ -188,7 +189,7 @@ def _filter_text_field(queryset, fstr, fieldname):
     q = _build_q_expr(ftokens, fieldname, _q_builder_default)
     try:
         queryset = queryset.filter(q)
-    except ValueError:
+    except (ValueError, DataError):
         return queryset, 'has-error'
     return queryset, None
 
@@ -271,7 +272,7 @@ def filter_cards_by_multi_type(queryset, fstr):
         return queryset, 'has-warning'
     try:
         queryset = queryset.filter(q)
-    except ValueError:
+    except (ValueError, DataError):
         return queryset, 'has-error'
     return queryset, None
 
@@ -306,7 +307,7 @@ def filter_cards_by_rarity(queryset, fstr):
         if binop == '&':
             try:
                 filtered = filtered.filter(q)
-            except ValueError:
+            except (ValueError, DataError):
                 return queryset, 'has-error'
             q = Q()
 
@@ -316,7 +317,7 @@ def filter_cards_by_rarity(queryset, fstr):
             q = p
     try:
         filtered = filtered.filter(q)
-    except ValueError:
+    except (ValueError, DataError):
         return queryset, 'has-error'
     return filtered, None
 
@@ -361,16 +362,63 @@ def filter_cards_by_mana(queryset, fstr):
     # raise ValueError("Unknown operator '{0}'.".format(op))
 
 
+def _q_builder_ptl(ft, fieldname, unop, binop_default, unop_default):
+    """Build a Q object to filter power/toughness/loyalty."""
+    if 'word' in ft.keys():
+        if ft.word in ['cmc', 'power', 'toughness', 'loyalty']:
+            lookup = UNOPS[unop]
+            # F expressions don't allow __icontains lookups.
+            if lookup == '__icontains':
+                lookup = ''
+            p = Q(**{fieldname + lookup: F(ft.word)})
+        else:
+            try:
+                p = Q(**{fieldname + UNOPS[unop]: int(ft.word)})
+            except ValueError:
+                p = Q(**{fieldname + '_special' + UNOPS[unop]: ft.word})
+    elif 'literal' in ft.keys():
+        lookup = UNOPS[unop]
+        if lookup == '__icontains':
+            lookup = '__contains'
+        try:
+            p = Q(**{fieldname + lookup: int(ft.literal)})
+        except ValueError:
+            p = Q(**{fieldname + '_special' + lookup: ft.literal})
+    elif 'regex' in ft.keys():
+        p = (Q(**{fieldname + '__regex': ft.regex}) |
+             Q(**{fieldname + '_special__regex': ft.regex}))
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_ptl,
+                          binop_default, unop_default)
+    return p
+
+
+def _filter_ptl_field(queryset, fstr, fieldname):
+    if fstr is None or fstr == '':
+        return queryset, None
+    ftokens, error = _tokenise_filter_string(fstr)
+    if error:
+        return queryset, error
+    q = _build_q_expr(ftokens, fieldname, _q_builder_ptl)
+    try:
+        filtered = queryset.filter(q)
+    except (ValueError, DataError):
+        return queryset, 'has-error'
+    return filtered, None
+
+
 def filter_cards_by_power(queryset, fstr):
-    return queryset, None
+    return _filter_ptl_field(queryset, fstr, 'power')
 
 
 def filter_cards_by_toughness(queryset, fstr):
-    return queryset, None
+    return _filter_ptl_field(queryset, fstr, 'toughness')
 
 
 def filter_cards_by_loyalty(queryset, fstr):
-    return queryset, None
+    return _filter_ptl_field(queryset, fstr, 'loyalty')
 
 
 def _q_builder_blocks_sets(ft, fieldname, unop, binop_default,
@@ -415,7 +463,7 @@ def filter_cards_by_blocks_sets(queryset, fstr):
                       binop_default='|')
     try:
         filtered = queryset.filter(q)
-    except ValueError:
+    except (ValueError, DataError):
         return queryset, 'has-error'
     return filtered, None
 
