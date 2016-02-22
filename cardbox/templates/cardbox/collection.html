@@ -16,8 +16,14 @@
         <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card"></a>
       {% endif %}
 
-      <a href="{% append_to_get layout='list' %}">list</a> /
-      <a href="{% append_to_get layout='grid' %}">grid</a>
+      <div class="btn-group" role="group" aria-label="...">
+        <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
+          <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
+        </a>
+        <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
+          <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
+        </a>
+      </div>
   </small></h1>
 </div>
 
