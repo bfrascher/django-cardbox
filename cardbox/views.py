@@ -395,3 +395,19 @@ def add_collection_entry(request, collection_id):
     else:
         return HttpResponseRedirect(reverse('cardbox:collection',
                                             args=[collection.id]))
+
+
+def collection_card(request, collection_id, card_id):
+    collection = get_object_or_404(Collection, pk=collection_id)
+    card = get_object_or_404(Card, pk=card_id)
+    entries = CollectionEntry.objects.filter(collection__id=collection_id,
+                                             edition__card__id=card_id)
+    if entries is None:
+        return Http404('Card {0} is not in the collection {1}'
+                       .format(card.name, collection.name))
+
+    return render(request, 'cardbox/collection_card.html', {
+        'collection': collection,
+        'card': card,
+        'entries': entries,
+    })

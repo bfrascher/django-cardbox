@@ -42,7 +42,7 @@
             <tr>
               <td>{{ count }}</td>
               <td>{{ fcount }}</td>
-              <td>{{ card.name }}</td>
+              <td><a href="{% url 'cardbox:collection_card' collection.id card.id %}">{{ card.name }}</a></td>
               <td>{{ card.types }}</td>
               <td>{{ card.get_ptl }}</td>
               <td>{{ card.get_mana }}</td>
@@ -56,7 +56,7 @@
             {% for count, fcount, card in entries.object_list %}
             <div class="col-xs-6 col-md-4">
               <div>Copies: {{ count }}, Foils: {{ fcount }}</div>
-              <a href="#" class="thumbnail">
+              <a href="{% url 'cardbox:collection_card' collection.id card.id %}" class="thumbnail">
                 <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
               </a>
             </div>
