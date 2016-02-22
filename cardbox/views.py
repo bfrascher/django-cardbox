@@ -32,7 +32,7 @@ from cardbox.utils.filters import (
     filter_cards_by_rarity,
     filter_cards_by_format,
     filter_cards_by_multi_type,
-    filter_cards_by_sets,
+    filter_cards_by_blocks_sets,
 )
 
 LOGIN_URL = '/cardbox/login/'
@@ -80,20 +80,7 @@ def _filter_cards(request, queryset):
     fstr_rarity = request.GET.get('fra', '')
     fstr_format = request.GET.get('ffo', '')
     fstr_multi_type = request.GET.get('fmt', '')
-    fstr_sets = request.GET.get('fse', '')
-
-    try:
-        fstr_power = int(fstr_power)
-    except ValueError:
-        fstr_power = None
-    try:
-        fstr_toughness = int(fstr_toughness)
-    except ValueError:
-        fstr_toughness = None
-    try:
-        fstr_loyalty = int(fstr_loyalty)
-    except ValueError:
-        fstr_loyalty = None
+    fstr_block_sets = request.GET.get('fbs', '')
 
     filtered, errors['fna'] = filter_cards_by_name(filtered, fstr_name)
     filtered, errors['fty'] = filter_cards_by_types(filtered, fstr_types)
@@ -108,7 +95,7 @@ def _filter_cards(request, queryset):
     filtered, errors['fra'] = filter_cards_by_rarity(filtered, fstr_rarity)
     filtered, errors['ffo'] = filter_cards_by_format(filtered, fstr_format)
     filtered, errors['fmt'] = filter_cards_by_multi_type(filtered, fstr_multi_type)
-    filtered, errors['fse'] = filter_cards_by_sets(filtered, fstr_sets)
+    filtered, errors['fbs'] = filter_cards_by_blocks_sets(filtered, fstr_block_sets)
 
     return filtered, errors
 
