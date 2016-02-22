@@ -321,16 +321,6 @@ def filter_cards_by_rarity(queryset, fstr):
     return filtered, None
 
 
-# TODO(benedikt) Implement
-def filter_cards_by_format(queryset, fstr):
-    return queryset, None
-
-
-# TODO(benedikt) Implement
-def filter_cards_by_artist(queryset, fstr):
-    return queryset, None
-
-
 def filter_cards_by_mana(queryset, fstr):
     return queryset, None
 
@@ -383,6 +373,32 @@ def filter_cards_by_loyalty(queryset, fstr):
     return queryset, None
 
 
+def _q_builder_blocks_sets(ft, fieldname, unop, binop_default,
+                           unop_default):
+    """Build a Q object to filter blocks and sets."""
+    if 'word' in ft.keys():
+        p = (Q(**{'editions__mtgset__name' + UNOPS[unop]: ft.word}) |
+             Q(**{'editions__mtgset__code' + UNOPS[unop]: ft.word}) |
+             Q(**{'editions__mtgset__block__name' + UNOPS[unop]: ft.word}))
+    elif 'literal' in ft.keys():
+        lookup = UNOPS[unop]
+        if lookup == '__icontains':
+            lookup = '__contains'
+        p = (Q(**{'editions__mtgset__name' + lookup: ft.literal}) |
+             Q(**{'editions__mtgset__code' + lookup: ft.literal}) |
+             Q(**{'editions__mtgset__block__name' + lookup: ft.literal}))
+    elif 'regex' in ft.keys():
+        p = (Q(**{'editions__mtgset__name__regex': ft.regex}) |
+             Q(**{'editions__mtgset__code__regex': ft.regex}) |
+             Q(**{'editions__mtgset__block__name__regex': ft.regex}))
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_blocks_sets,
+                          binop_default, unop_default)
+    return p
+
+
 def filter_cards_by_blocks_sets(queryset, fstr):
     """Filter cards by sets.
 
@@ -390,4 +406,25 @@ def filter_cards_by_blocks_sets(queryset, fstr):
 
     :returns: The filtered queryset.
     """
+    if fstr is None or fstr == '':
+        return queryset, None
+    ftokens, error = _tokenise_filter_string(fstr)
+    if error:
+        return queryset, error
+    q = _build_q_expr(ftokens, None, _q_builder_blocks_sets,
+                      binop_default='|')
+    try:
+        filtered = queryset.filter(q)
+    except ValueError:
+        return queryset, 'has-error'
+    return filtered, None
+
+
+# TODO(benedikt) Implement
+def filter_cards_by_format(queryset, fstr):
+    return queryset, None
+
+
+# TODO(benedikt) Implement
+def filter_cards_by_artist(queryset, fstr):
     return queryset, None
