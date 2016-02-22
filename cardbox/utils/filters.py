@@ -473,6 +473,5 @@ def filter_cards_by_format(queryset, fstr):
     return queryset, None
 
 
-# TODO(benedikt) Implement
 def filter_cards_by_artist(queryset, fstr):
-    return queryset, None
+    return _filter_text_field(queryset, fstr, 'editions__artist__last_name')
