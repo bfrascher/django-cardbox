@@ -64,15 +64,15 @@
   </div>
   <div class="form-group{% if ferrors.fpo %} {{ ferrors.fpo }} {% endif %}">
     <label for="fpo" class="sr-only">Power</label>
-    <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Power</strong>" data-content="TODO">
+    <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Power</strong>" data-content="<strong>Examples</strong>: <1 | >=15, >cmc<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong><=</strong>, <strong>>=</strong>, <strong><</strong>, <strong>></strong><br />You can use the special keywords <strong>cmc</strong> (converted mana cost), <strong>toughness</strong>, <strong>loyalty</strong> to compare this field to another of this card.">
   </div>
   <div class="form-group{% if ferrors.fto %} {{ ferrors.fto }} {% endif %}">
     <label for="fto" class="sr-only">Toughness</label>
-    <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Toughness</strong>" data-content="TODO">
+    <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Toughness</strong>" data-content="<strong>Examples</strong>: ='1+*', =power | =cmc<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong><=</strong>, <strong>>=</strong>, <strong><</strong>, <strong>></strong><br />You can use the special keywords <strong>cmc</strong> (converted mana cost), <strong>power</strong>, <strong>loyalty</strong> to compare this field to another of this card.">
   </div>
   <div class="form-group{% if ferrors.flo %} {{ ferrors.flo }} {% endif %}">
     <label for="flo" class="sr-only">Loyalty</label>
-    <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Loyalty</strong>" data-content="TODO">
+    <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Loyalty</strong>" data-content="<strong>Examples</strong>: >=6, ~cmc<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong><=</strong>, <strong>>=</strong>, <strong><</strong>, <strong>></strong><br />You can use the special keywords <strong>cmc</strong> (converted mana cost), <strong>power</strong>, <strong>toughness</strong>, to compare this field to another of this card.">
   </div>
   <div class="form-group{% if ferrors.ffo %} {{ ferrors.ffo }} {% endif %}">
     <label for="ffo" class="sr-only">Format</label>
@@ -92,7 +92,7 @@
   </div>
   <div class="form-group{% if ferrors.fbs %} {{ ferrors.fbs }} {% endif %}">
     <label for="fbs" class="sr-only">Blocks and Sets</label>
-    <input type="text" id="fbs" name="fbs" class="form-control" placeholder="Blocks and Sets" value="{{ get.fbs }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Blocks and Sets<strong>" data-content="TODO">
+    <input type="text" id="fbs" name="fbs" class="form-control" placeholder="Blocks and Sets" value="{{ get.fbs }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Blocks and Sets<strong>" data-content="<strong>Example</strong>: ='Battle for Zendikar' & ~OGW<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong><br />Searches through set and block name, as well as the set code.  By default all cards that match any of the given expressions will be included.">
   </div>
   <input type="hidden" id="layout" name="layout" value="{{ layout }}">
   <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
