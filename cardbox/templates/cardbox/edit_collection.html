@@ -14,7 +14,7 @@
     {% if collection %}
     <form action="{% url 'cardbox:edit_collection' collection.id %}" method="post">
     {% else %}
-    <form action="{% url 'cardbox:edit_collection' 0 %}" method="post">
+    <form action="{% url 'cardbox:new_collection' %}" method="post">
     {% endif %}
       {% csrf_token %}
       <label for="name" class="sr-only">Collection name</label>
