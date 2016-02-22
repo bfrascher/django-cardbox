@@ -8,12 +8,13 @@
 <div class="page-header">
   <h1>{{ collection.name }} <small>
       {% if request.user == collection.owner %}
-      <a href="{% url 'cardbox:edit_collection' collection.id %}"><img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Edit" title="Edit"></a>
+      <a href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
+        <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"></a>
       {% endif %}
       {{ collection.date_created }}
       {% if request.user == collection.owner or request.user in collection.editors.all %}
-      <a href="{% url 'cardbox:add_collection_entry' collection.id %}">
-        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card" title="Add card"></a>
+      <a href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
+        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"></a>
       {% endif %}
 
       <div class="btn-group" role="group" aria-label="...">
