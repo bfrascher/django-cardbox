@@ -56,7 +56,7 @@
   </div>
   <div class="form-group{% if ferrors.fma %} {{ ferrors.fma }} {% endif %}">
     <label for="fma" class="sr-only">Mana</label>
-    <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Mana</strong>" data-content="TODO">
+    <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Mana</strong>" data-content="<strong>Examples</strong>: >=U & >=B, {B/G}, >=2{BP}<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong><=</strong>, <strong>>=</strong>, <strong><</strong>, <strong>></strong><br />You can use special mana like <strong>X</strong>, <strong>{3/W}</strong> and <strong>{UP}</strong> in your expressions.">
   </div>
   <div class="form-group{% if ferrors.fcm %} {{ ferrors.fcm }} {% endif %}">
     <label for="fcm" class="sr-only">Converted mana cost</label>
@@ -76,7 +76,7 @@
   </div>
   <div class="form-group{% if ferrors.ffo %} {{ ferrors.ffo }} {% endif %}">
     <label for="ffo" class="sr-only">Format</label>
-    <input type="text" id="ffo" name="ffo" class="form-control" placeholder="Format" value="{{ get.ffo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Format</strong>" data-content="TODO">
+    <input type="text" id="ffo" name="ffo" class="form-control" placeholder="Format" value="{{ get.ffo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Format</strong>" data-content="<strong>Example</strong>: vintage | ~modern<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong><br />All other operators will be ignored.  The following formats are available: <strong>vintage</strong>, <strong>modern</strong>, <strong>extended</strong>, <strong>standard</strong>, <strong>classic</strong>, <strong>commander</strong>, <strong>modern</strong>.">
   </div>
   <div class="form-group{% if ferrors.fmt %} {{ ferrors.fmt }} {% endif %}">
     <label for="fmt" class="sr-only">Multi Type</label>
