@@ -22,6 +22,7 @@ from cardbox.utils.filters import (
     _guess_cmc,
     _q_builder_default,
     _q_builder_choice,
+    _q_builder_ptl,
     filter_cards_by_mana,
 )
 
@@ -110,6 +111,20 @@ def test__q_builder_choice(fstr, fieldname, unop, binop_default,
     assert error is None
     q = _q_builder_choice(ftokens, fieldname, unop, binop_default,
                           unop_default)
+    print(q)
+    print(q_e)
+    assert str(q) == str(q_e)
+
+
+@pytest.mark.parametrize("fstr,fieldname,unop,binop_default,unop_default,q_e", [
+    ("='2+*'", 'power', None, '&', '', Q(power='2+*') | Q(power_special='2+*')),
+])
+def test__q_builder_ptl(fstr, fieldname, unop, binop_default,
+                        unop_default, q_e):
+    ftokens, error = _tokenise_filter_string(fstr)
+    assert error is None
+    q = _q_builder_ptl(ftokens, fieldname, unop, binop_default,
+                       unop_default)
     print(q)
     print(q_e)
     assert str(q) == str(q_e)
