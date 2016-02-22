@@ -7,11 +7,13 @@
   </h2>
   <div class="collapse" id="collapsedHelp">
     <div class="well">
-      You can prefix any expression with a ~ to negate it.<br />
+      You can prefix any expression with a <strong>~</strong> to
+      negate it.<br />
 
       By default all cards will be returned that contain the given
       expression.  To override that behaviour you can use the
-      following prefixes (following after the ~ if you use it):
+      following prefixes (following after the <strong>~</strong> if
+      you use it):
       <ul>
         <li><strong>=</strong>: equals/exact</li>
         <li><strong><=</strong>: lesser equals</li>
@@ -22,72 +24,75 @@
 
       If you use multiple expressions in the same filter only cards
       matching all expressions will be returned (with the exception of
-      the set filter which will return all cards that are in any of
-      the specified sets).  You can also use & (and) and | (or)
-      explicitly as well as group the expressions using ( and ).<br />
+      the set, rarity and multi-type filter which will return all
+      cards that match any of the given expressions).  You can also
+      use <strong>&</strong> (and) and <strong>|</strong> (or)
+      explicitly as well as group the expressions
+      using <strong>(</strong> and <strong>)</strong>.<br />
 
       If you have an expression you want to search for that is longer
-      than a single word, surround it with " or '.  The expression
-      will be matched case sensitive.  Using r" or r' as the opening
-      quote will interpret the contained expression as a regular
-      expression.
+      than a single word, surround it with <strong>"</strong>
+      or <strong>'</strong>.  The expression will be matched case
+      sensitive.  Using <strong>r"</strong> or <strong>r'</strong> as
+      the opening quote will interpret the contained expression as a
+      regular expression.
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fna %} {{ ferrors.fna }} {% endif %}">
     <label for="fna" class="sr-only">Card name</label>
-    <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-placement="top" data-trigger="focus" title="Example: Sphinx " data-content="TODO">
+    <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Card name</strong>" data-content="<strong>Example</strong>: =Sphinx ~'Sphinx of the'<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong>'</strong>, <strong>r'</strong>">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fty %} {{ ferrors.fty }} {% endif %}">
     <label for="fty" class="sr-only">Types</label>
-    <input type="text" id="fty" name="fty" class="form-control" placeholder="Types" value="{{ get.fty }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fty" name="fty" class="form-control" placeholder="Types" value="{{ get.fty }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Types</strong>" data-content="<strong>Example</strong>: Legendary & (Artifact | Creature)<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong>'</strong>, <strong>r'</strong><br />Both super- and subtypes are searched.">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fru %} {{ ferrors.fru }} {% endif %}">
     <label for="fru" class="sr-only">Rules</label>
-    <input type="text" id="fru" name="fru" class="form-control" placeholder="Rules" value="{{ get.fru }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fru" name="fru" class="form-control" placeholder="Rules" value="{{ get.fru }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Rules</strong>" data-content="<strong>Example</strong>: (~Devoid ingest) | (exile Planeswalker)<br /><strong>Operators</strong>:<strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong>'</strong>, <strong>r'</strong><br />Searches through the rules text printed on the card.">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fra %} {{ ferrors.fra }} {% endif %}">
     <label for="fra" class="sr-only">Rarity</label>
-    <input type="text" id="fra" name="fra" class="form-control" placeholder="Rarity" value="{{ get.fra }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fra" name="fra" class="form-control" placeholder="Rarity" value="{{ get.fra }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Rarity</strong>" data-content="<strong>Examples:</strong>: M & ~R, C | U<br /><strong>Operators</strong>: <strong>~</strong>,<strong>&</strong>,<strong>|</strong><br />Use <strong>M</strong> for Mythic Rare, <strong>R</strong> for Rare, <strong>U</strong> for Uncommon, <strong>C</strong> for Common, <strong>S</strong> for Special, <strong>L</strong> for Land, <strong>T</strong> for Token, <strong>E</strong> for Emblem and <strong>O</strong> for Other.">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fma %} {{ ferrors.fma }} {% endif %}">
     <label for="fma" class="sr-only">Mana</label>
-    <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fma" name="fma" class="form-control" placeholder="Mana" value="{{ get.fma }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Mana</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fcm %} {{ ferrors.fcm }} {% endif %}">
     <label for="fcm" class="sr-only">Converted mana cost</label>
-    <input type="text" id="fcm" name="fcm" class="form-control" placeholder="Converted mana cost" value="{{ get.fcm }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fcm" name="fcm" class="form-control" placeholder="Converted mana cost" value="{{ get.fcm }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Converted mana cost</strong>" data-content="<strong>Example</strong>: (>= 10 ~15) | (>7 & <=9)<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong><=</strong>, <strong>>=</strong>, <strong><</strong>, <strong>></strong>">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fpo %} {{ ferrors.fpo }} {% endif %}">
     <label for="fpo" class="sr-only">Power</label>
-    <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fpo" name="fpo" class="form-control" placeholder="Power" value="{{ get.fpo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Power</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.fto %} {{ ferrors.fto }} {% endif %}">
     <label for="fto" class="sr-only">Toughness</label>
-    <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="fto" name="fto" class="form-control" placeholder="Toughness" value="{{ get.fto }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Toughness</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.flo %} {{ ferrors.flo }} {% endif %}">
     <label for="flo" class="sr-only">Loyalty</label>
-    <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="flo" name="flo" class="form-control" placeholder="Loyalty" value="{{ get.flo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Loyalty</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.ffo %} {{ ferrors.ffo }} {% endif %}">
     <label for="ffo" class="sr-only">Format</label>
-    <input type="text" id="ffo" name="ffo" class="form-control" placeholder="Format" value="{{ get.ffo }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="ffo" name="ffo" class="form-control" placeholder="Format" value="{{ get.ffo }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Format</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
-    <label for="fmt" class="sr-only">Multi type</label>
-    <input type="text" id="fmt" name="fmt" class="form-control" placeholder="Multi type" value="{{ get.fmt }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+  <div class="form-group{% if ferrors.fmt %} {{ ferrors.fmt }} {% endif %}">
+    <label for="fmt" class="sr-only">Multi Type</label>
+    <input type="text" id="fmt" name="fmt" class="form-control" placeholder="Multi type" value="{{ get.fmt }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Multi Type</strong>" data-content="<strong>Examples</strong>: F | S, ~F<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong><br />Use <strong>F</strong> for flip-cards and <strong>S</strong> for split-cards.">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.far %} {{ ferrors.far }} {% endif %}">
     <label for="far" class="sr-only">Artist</label>
-    <input type="text" id="far" name="far" class="form-control" placeholder="Artist" value="{{ get.far }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="far" name="far" class="form-control" placeholder="Artist" value="{{ get.far }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Artist</strong>" data-content="TODO">
   </div>
-  <div class="form-group">
+  <div class="form-group{% if ferrors.ffl %} {{ ferrors.ffl }} {% endif %}">
     <label for="ffl" class="sr-only">Flavour</label>
-    <input type="text" id="ffl" name="ffl" class="form-control" placeholder="Flavour" value="{{ get.ffl }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+    <input type="text" id="ffl" name="ffl" class="form-control" placeholder="Flavour" value="{{ get.ffl }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Flavour</strong>" data-content="<strong>Example</strong>: ~Zendikar jace<br /><strong>Operators</strong>:<strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong>'</strong>, <strong>r'</strong><br />Searches through the flavour text printed on the card.">
   </div>
-  <div class="form-group">
-    <label for="fse" class="sr-only">Sets</label>
-    <input type="text" id="fse" name="fse" class="form-control" placeholder="Sets" value="{{ get.fse }}" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="TODO">
+  <div class="form-group{% if ferrors.fbs %} {{ ferrors.fbs }} {% endif %}">
+    <label for="fbs" class="sr-only">Blocks and Sets</label>
+    <input type="text" id="fbs" name="fbs" class="form-control" placeholder="Sets" value="{{ get.fse }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Blocks and Sets<strong>" data-content="TODO">
   </div>
   <input type="hidden" id="layout" name="layout" value="{{ layout }}">
   <button type="submit" class="btn btn-l btn-primary btn-block">Filter</button>
