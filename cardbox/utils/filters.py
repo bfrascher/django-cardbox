@@ -37,8 +37,20 @@ fg_syntax_part = pp.ZeroOrMore(pp.Group(fg_not)) + (pp.Group(fg_atom) ^ fg_neste
 fg_syntax = pp.OneOrMore(fg_syntax_part)
 
 
+def _tokenise_filter_string(fstr):
+    ftokens = None
+    error = None
+    try:
+        # ftokens = fg_expr.parseString(fstr)
+        ftokens = fg_syntax.parseString(fstr)
+    except (pp.ParseException, pp.ParseFatalException):
+        error = 'has-error'
+    return ftokens, error
+
+
 def _build_q_atom(ftokens, fieldname, q_builder,
                   binop_default='&', unop_default=''):
+    """Build a Q object from scratch."""
     binop = binop_default
     unop = unop_default
     negate = False
@@ -77,7 +89,7 @@ def _build_q_atom(ftokens, fieldname, q_builder,
 
 def _build_q_expr(ftokens, fieldname, q_builder,
                   binop_default='&', unop_default=''):
-    """Build a Q object from tokens."""
+    """Combine Q objects from atoms."""
     q = Q()
     for binop, p in _build_q_atom(ftokens, fieldname, q_builder,
                                   binop_default, unop_default):
@@ -93,15 +105,172 @@ def _build_q_expr(ftokens, fieldname, q_builder,
     return q
 
 
-def _tokenise_filter_string(fstr):
-    ftokens = None
-    error = None
-    try:
-        # ftokens = fg_expr.parseString(fstr)
-        ftokens = fg_syntax.parseString(fstr)
-    except (pp.ParseException, pp.ParseFatalException):
-        error = 'has-error'
-    return ftokens, error
+def _q_builder_default(ft, fieldname, unop, binop_default, unop_default):
+    """The default query builder.
+
+    Used for Card.name, Card.types, Card.rules, Card.flavour,
+    Card.rulings and Card.cmc.
+
+    """
+    if 'word' in ft.keys():
+        p = Q(**{fieldname + UNOPS[unop]: ft.word})
+    elif 'literal' in ft.keys():
+        # Use case sensitive contains instead of icontains.
+        if UNOPS[unop] == '__icontains':
+            lookup = '__contains'
+        else:
+            lookup = UNOPS[unop]
+        p = Q(**{fieldname + lookup: ft.literal})
+    elif 'regex' in ft.keys():
+        p = Q(**{fieldname + '__regex': ft.regex})
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_default,
+                          binop_default, unop_default)
+    return p
+
+
+def _q_builder_format(ft, fieldname, unop, binop_default,
+                           unop_default):
+    """Build a Q object to filter formats."""
+    if 'word' in ft.keys():
+        if ft.word.lower() not in ['vintage', 'legacy', 'extended',
+                           'standard', 'classic', 'commander', 'modern']:
+            raise ValueError("Unknown format '{0}'.".format(ft.word))
+        p = Q(**{'legal_' + ft.word.lower(): Card.LEGALITY_LEGAL})
+    elif 'literal' in ft.keys():
+        raise KeyError('literals are not supported by this filter.')
+    elif 'regex' in ft.keys():
+        raise KeyError('regex are not supported by this filter.')
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_format,
+                          binop_default, unop_default)
+    return p
+
+
+def _q_builder_choice(ft, fieldname, unop, binop_default, unop_default):
+    """Build a Q object for a CharField with choices.
+
+    Used for Card.editions.rarity and Card.multi_type.
+    """
+    if 'word' in ft.keys():
+        p = Q(**{fieldname + UNOPS[unop]: ft.word})
+    elif 'literal' in ft.keys():
+        raise KeyError('literal has no meaning for {0}'.format(fieldname))
+    elif 'regex' in ft.keys():
+        raise KeyError('regex has no meaning for {0}'.format(fieldname))
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_choice,
+                          binop_default, unop_default)
+    return p
+
+
+# TODO(benedikt) Fix this function
+def _q_builder_mana(ft, fieldname, unop, binop_default, unop_default):
+    """Build a Q object to filter mana."""
+    if 'word' in ft.keys():
+        mana = {}
+        (mana['n'], mana['w'], mana['u'], mana['b'], mana['r'],
+         mana['g'], mana['c'], s) = Card.parse_mana(ft.word)
+        mts = _tokenise_special_mana(s)
+        cmc = _guess_cmc(mana['n'], mana['w'], mana['u'], mana['b'],
+                         mana['r'], mana['g'], mana['c'], mts)
+
+        p = Q()
+        if '>' in unop:
+            for mt in mts:
+                p = p & Q(mana_special__icontains=mts[mt]*mt)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour + '__lte': mana[colour]})
+        elif '<' in unop:
+            for mt in mts:
+                p = p & ~Q(mana_special__icontains=(mts[mt]+1)*mt)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour + '__gte': mana[colour]})
+        else:
+            p = Q(mana_special=s)
+            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
+                p = p & Q(**{'mana_' + colour: mana[colour]})
+
+        lookup = UNOPS[unop]
+        # __icontains is not supported for an IntegerField.
+        if lookup == '__icontains':
+            lookup = ''
+        p = p & Q(**{'cmc' + lookup: cmc})
+    elif 'literal' in ft.keys():
+        raise KeyError('literals are not supported for filtering mana.')
+    elif 'regex' in ft.keys():
+        raise KeyError('regex are not supported for filtering mana.')
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_mana,
+                          binop_default, unop_default)
+    return p
+
+
+def _q_builder_ptl(ft, fieldname, unop, binop_default, unop_default):
+    """Build a Q object to filter power/toughness/loyalty."""
+    if 'word' in ft.keys():
+        if ft.word in ['cmc', 'power', 'toughness', 'loyalty']:
+            lookup = UNOPS[unop]
+            # F expressions don't allow __icontains lookups.
+            if lookup == '__icontains':
+                lookup = ''
+            p = Q(**{fieldname + lookup: F(ft.word)})
+        else:
+            try:
+                p = Q(**{fieldname + UNOPS[unop]: int(ft.word)})
+            except ValueError:
+                p = Q(**{fieldname + '_special' + UNOPS[unop]: ft.word})
+    elif 'literal' in ft.keys():
+        lookup = UNOPS[unop]
+        if lookup == '__icontains':
+            lookup = '__contains'
+        try:
+            p = Q(**{fieldname + lookup: int(ft.literal)})
+        except ValueError:
+            p = Q(**{fieldname + '_special' + lookup: ft.literal})
+    elif 'regex' in ft.keys():
+        p = (Q(**{fieldname + '__regex': ft.regex}) |
+             Q(**{fieldname + '_special__regex': ft.regex}))
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_ptl,
+                          binop_default, unop_default)
+    return p
+
+
+def _q_builder_blocks_sets(ft, fieldname, unop, binop_default,
+                           unop_default):
+    """Build a Q object to filter blocks and sets."""
+    if 'word' in ft.keys():
+        p = (Q(**{'editions__mtgset__name' + UNOPS[unop]: ft.word}) |
+             Q(**{'editions__mtgset__code' + UNOPS[unop]: ft.word}) |
+             Q(**{'editions__mtgset__block__name' + UNOPS[unop]: ft.word}))
+    elif 'literal' in ft.keys():
+        lookup = UNOPS[unop]
+        if lookup == '__icontains':
+            lookup = '__contains'
+        p = (Q(**{'editions__mtgset__name' + lookup: ft.literal}) |
+             Q(**{'editions__mtgset__code' + lookup: ft.literal}) |
+             Q(**{'editions__mtgset__block__name' + lookup: ft.literal}))
+    elif 'regex' in ft.keys():
+        p = (Q(**{'editions__mtgset__name__regex': ft.regex}) |
+             Q(**{'editions__mtgset__code__regex': ft.regex}) |
+             Q(**{'editions__mtgset__block__name__regex': ft.regex}))
+    else:
+        # Neither binop, unop, word, literal nor regex are keys in ft.
+        # Therefore ft has to be a nested expression.
+        p = _build_q_expr(ft, fieldname, _q_builder_blocks_sets,
+                          binop_default, unop_default)
+    return p
 
 
 def _tokenise_special_mana(special_mana):
@@ -153,231 +322,72 @@ def _guess_cmc(n, w, u, b, r, g, c, tokens):
     return cmc
 
 
-def _q_builder_default(ft, fieldname, unop, binop_default, unop_default):
-    """The default query builder.
-
-    Used for Card.name, Card.types, Card.rules, Card.flavour,
-    Card.rulings and Card.cmc.
-
-    """
-    if 'word' in ft.keys():
-        p = Q(**{fieldname + UNOPS[unop]: ft.word})
-    elif 'literal' in ft.keys():
-        # Use case sensitive contains instead of icontains.
-        if UNOPS[unop] == '__icontains':
-            lookup = '__contains'
-        else:
-            lookup = UNOPS[unop]
-        p = Q(**{fieldname + lookup: ft.literal})
-    elif 'regex' in ft.keys():
-        p = Q(**{fieldname + '__regex': ft.regex})
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_default,
-                          binop_default, unop_default)
-    return p
-
-
-def _filter_text_field(queryset, fstr, fieldname):
-    """Filter a simple TextField or IntegerField."""
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error is not None:
-        return queryset, error
-    q = _build_q_expr(ftokens, fieldname, _q_builder_default)
-    try:
-        queryset = queryset.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return queryset, None
-
-
-def filter_cards_by_name(queryset, fstr):
-    """Filter cards by name.
-
-    :param queryset: The card queryset to filter.
-
-    :param str fstr: The filter string for the name.
-
-    :returns: The filtered queryset.
-
-    """
-    return _filter_text_field(queryset, fstr, 'name')
-
-
-def filter_cards_by_types(queryset, fstr):
-    """Filter cards by type.
-
-    :param queryset: The card queryset to filter.
-
-    :param str fstr: The filter string for the types.
-
-    :returns: The filtered queryset.
-
-    """
-    return _filter_text_field(queryset, fstr, 'types')
-
-
-def filter_cards_by_rules(queryset, fstr):
-    """Filter cards by rules text."""
-    return _filter_text_field(queryset, fstr, 'rules')
-
-
-def filter_cards_by_flavour(queryset, fstr):
-    """Filter cards by flavour text."""
-    return _filter_text_field(queryset, fstr, 'flavour')
-
-
-def filter_cards_by_rulings(queryset, fstr):
-    """Filter cards by rulings text."""
-    return _filter_text_field(queryset, fstr, 'rulings__ruling')
-
-
-def filter_cards_by_cmc(queryset, fstr):
-    """Filter cards by converted mana cost."""
-    return _filter_text_field(queryset, fstr, 'cmc')
-
-
-def _q_builder_choice(ft, fieldname, unop, binop_default, unop_default):
-    """Build a Q object for a CharField with choices.
-
-    Used for Card.editions.rarity and Card.multi_type.
-    """
-    if 'word' in ft.keys():
-        p = Q(**{fieldname + UNOPS[unop]: ft.word})
-    elif 'literal' in ft.keys():
-        raise KeyError('literal has no meaning for {0}'.format(fieldname))
-    elif 'regex' in ft.keys():
-        raise KeyError('regex has no meaning for {0}'.format(fieldname))
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_choice,
-                          binop_default, unop_default)
-    return p
-
-
-def filter_cards_by_multi_type(queryset, fstr):
+def _filter_by_field(queryset, fstr, fieldname, q_builder,
+                     binop_default='&', unop_default=''):
+    """Filter cards by field."""
     if fstr is None or fstr == '':
         return queryset, None
     ftokens, error = _tokenise_filter_string(fstr)
     if error is not None:
         return queryset, error
     try:
-        q = _build_q_expr(ftokens, 'multi_type', _q_builder_choice,
-                          binop_default='|', unop_default='=')
-    except KeyError:
+        q = _build_q_expr(ftokens, fieldname, q_builder,
+                          binop_default, unop_default)
+    except (ValueError, KeyError):
         return queryset, 'has-warning'
-    try:
-        queryset = queryset.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return queryset, None
-
-
-def filter_cards_by_rarity(queryset, fstr):
-    """Filter cards by rarity."""
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error is not None:
-        return queryset, error
-    # In _q_builder_choice literal and regex inputs raise a KeyError
-    # since they don't really work on a CharField of length one.
-    try:
-        q_atoms = list(_build_q_atom(
-            ftokens, 'editions__rarity', _q_builder_choice,
-            binop_default='|', unop_default='='))
-    except KeyError:
-        return queryset, 'has-warning'
-
-    filtered = queryset
-    q = Q()
-    # If we combine two Q objects with & the result will only match a
-    # card which field matches both expressions.  Since a single
-    # rarity field on a CardEdition can't match two different
-    # rarities, but a card can have different editions with different
-    # rarities, we have to apply one Q object after the other (when
-    # trying to combine them with &).  This way the previous filtered
-    # cards are filtered further.  Combinations with | are handled as
-    # usual.
-    for binop, p in q_atoms:
-        if binop == '&':
-            try:
-                filtered = filtered.filter(q)
-            except (ValueError, DataError):
-                return queryset, 'has-error'
-            q = Q()
-
-        if q:
-            q = q | p
-        else:
-            q = p
-    try:
-        filtered = filtered.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return filtered, None
-
-
-# TODO(benedikt) Fix this function
-def _q_builder_mana(ft, fieldname, unop, binop_default, unop_default):
-    """Build a Q object to filter mana."""
-    if 'word' in ft.keys():
-        mana = {}
-        (mana['n'], mana['w'], mana['u'], mana['b'], mana['r'],
-         mana['g'], mana['c'], s) = Card.parse_mana(ft.word)
-        mts = _tokenise_special_mana(s)
-        cmc = _guess_cmc(mana['n'], mana['w'], mana['u'], mana['b'],
-                         mana['r'], mana['g'], mana['c'], mts)
-
-        p = Q()
-        if '>' in unop:
-            for mt in mts:
-                p = p & Q(mana_special__icontains=mts[mt]*mt)
-            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
-                p = p & Q(**{'mana_' + colour + '__lte': mana[colour]})
-        elif '<' in unop:
-            for mt in mts:
-                p = p & ~Q(mana_special__icontains=(mts[mt]+1)*mt)
-            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
-                p = p & Q(**{'mana_' + colour + '__gte': mana[colour]})
-        else:
-            p = Q(mana_special=s)
-            for colour in ['n', 'w', 'u', 'b', 'r', 'g', 'c']:
-                p = p & Q(**{'mana_' + colour: mana[colour]})
-
-        lookup = UNOPS[unop]
-        # __icontains is not supported for an IntegerField.
-        if lookup == '__icontains':
-            lookup = ''
-        p = p & Q(**{'cmc' + lookup: cmc})
-    elif 'literal' in ft.keys():
-        raise KeyError('literals are not supported for filtering mana.')
-    elif 'regex' in ft.keys():
-        raise KeyError('regex are not supported for filtering mana.')
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_mana,
-                          binop_default, unop_default)
-    return p
-
-
-def filter_cards_by_mana(queryset, fstr):
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error:
-        return queryset, error
-    q = _build_q_expr(ftokens, None, _q_builder_mana, unop_default='=')
     try:
         filtered = queryset.filter(q)
     except (ValueError, DataError):
         return queryset, 'has-error'
     return filtered, None
+
+
+def filter_cards_by_name(queryset, fstr):
+    """Filter cards by name."""
+    return _filter_by_field(queryset, fstr, 'name',
+                            _q_builder_default)
+
+
+def filter_cards_by_types(queryset, fstr):
+    """Filter cards by type."""
+    return _filter_by_field(queryset, fstr, 'types',
+                            _q_builder_default)
+
+
+def filter_cards_by_rules(queryset, fstr):
+    """Filter cards by rules text."""
+    return _filter_by_field(queryset, fstr, 'rules',
+                            _q_builder_default)
+
+
+def filter_cards_by_flavour(queryset, fstr):
+    """Filter cards by flavour text."""
+    return _filter_by_field(queryset, fstr, 'flavour',
+                            _q_builder_default)
+
+
+def filter_cards_by_rulings(queryset, fstr):
+    """Filter cards by rulings text."""
+    return _filter_by_field(queryset, fstr, 'rulings__ruling',
+                            _q_builder_default)
+
+
+def filter_cards_by_cmc(queryset, fstr):
+    """Filter cards by converted mana cost."""
+    return _filter_by_field(queryset, fstr, 'cmc', _q_builder_default)
+
+
+def filter_cards_by_multi_type(queryset, fstr):
+    """Filter cards by multy type."""
+    return _filter_by_field(queryset, fstr, 'multi_type',
+                            _q_builder_choice, binop_default='|',
+                            unop_default='=')
+
+
+def filter_cards_by_mana(queryset, fstr):
+    """Filter cards by mana."""
+    return _filter_by_field(queryset, fstr, None, _q_builder_mana,
+                            unop_default='=')
 
     # n, w, u, b, r, g, c, s = Card.parse_mana(mana)
     # tokens = _tokenise_special_mana(s)
@@ -416,149 +426,80 @@ def filter_cards_by_mana(queryset, fstr):
     # raise ValueError("Unknown operator '{0}'.".format(op))
 
 
-def _q_builder_ptl(ft, fieldname, unop, binop_default, unop_default):
-    """Build a Q object to filter power/toughness/loyalty."""
-    if 'word' in ft.keys():
-        if ft.word in ['cmc', 'power', 'toughness', 'loyalty']:
-            lookup = UNOPS[unop]
-            # F expressions don't allow __icontains lookups.
-            if lookup == '__icontains':
-                lookup = ''
-            p = Q(**{fieldname + lookup: F(ft.word)})
-        else:
-            try:
-                p = Q(**{fieldname + UNOPS[unop]: int(ft.word)})
-            except ValueError:
-                p = Q(**{fieldname + '_special' + UNOPS[unop]: ft.word})
-    elif 'literal' in ft.keys():
-        lookup = UNOPS[unop]
-        if lookup == '__icontains':
-            lookup = '__contains'
-        try:
-            p = Q(**{fieldname + lookup: int(ft.literal)})
-        except ValueError:
-            p = Q(**{fieldname + '_special' + lookup: ft.literal})
-    elif 'regex' in ft.keys():
-        p = (Q(**{fieldname + '__regex': ft.regex}) |
-             Q(**{fieldname + '_special__regex': ft.regex}))
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_ptl,
-                          binop_default, unop_default)
-    return p
-
-
-def _filter_ptl_field(queryset, fstr, fieldname):
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error:
-        return queryset, error
-    q = _build_q_expr(ftokens, fieldname, _q_builder_ptl)
-    try:
-        filtered = queryset.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return filtered, None
-
-
 def filter_cards_by_power(queryset, fstr):
-    return _filter_ptl_field(queryset, fstr, 'power')
+    """Filter cards by power."""
+    return _filter_by_field(queryset, fstr, 'power', _q_builder_ptl)
 
 
 def filter_cards_by_toughness(queryset, fstr):
-    return _filter_ptl_field(queryset, fstr, 'toughness')
+    """Filter cards by toughness."""
+    return _filter_by_field(queryset, fstr, 'toughness', _q_builder_ptl)
 
 
 def filter_cards_by_loyalty(queryset, fstr):
-    return _filter_ptl_field(queryset, fstr, 'loyalty')
-
-
-def _q_builder_blocks_sets(ft, fieldname, unop, binop_default,
-                           unop_default):
-    """Build a Q object to filter blocks and sets."""
-    if 'word' in ft.keys():
-        p = (Q(**{'editions__mtgset__name' + UNOPS[unop]: ft.word}) |
-             Q(**{'editions__mtgset__code' + UNOPS[unop]: ft.word}) |
-             Q(**{'editions__mtgset__block__name' + UNOPS[unop]: ft.word}))
-    elif 'literal' in ft.keys():
-        lookup = UNOPS[unop]
-        if lookup == '__icontains':
-            lookup = '__contains'
-        p = (Q(**{'editions__mtgset__name' + lookup: ft.literal}) |
-             Q(**{'editions__mtgset__code' + lookup: ft.literal}) |
-             Q(**{'editions__mtgset__block__name' + lookup: ft.literal}))
-    elif 'regex' in ft.keys():
-        p = (Q(**{'editions__mtgset__name__regex': ft.regex}) |
-             Q(**{'editions__mtgset__code__regex': ft.regex}) |
-             Q(**{'editions__mtgset__block__name__regex': ft.regex}))
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_blocks_sets,
-                          binop_default, unop_default)
-    return p
+    """Filter cards by loyalty."""
+    return _filter_by_field(queryset, fstr, 'loyalty', _q_builder_ptl)
 
 
 def filter_cards_by_blocks_sets(queryset, fstr):
-    """Filter cards by sets.
-
-    :param queryset: The cards to filter.
-
-    :returns: The filtered queryset.
-    """
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error:
-        return queryset, error
-    q = _build_q_expr(ftokens, None, _q_builder_blocks_sets,
-                      binop_default='|')
-    try:
-        filtered = queryset.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return filtered, None
-
-
-def _q_builder_format(ft, fieldname, unop, binop_default,
-                           unop_default):
-    """Build a Q object to filter formats."""
-    if 'word' in ft.keys():
-        if ft.word.lower() not in ['vintage', 'legacy', 'extended',
-                           'standard', 'classic', 'commander', 'modern']:
-            raise ValueError("Unknown format '{0}'.".format(ft.word))
-        p = Q(**{'legal_' + ft.word.lower(): Card.LEGALITY_LEGAL})
-    elif 'literal' in ft.keys():
-        raise KeyError('literals are not supported by this filter.')
-    elif 'regex' in ft.keys():
-        raise KeyError('regex are not supported by this filter.')
-    else:
-        # Neither binop, unop, word, literal nor regex are keys in ft.
-        # Therefore ft has to be a nested expression.
-        p = _build_q_expr(ft, fieldname, _q_builder_format,
-                          binop_default, unop_default)
-    return p
+    """Filter cards by sets."""
+    return _filter_by_field(queryset, fstr, None,
+                            _q_builder_blocks_sets, binop_default='|')
 
 
 def filter_cards_by_format(queryset, fstr):
-    if fstr is None or fstr == '':
-        return queryset, None
-    ftokens, error = _tokenise_filter_string(fstr)
-    if error:
-        return queryset, error
-    try:
-        q = _build_q_expr(ftokens, None, _q_builder_format,
-                          binop_default='|', unop_default='=')
-    except (KeyError):
-        return queryset, 'has-warning'
-    try:
-        filtered = queryset.filter(q)
-    except (ValueError, DataError):
-        return queryset, 'has-error'
-    return filtered, None
+    """Filter cards by format."""
+    return _filter_by_field(queryset, fstr, None, _q_builder_format,
+                            binop_default='|', unop_default='=')
 
 
 def filter_cards_by_artist(queryset, fstr):
-    return _filter_text_field(queryset, fstr, 'editions__artist__last_name')
+    """Filter cards by artist."""
+    return _filter_by_field(queryset, fstr,
+                            'editions__artist__last_name',
+                            _q_builder_default)
+
+
+def filter_cards_by_rarity(queryset, fstr):
+    """Filter cards by rarity."""
+    if fstr is None or fstr == '':
+        return queryset, None
+    ftokens, error = _tokenise_filter_string(fstr)
+    if error is not None:
+        return queryset, error
+    # In _q_builder_choice literal and regex inputs raise a KeyError
+    # since they don't really work on a CharField of length one.
+    try:
+        q_atoms = list(_build_q_atom(
+            ftokens, 'editions__rarity', _q_builder_choice,
+            binop_default='|', unop_default='='))
+    except (KeyError, ValueError):
+        return queryset, 'has-warning'
+
+    filtered = queryset
+    q = Q()
+    # If we combine two Q objects with & the result will only match a
+    # card which field matches both expressions.  Since a single
+    # rarity field on a CardEdition can't match two different
+    # rarities, but a card can have different editions with different
+    # rarities, we have to apply one Q object after the other (when
+    # trying to combine them with &).  This way the previous filtered
+    # cards are filtered further.  Combinations with | are handled as
+    # usual.
+    for binop, p in q_atoms:
+        if binop == '&':
+            try:
+                filtered = filtered.filter(q)
+            except (ValueError, DataError):
+                return queryset, 'has-error'
+            q = Q()
+
+        if q:
+            q = q | p
+        else:
+            q = p
+    try:
+        filtered = filtered.filter(q)
+    except (ValueError, DataError):
+        return queryset, 'has-error'
+    return filtered, None
