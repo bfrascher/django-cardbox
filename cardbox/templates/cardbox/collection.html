@@ -71,9 +71,7 @@
           </div>
         </div>
         {% endif %}
-        {% with entries as page_obj %}
-        {% include 'cardbox/pagination.html' %}
-        {% endwith %}
+        {% include 'cardbox/pagination.html' with page_obj=entries %}
       </td>
       <td width="35%" valign="top">
         {% include 'cardbox/filter_sidebar.html' %}
