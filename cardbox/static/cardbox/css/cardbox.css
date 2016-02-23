@@ -3,13 +3,13 @@ body {
     overflow-x: hidden;
 }
 
-.main-container { 
-    padding-top: 70px; 
+.main-container {
+    padding-top: 70px;
 }
 
-.navbar-toggle.pull-left { 
-    margin-left: 15px; 
-    margin-right:0; 
+.navbar-toggle.pull-left {
+    margin-left: 15px;
+    margin-right:0;
 }
 
 .page-header {
@@ -72,12 +72,32 @@ body {
     font-size: 16px;
 }
 
+.card-rules {
+  font-weight: bold;
+}
+
+.card-flavour {
+  font-style: italic;
+  padding-bottom: 15px;
+}
+
+.legal-list {
+  float: none;
+  display: inline-block;
+  text-align: left;
+}
+
+.caption {
+  font-variant: small-caps;
+  text-rendering: auto;
+}
+
 @media screen and (max-width: 767px) {
     /* prevent body scroll when drawer opened. This doesnt work well on iOS. */
     .drawer-open {
         overflow: hidden!important;
     }
-    
+
     /* canvas inner content */
     .offcanvas-inner {
         position: relative;
@@ -92,20 +112,20 @@ body {
     /* left drawer closed */
     .offcanvas-drawer-left,
     .offcanvas-content-left { left: -80%; }
-    
+
     /* left drawer open */
     .active-left .offcanvas-drawer-left,
     .active-left .offcanvas-content-left  { left: 0; }
-    
+
     /* left drawer open content */
     .active-left .offcanvas-inner,
     /* move fixed nav */
     .active-left .navbar-fixed-top { left: 80%; }
-    
+
     /* right drawer closed */
     .offcanvas-drawer-right,
     .offcanvas-content-right { right: -80%; }
-    
+
     /* left drawer open */
     .active-right .offcanvas-drawer-right,
     .active-right .offcanvas-content-right { right: 0; }
@@ -114,10 +134,10 @@ body {
     .active-right .offcanvas-inner,
     /* move fixed nav */
     .active-right .navbar-fixed-top { left: -80%; }
-    
+
     /* make sure fixed nav does not collapse */
-    .drawer-open .navbar-fixed-top { 
-        width: 100%; 
+    .drawer-open .navbar-fixed-top {
+        width: 100%;
         -webkit-transition: left 0.25s ease-out;
         -moz-transition: left 0.25s ease-out;
         -o-transition: left 0.25s ease-out;
@@ -143,7 +163,7 @@ body {
         -ms-transition: all 0.25s ease-out;
         transition: all 0.25s ease-out;
     }
-    
+
     /* close button */
     .offcanvas-close-btn {
         position: fixed;
@@ -157,7 +177,7 @@ body {
     }
     .active-left .offcanvas-close-btn { right: 0; display: block; }
     .active-right .offcanvas-close-btn { left: 0; display: block; }
-    
+
     /*
      * Off Canvas Theme
      * --------------------------------------------------
@@ -173,7 +193,7 @@ body {
     .offcanvas-content-left,
     .offcanvas-content-right {
         background-color: #222;
-        color: #fff; 
+        color: #fff;
     }
 
     .offcanvas-drawer .navbar-nav { margin:0; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5); }
@@ -185,14 +205,14 @@ body {
        color: #ccc;
        font-size: 16px;
        font-weight: bold;
-       padding: 15px; 
+       padding: 15px;
     }
     .offcanvas-drawer .navbar-nav li a:hover {
         background-color: rgba(0,0,0,.2);
     }
 
-    .offcanvas-drawer .navbar-nav h3 { 
-        margin:0; 
+    .offcanvas-drawer .navbar-nav h3 {
+        margin:0;
         background-color: #333;
         color: #888;
         border-top: 1px solid rgba(255,255,255,.1);
