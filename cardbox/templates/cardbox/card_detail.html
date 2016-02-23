@@ -4,29 +4,54 @@
 
 {% block content %}
 
-<table>
-  <tbody>
-    <tr>
-      <td><img src="{% static card.get_image_url %}" alt="{{ card.name }}"></td>
-      <td>
-        <h3>{{ card.name }}</h3>
-        <p><b>Types:</b> {{ card.types }}</p>
-        <p><b>P/T/L:</b> {{ card.get_ptl }}</p>
-        <p><b>Mana:</b> {{ card.get_mana }} ({{ card.cmc }})</p>
-        <p><b>Rules:</b> {{ card.rules }}</p>
-        <p><b>Flavour:</b> <emph>{{ card.flavour }}</emph></p>
-        <p><b>Editions:</b>
-          {% for edition in card.editions.all %}
-          <p>{{ edition.mtgset.code }}</p>
-          {% endfor %}
-        </p>
-        <p><b>Rulings:</b>
-          {% for ruling in card.rulings.all %}
-          <p><b>{{ ruling.date }}:</b> {{ ruling.ruling }}</p>
-          {% endfor %}
-      </td>
-    <tr>
-  </tbody>
-</table>
+<div class="row">
+  <div class="col-md-7">
+    <div class="page-header">
+      <h1>{{ card.name }} <small>{{ card.get_mana }} ({{ card.cmc }})<br />{{ card.types }} {{ card.get_ptl }}</small></h1>
+    </div>
+    {% autoescape off %}
+    <div class="well"><strong>{{ card.rules_html }}</strong></div>
+    <div class="text-muted"><em>{{ card.flavour_html }}</em></div>
+    {% endautoescape %}
+
+    {% if entries %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Copies</th>
+          <th>Foils</th>
+          <th>Number</th>
+          <th>Set</th>
+          <th>Rarity</th>
+          <th>Artist</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in entries %}
+        <tr>
+          <td>{{ entry.count }}</td>
+          <td>{{ entry.foil_count }}</td>
+          <td>{{ entry.edition.number }}{{ entry.edition.number_suffix }}</td>
+          <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
+          <td>{{ entry.edition.rarity }}</td>
+          <td>{{ entry.edition.artist }}</td>
+          <td><img src="{% static 'cardbox/images/icons/16px/173-bin.png' %}" alt="Delete"></td>
+        </tr>
+        {% endfor  %}
+      </tbody>
+    </table>
+    {% endif  %}
+  </div>
+  <div class="col-md-5">
+    <img src="{% static card.get_image_url %}" class="img-responsive center-block" alt="{{ card.name }}">
+    <div class="content text-center">
+      <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
+      <ul>
+
+      </ul>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
