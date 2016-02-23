@@ -6,30 +6,32 @@
 {% block content %}
 
 <div class="main-container row">
-  <div class="page-header">
-    <h1>{{ collection.name }} <small>
-        {% if request.user == collection.owner %}
-        <a href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
-          <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"></a>
-        {% endif %}
-        {{ collection.date_created }}
-        {% if request.user == collection.owner or request.user in collection.editors.all %}
-        <a href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
-          <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"></a>
-        {% endif %}
-
-        <div class="btn-group" role="group" aria-label="...">
-          <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
-            <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
-          </a>
-          <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
-            <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
-          </a>
-        </div>
-    </small></h1>
-  </div>
-
   <div class="col-xs-12 col-sm-8">
+    <div class="page-header">
+      <h1>{{ collection.name }} <small>
+          {% if request.user == collection.owner %}
+          <a href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
+            <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"></a>
+          {% endif %}
+          {{ collection.date_created }}
+
+          <div class="header-right">
+            {% if request.user == collection.owner or request.user in collection.editors.all %}
+            <a href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
+              <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"></a>
+            {% endif %}
+
+            <div class="btn-group" role="group" aria-label="...">
+              <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
+                <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
+              </a>
+              <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
+                <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
+              </a>
+            </div>
+          </div>
+      </small></h1>
+    </div>
     {% if layout == 'list' %}
     <table class="table table-striped">
       <thead>
