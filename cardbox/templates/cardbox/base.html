@@ -27,14 +27,16 @@
       {% include 'cardbox/navbar.html' %}
 
       <div class="container">
-        {% for message in  messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <strong>{{ message.tags|capfirst }}!</strong> {{ message }}
-        </div>
-        {% endfor %}
+        <div class="main-container">
+          {% for message in  messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>{{ message.tags|capfirst }}!</strong> {{ message }}
+          </div>
+          {% endfor %}
 
-        {% block content %}{% endblock %}
+          {% block content %}{% endblock %}
+        </div>
       </div>
     </div>
 
