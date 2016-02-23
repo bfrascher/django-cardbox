@@ -1,6 +1,7 @@
 body {
     padding-top: 60px;
     background-color: #eee;
+    overflow-x: hidden;
 }
 
 .form-signin {
@@ -51,7 +52,7 @@ body {
 .form-filter-sidebar {
     padding: 15px;
     margin: 0 auto;
-    width: 400px;
+    /* width: 400px; */
 }
 
 .form-filter-sidebar .form-filter-sidebar-heading {
@@ -70,4 +71,153 @@ body {
 
 .form-filter-sidebar .form-control:focus {
     z-index: 2;
+}
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+/* we need to use this rather than body padding */
+.main-container { 
+    padding-top: 70px; 
+}
+
+/* fix left toggle margin */
+.navbar-toggle.pull-left { 
+    margin-left: 15px; 
+    margin-right:0; 
+}
+@media screen and (max-width: 767px) {
+    /* prevent body scroll when drawer opened. This doesnt work well on iOS. */
+    .drawer-open {
+        overflow: hidden!important;
+    }
+    
+    /* canvas inner content */
+    .offcanvas-inner {
+        position: relative;
+        left:0;
+        -webkit-transition: left 0.25s ease-out;
+        -moz-transition: left 0.25s ease-out;
+        -o-transition: left 0.25s ease-out;
+        -ms-transition: left 0.25s ease-out;
+        transition: left 0.25s ease-out;
+    }
+
+    /* left drawer closed */
+    .offcanvas-drawer-left,
+    .offcanvas-content-left { left: -80%; }
+    
+    /* left drawer open */
+    .active-left .offcanvas-drawer-left,
+    .active-left .offcanvas-content-left  { left: 0; }
+    
+    /* left drawer open content */
+    .active-left .offcanvas-inner,
+    /* move fixed nav */
+    .active-left .navbar-fixed-top { left: 80%; }
+    
+    /* right drawer closed */
+    .offcanvas-drawer-right,
+    .offcanvas-content-right { right: -80%; }
+    
+    /* left drawer open */
+    .active-right .offcanvas-drawer-right,
+    .active-right .offcanvas-content-right { right: 0; }
+
+    /* left drawer open content */
+    .active-right .offcanvas-inner,
+    /* move fixed nav */
+    .active-right .navbar-fixed-top { left: -80%; }
+    
+    /* make sure fixed nav does not collapse */
+    .drawer-open .navbar-fixed-top { 
+        width: 100%; 
+        -webkit-transition: left 0.25s ease-out;
+        -moz-transition: left 0.25s ease-out;
+        -o-transition: left 0.25s ease-out;
+        -ms-transition: left 0.25s ease-out;
+        transition: left 0.25s ease-out;
+    }
+
+    /* drawer base styles */
+    .offcanvas-drawer,
+    .offcanvas-content-left,
+    .offcanvas-content-right {
+        position: fixed;
+        top: 0;
+        bottom:0;
+        width: 80%;
+        z-index:0;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        -webkit-transition: all 0.25s ease-out;
+        -moz-transition: all 0.25s ease-out;
+        -o-transition: all 0.25s ease-out;
+        -ms-transition: all 0.25s ease-out;
+        transition: all 0.25s ease-out;
+    }
+    
+    /* close button */
+    .offcanvas-close-btn {
+        position: fixed;
+        top: 0;
+        bottom:0;
+        width: 20%;
+        z-index:1031;
+        height: 100%;
+        cursor: pointer;
+        display: none;
+    }
+    .active-left .offcanvas-close-btn { right: 0; display: block; }
+    .active-right .offcanvas-close-btn { left: 0; display: block; }
+    
+    /*
+     * Off Canvas Theme
+     * --------------------------------------------------
+     */
+     .drawer-open .navbar-inverse .navbar-toggle .icon-bar { background-color: #428bca; }
+     .offcanvas-inner {
+        background-color: #fff;
+        box-shadow: 0 0 10px 5px rgba(0, 0, 0,.3);
+        -webkit-box-shadow: 0 0 10px 5px rgba(0,0,0,.3);
+    }
+
+    .offcanvas-drawer,
+    .offcanvas-content-left,
+    .offcanvas-content-right {
+        background-color: #222;
+        color: #fff; 
+    }
+
+    .offcanvas-drawer .navbar-nav { margin:0; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5); }
+    .offcanvas-drawer .navbar-nav li {
+        border-top: 1px solid rgba(255,255,255,.05);
+        border-bottom: 1px solid rgba(0,0,0,.2);
+    }
+    .offcanvas-drawer .navbar-nav li a {
+       color: #ccc;
+       font-size: 16px;
+       font-weight: bold;
+       padding: 15px; 
+    }
+    .offcanvas-drawer .navbar-nav li a:hover {
+        background-color: rgba(0,0,0,.2);
+    }
+
+    .offcanvas-drawer .navbar-nav h3 { 
+        margin:0; 
+        background-color: #333;
+        color: #888;
+        border-top: 1px solid rgba(255,255,255,.1);
+        font-size: 14px;
+        text-transform: uppercase;
+        padding: 6px 15px;
+    }
+    .offcanvas-drawer .navbar-nav .glyphicon {
+        color: #444;
+        margin-right: 5px;
+    }
+
 }

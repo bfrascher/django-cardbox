@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, use-sclalable=0">
 
     <title>MTG Cardbox</title>
 
@@ -20,21 +20,27 @@
     <![endif]-->
   </head>
   <body>
-    {% include 'cardbox/navbar.html' %}
+    {% include 'cardbox/drawer.html' %}
 
-    {% for message in  messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <strong>{{ message.tags|capfirst }}!</strong> {{ message }}
-    </div>
-    {% endfor %}
+    <div class="offcanvas-inner">
+      <div class="offcanvas-close-btn"></div>
+      {% include 'cardbox/navbar.html' %}
 
-    <div class="container">
+      <div class="container">
+        {% for message in  messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <strong>{{ message.tags|capfirst }}!</strong> {{ message }}
+        </div>
+        {% endfor %}
+
         {% block content %}{% endblock %}
+      </div>
     </div>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="{% static 'cardbox/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'cardbox/js/cardbox.js' %}"></script>
     <script>
       $(function () {
         $('[data-toggle="tooltip"]').tooltip();

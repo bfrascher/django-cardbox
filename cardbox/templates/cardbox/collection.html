@@ -5,79 +5,77 @@
 
 {% block content %}
 
-<div class="page-header">
-  <h1>{{ collection.name }} <small>
-      {% if request.user == collection.owner %}
-      <a href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
-        <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"></a>
-      {% endif %}
-      {{ collection.date_created }}
-      {% if request.user == collection.owner or request.user in collection.editors.all %}
-      <a href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
-        <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"></a>
-      {% endif %}
-
-      <div class="btn-group" role="group" aria-label="...">
-        <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
-          <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
-        </a>
-        <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
-          <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
-        </a>
-      </div>
-  </small></h1>
-</div>
-
-<table>
-  <tbody>
-    <tr>
-      <td width="65%" valign="top">
-        {% if layout == 'list' %}
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Count</th>
-              <th>Foiled</th>
-              <th>Name</th>
-              <th>Types</th>
-              <th>P/T/L</th>
-              <th>Mana</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for count, fcount, card in entries.object_list %}
-            <tr>
-              <td>{{ count }}</td>
-              <td>{{ fcount }}</td>
-              <td><a href="{% url 'cardbox:collection_card' collection.id card.id %}">{{ card.name }}</a></td>
-              <td>{{ card.types }}</td>
-              <td>{{ card.get_ptl }}</td>
-              <td>{{ card.get_mana }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <div class="container-fluid">
-          <div class="row">
-            {% for count, fcount, card in entries.object_list %}
-            <div class="col-xs-6 col-md-4">
-              <div>Copies: {{ count }}, Foils: {{ fcount }}</div>
-              <a href="{% url 'cardbox:collection_card' collection.id card.id %}" class="thumbnail">
-                <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
-              </a>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
+<div class="main-container row">
+  <div class="page-header">
+    <h1>{{ collection.name }} <small>
+        {% if request.user == collection.owner %}
+        <a href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
+          <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"></a>
         {% endif %}
-        {% include 'cardbox/pagination.html' with page_obj=entries %}
-      </td>
-      <td width="35%" valign="top">
-        {% include 'cardbox/filter_sidebar.html' %}
-      </td>
-    </tr>
-  </tbody>
-</table>
+        {{ collection.date_created }}
+        {% if request.user == collection.owner or request.user in collection.editors.all %}
+        <a href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
+          <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"></a>
+        {% endif %}
+
+        <div class="btn-group" role="group" aria-label="...">
+          <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
+            <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
+          </a>
+          <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
+            <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
+          </a>
+        </div>
+    </small></h1>
+  </div>
+
+  <div class="col-xs-12 col-sm-8">
+    {% if layout == 'list' %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Count</th>
+          <th>Foiled</th>
+          <th>Name</th>
+          <th>Types</th>
+          <th>P/T/L</th>
+          <th>Mana</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for count, fcount, card in entries.object_list %}
+        <tr>
+          <td>{{ count }}</td>
+          <td>{{ fcount }}</td>
+          <td><a href="{% url 'cardbox:collection_card' collection.id card.id %}">{{ card.name }}</a></td>
+          <td>{{ card.types }}</td>
+          <td>{{ card.get_ptl }}</td>
+          <td>{{ card.get_mana }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="container-fluid">
+      <div class="row">
+        {% for count, fcount, card in entries.object_list %}
+        <div class="col-xs-6 col-md-4">
+          <div>Copies: {{ count }}, Foils: {{ fcount }}</div>
+          <a href="{% url 'cardbox:collection_card' collection.id card.id %}" class="thumbnail">
+            <img src="{% static card.get_image_url %}" alt="{{ card.name }}">
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% include 'cardbox/pagination.html' with page_obj=entries %}
+  </div>
+  <div class="col-xs-6 col-sm-4">
+    <div class="offcanvas-content-right">
+      {% include 'cardbox/filter_sidebar.html' %}
+    </div>
+  </div>
+</div>
 
 {% endblock %}

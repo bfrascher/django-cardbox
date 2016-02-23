@@ -1,0 +1,37 @@
+{% load staticfiles %}
+
+<aside class="offcanvas-drawer offcanvas-drawer-left visible-xs">
+  <ul class="nav navbar-nav">
+    <li><h3>Navigation</h3></li>
+    <li><a href="{% url 'cardbox:cards' %}">Cards</a></li>
+    {% if request.user.is_authenticated %}
+    <li><a href="{% url 'cardbox:logout' %}"><img src="{% static 'cardbox/images/icons/16px/277-exit.png' %}" alt="Logout" title="Logout"> Logout</a></li>
+    {% else %}
+    <li><a href="{% url 'cardbox:login' %}"><img src="{% static 'cardbox/images/icons/16px/276-enter.png' %}" alt="Login" title="Login"> Login</a></li>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+    <li><h3>Collections</h3></li>
+    {% if user.collection_set.all.count > 0 %}
+    <li class="dropdown-header">Your collections</li>
+    {% endif %}
+    {% for collection in user.collection_set.all %}
+    <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+    {% endfor %}
+    {% if user.editable_collections.count > 0 %}
+    <li class="dropdown-header">Editable collections</li>
+    {% endif %}
+    {% for collection in user.editable_collections.all %}
+    <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }} ({{ collection.owner.username }})</a></li>
+    {% endfor %}
+    {% if user.viewable_collections.all.count > 0 %}
+    <li class="dropdown-header">Viewable collections</li>
+    {% endif %}
+    {% for collection in user.viewable_collections.all %}
+    <li><a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></li>
+    {% endfor %}
+    <li role="seperator" class="divider"></li>
+    <li><a href="{% url 'cardbox:new_collection' %}">New collection</a></li>
+    {% endif %}
+  </ul>
+</aside>
+<aside clas="offcanvas-drawer offcanvas-drawer-right visible-xs"></aside>
