@@ -387,7 +387,7 @@ def collection_card(request, collection_id, card_id):
         return Http404('Card {0} is not in the collection {1}'
                        .format(card.name, collection.name))
 
-    return render(request, 'cardbox/collection_card.html', {
+    return render(request, 'cardbox/card_detail.html', {
         'collection': collection,
         'card': card,
         'entries': entries,
