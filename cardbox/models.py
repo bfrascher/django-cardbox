@@ -288,6 +288,12 @@ class Card(models.Model):
                .aggregate(count=Sum('count'), foil_count=Sum('foil_count')))
         return sum['count'], sum['foil_count']
 
+    def rules_html(self):
+        return self.rules.replace('\n', '<br />')
+
+    def flavour_html(self):
+        return self.flavour.replace('\n', '<br />')
+
 
 class CardEdition(models.Model):
     """Model linking `cardbox.models.Card` with
