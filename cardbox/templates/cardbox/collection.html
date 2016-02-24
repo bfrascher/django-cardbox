@@ -21,10 +21,10 @@
               {% endif %}
 
               <div class="btn-group" role="group" aria-label="...">
-                <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}">
+                <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}" data-toggle="tooltip" data-placement="bottom" data-container="body" title="list">
                   <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
                 </a>
-                <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}">
+                <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}" data-toggle="tooltip" data-placement="bottom" data-container="body" title="grid">
                   <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
                 </a>
               </div>
