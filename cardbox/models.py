@@ -8,15 +8,10 @@ from django.db.models import Sum
 
 class Artist(models.Model):
     """Simple model for an artist.  Referenced in `cardbox.models.Card`"""
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=100)
-
-    class Meta:
-        ordering = ['last_name', 'first_name']
-        unique_together = ('first_name', 'last_name')
+    name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
-        return '{0} {1}'.format(self.first_name, self.last_name)
+        return self.name
 
 
 class Ruling(models.Model):

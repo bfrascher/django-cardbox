@@ -24,8 +24,7 @@ logger = logging.getLogger(__name__)
 def insert_artist(artist, update=False):
     """Create/update a single artist."""
     try:
-        a = Artist.objects.get(last_name=artist.last_name,
-                               first_name=artist.first_name)
+        a = Artist.objects.get(name=artist.name)
         if update:
             logger.info("Updating artist '{0}'.".format(a))
             # a.save()

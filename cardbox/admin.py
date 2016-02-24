@@ -14,8 +14,8 @@ from cardbox.models import (
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name',)
-    search_fields = ('^last_name', '^first_name',)
+    list_display = ('name',)
+    search_fields = ('name',)
 
 
 @admin.register(Block)

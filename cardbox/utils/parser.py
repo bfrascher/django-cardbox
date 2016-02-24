@@ -179,19 +179,13 @@ class MCIParser:
 
            Illus. <artist name>
 
-        It is assumed that the artist has only one last name.  All
-        other parts of his name are considered to be first names.
-        This assumption doesn't have much of an impact, as the
-        name parts are almost always displayed together anyways.
-
         """
         split_artist = p.text.split(' ')
         # The first entry will always be 'Illus.'.  We assume that
         # every artist has only one last name.  This isn't a
         # problem since first and last name are always shown
         # together.
-        return Artist(first_name=' '.join(split_artist[1:-1]),
-                      last_name=split_artist[-1])
+        return Artist(name=' '.join(split_artist[1:]))
 
     @staticmethod
     def _parse_multi_type(name):

@@ -456,7 +456,7 @@ def filter_cards_by_format(queryset, fstr):
 def filter_cards_by_artist(queryset, fstr):
     """Filter cards by artist."""
     return _filter_by_field(queryset, fstr,
-                            'editions__artist__last_name',
+                            'editions__artist__name',
                             _q_builder_default)
 
 
