@@ -87,7 +87,7 @@ class CardAdmin(admin.ModelAdmin):
         }),
         ('Multi Card', {
             'classes': ('collapse',),
-            'fields': ('multi_type','multi_cards',),
+            'fields': ('multi_type',),
         }),
         ('Legality', {
             'classes': ('collapse',),
@@ -95,12 +95,8 @@ class CardAdmin(admin.ModelAdmin):
                         'legal_standard', 'legal_classic', 'legal_commander',
                         'legal_modern'),),
         }),
-        ('Rulings', {
-            'classes': ('collapse',),
-            'fields': ('rulings',),
-        }),
     )
-    filter_horizontal = ('rulings', 'multi_cards',)
+    filter_horizontal = ('multi_cards',)
     list_display = ('name', 'types', 'cmc', 'power', 'toughness',)
     list_filter = ('multi_type', 'sets',)
     search_fields = ('name', 'types',)
