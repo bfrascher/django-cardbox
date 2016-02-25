@@ -15,6 +15,7 @@
 import logging
 
 from collections import namedtuple
+from django.db.models import F
 
 from cardbox.models import (
     Artist,
@@ -24,7 +25,7 @@ from cardbox.models import (
     Card,
     CardEdition,
 #    Collection,
-#    CollectionEntry,
+    CollectionEntry,
 )
 
 from cardbox.utils.parser import (
@@ -255,3 +256,54 @@ def insert_cards_from_parser(parser=MCIParser, update=False):
 def insert_blocks_sets_cards_from_parser(parser=MCIParser, update=False):
     insert_blocks_sets_from_parser(parser, update)
     insert_cards_from_parser(parser, update)
+
+
+def add_collection_entry(count, fcount, collection, edition):
+    """Update or create a collection entry."""
+    try:
+        entry = CollectionEntry.objects.get(collection=collection,
+                                            edition=edition)
+        entry.count = F('count') + count
+        entry.foil_count = F('foil_count') + fcount
+    except CollectionEntry.DoesNotExist:
+        entry = CollectionEntry(collection=collection,
+                                edition=edition, count=count,
+                                foil_count=fcount)
+    entry.save()
+
+
+def import_collection_from_text(collection, text):
+    """Read in a collection from plain text.
+
+    The text has to have one collection entry per line with the count,
+    foiled count, number (with prefix) and set code (in this order)
+    seperated by a whitespace.
+
+    """
+    lines = text.split('\n')
+    for line in lines:
+        columns = line.split()
+        if len(columns) != 4:
+            # TODO(benedikt) Raise better exception
+            raise ValueError('There are not exactly four columns per line.')
+        count = columns[0]
+        fcount = columns[1]
+        number, number_suffix = CardEdition.parse_number(columns[2])
+        code = columns[3]
+
+        set_ = Set.objects.get(code=code.upper())
+        edition = CardEdition.objects.get(mtgset=set_, number=number,
+                                          number_suffix=number_suffix)
+        add_collection_entry(count, fcount, collection, edition)
+
+
+def export_collection_as_text(collection):
+    """Export a collection as plain text."""
+    lines = []
+    for entry in collection.collectionentry_set.all():
+        line = '{0} {1} {2}{3} {4}'.format(
+            entry.count, entry.foil_count, entry.edition.number,
+            entry.edition.number_suffix, entry.edition.mtgset.code)
+        lines.append(line)
+
+    return '\n'.join(lines)
