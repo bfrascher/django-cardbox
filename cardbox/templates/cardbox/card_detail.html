@@ -18,8 +18,9 @@
     {% endif %}
     {% endautoescape %}
 
-    {% if legality.legal or legality.restricted or legality.banned %}
     <div class="content">
+      <caption><h3 class="caption text-muted">legality</h3></caption>
+      {% if legality.legal or legality.restricted or legality.banned %}
       {% if legality.legal %}
       <p class="text-success"><strong>Legal</strong> in {{ legality.legal|join:', ' }}</p>
       {% endif %}
@@ -29,8 +30,10 @@
       {% if legality.banned %}
       <p class="text-danger"><strong>Banned</strong> in {{ legality.banned|join:', ' }}</p>
       {% endif %}
+      {% else %}
+      <p class="text-danger">This card is not legal in any format.</p>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
   <div class="col-md-5">
     <img src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
