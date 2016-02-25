@@ -52,9 +52,9 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
-        <li><a href="{% url 'cardbox:logout' %}"><img src="{% static 'cardbox/images/icons/16px/277-exit.png' %}" alt="Logout" title="Logout"> Logout</a></li>
+        <li><a href="{% url 'cardbox:logout' %}"><img src="{% static 'cardbox/images/icons/logout.png' %}" alt="Logout" title="Logout"> Logout</a></li>
         {% else %}
-        <li><a href="{% url 'cardbox:login' %}"><img src="{% static 'cardbox/images/icons/16px/276-enter.png' %}" alt="Login" title="Login"> Login</a></li>
+        <li><a href="{% url 'cardbox:login' %}"><img src="{% static 'cardbox/images/icons/login.png' %}" alt="Login" title="Login"> Login</a></li>
         {% endif %}
       </ul>
     </div><!--/.navbar-collapse -->

@@ -41,7 +41,7 @@
           <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
           <td>{{ entry.edition.rarity }}</td>
           <td>{{ entry.edition.artist }}</td>
-          <td><img src="{% static 'cardbox/images/icons/16px/173-bin.png' %}" alt="Delete"></td>
+          <td><img src="{% static 'cardbox/images/icons/delete.png' %}" alt="Delete"></td>
         </tr>
         {% endfor  %}
       </tbody>
@@ -55,7 +55,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for edition in card.editions.all %}
+        {% for edition in editions %}
         <tr>
           <td>{{ edition.number }}{{ edition.number_suffix }}</td>
           <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>

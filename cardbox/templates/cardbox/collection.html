@@ -12,21 +12,21 @@
         <div class="header-right">
           {% if request.user == collection.owner %}
           <a class="btn btn-default" href="{% url 'cardbox:edit_collection' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Settings">
-            <img src="{% static 'cardbox/images/icons/16px/149-cog.png' %}" alt="Settings"> Settings
+            <img src="{% static 'cardbox/images/icons/settings.png' %}" alt="Settings"> Settings
           </a>
           {% endif %}
           {% if request.user == collection.owner or request.user in collection.editors.all %}
           <a class="btn btn-default" href="{% url 'cardbox:add_collection_entry' collection.id %}" data-toggle="tooltip" data-placement="bottom" title="Add cards">
-            <img src="{% static 'cardbox/images/icons/16px/267-plus.png' %}" alt="Add card"> Add
+            <img src="{% static 'cardbox/images/icons/add.png' %}" alt="Add card"> Add
           </a>
           {% endif %}
 
           <div class="btn-group" role="group" aria-label="...">
             <a class="btn btn-default{% if layout == 'list' %} active {% endif %}" role="button" href="{% append_to_get layout='list' %}" data-toggle="tooltip" data-placement="bottom" data-container="body" title="list">
-              <img src="{% static 'cardbox/images/icons/16px/187-list.png' %}">
+              <img src="{% static 'cardbox/images/icons/list.png' %}">
             </a>
             <a class="btn btn-default{% if layout == 'grid' %} active {% endif %}" role="button" href="{% append_to_get layout='grid' %}" data-toggle="tooltip" data-placement="bottom" data-container="body" title="grid">
-              <img src="{% static 'cardbox/images/icons/16px/015-images.png' %}">
+              <img src="{% static 'cardbox/images/icons/grid.png' %}">
             </a>
           </div>
         </div>
