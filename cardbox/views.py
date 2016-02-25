@@ -33,6 +33,11 @@ from cardbox.models import (
     CollectionEntry,
 )
 
+from cardbox.utils.auth import (
+    can_edit_collection,
+    can_view_collection,
+)
+
 from cardbox.utils.filters import (
     filter_cards_by_name,
     filter_cards_by_types,
@@ -195,9 +200,7 @@ def card(request, card_id):
 @login_required
 def collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
-    if (request.user != collection.owner and
-        request.user not in collection.editors.all() and
-        request.user not in collection.viewers.all()):
+    if not can_view_collection(request.user, collection):
         raise PermissionDenied
 
     card_list = Card.objects.filter(editions__collection__id=collection_id)
@@ -246,7 +249,7 @@ def edit_collection(request, collection_id=None):
         try:
             collection = Collection.objects.get(pk=collection_id)
             if request.user != collection.owner:
-                raise PermissionDenied
+                raise PermissionDenied("You are not the owner of this collection.")
             data['collection'] = collection
         except Collection.DoesNotExist:
             raise Http404('Collection not found.')
@@ -312,16 +315,15 @@ def delete_collection(request, collection_id):
                              .format(collection.name))
         return HttpResponseRedirect(reverse('cardbox:index'))
     else:
-        raise PermissionDenied
+        raise PermissionDenied("You are not the owner of this collection.")
 
 
 @login_required
 def add_collection_entry(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     data = {'collection': collection}
-    if (request.user != collection.owner and
-        request.user not in collection.editors.all()):
-        raise PermissionDenied
+    if not can_edit_collection(request.user, collection):
+        raise PermissionDenied("You don't have permission to edit this collection.")
 
     try:
         set_str = request.POST['set']
@@ -394,10 +396,30 @@ def add_collection_entry(request, collection_id):
 @login_required
 def delete_collection_entry(request, entry_id):
     entry = get_object_or_404(CollectionEntry, pk=entry_id)
-    if (request.user != entry.collection.owner and
-        request.user not in entry.collection.editors):
+    if not can_edit_collection(request.user, entry.collection):
         raise PermissionDenied("You don't have permission to access this action.")
     entry.delete()
+
+
+@ajax
+@login_required
+def edit_collection_entry(request, entry_id):
+    entry = get_object_or_404(CollectionEntry, pk=entry_id)
+    if not can_edit_collection(request.user, entry.collection):
+        raise PermissionDenied("You don't have permission to access this action.")
+
+
+@ajax
+@login_required
+def collection_entry_table(request, collection_id, card_id):
+    collection = get_object_or_404(Collection, pk=collection_id)
+    if not can_view_collection(request.user, collection):
+        raise PermissionDenied("You don't have permission to access this data.")
+    entries = CollectionEntry.objects.filter(collection=collection,
+                                             edition__card__id=card_id)
+    return render(request, 'cardbox/collection_entry_table.html', {
+        'entries': entries
+    })
 
 
 @login_required
@@ -406,9 +428,7 @@ def collection_card(request, collection_id, card_id):
     card = get_object_or_404(Card, pk=card_id)
     entries = CollectionEntry.objects.filter(collection__id=collection_id,
                                              edition__card__id=card_id)
-    if (request.user != collection.owner and
-        request.user not in collection.editors and
-        request.user not in collection.viewer):
+    if not can_view_collection(request.user, collection):
         raise PermissionDenied("You don't have permission to access this page.")
     if entries is None:
         return Http404('Card {0} is not in the collection {1}'
