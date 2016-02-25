@@ -50,8 +50,6 @@ from cardbox.utils.filters import (
     filter_cards_by_blocks_sets,
 )
 
-LOGIN_URL = '/cardbox/login/'
-
 
 def _update_many_to_many_field(entries, m2m_manager):
     """Update the entries for a ManyToManyField.
@@ -194,7 +192,7 @@ def card(request, card_id):
     })
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required
 def collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if (request.user != collection.owner and
@@ -230,7 +228,7 @@ def collection(request, collection_id):
     })
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required
 def edit_collection(request, collection_id=None):
     """Update or create a collection.
 
@@ -304,7 +302,7 @@ def edit_collection(request, collection_id=None):
                                             args=[collection_id]))
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required
 def delete_collection(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if request.user == collection.owner:
@@ -317,8 +315,7 @@ def delete_collection(request, collection_id):
         raise PermissionDenied
 
 
-
-@login_required(login_url=LOGIN_URL)
+@login_required
 def add_collection_entry(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     data = {'collection': collection}
@@ -394,7 +391,7 @@ def add_collection_entry(request, collection_id):
 
 
 @ajax
-@login_required(login_url=LOGIN_URL)
+@login_required
 def delete_collection_entry(request, entry_id):
     entry = get_object_or_404(CollectionEntry, pk=entry_id)
     if (request.user != entry.collection.owner and
@@ -403,7 +400,7 @@ def delete_collection_entry(request, entry_id):
     entry.delete()
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required
 def collection_card(request, collection_id, card_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     card = get_object_or_404(Card, pk=card_id)
