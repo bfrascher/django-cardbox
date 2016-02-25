@@ -17,12 +17,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django_ajax.decorators import ajax
+from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 from cardbox.models import (
     Set,
@@ -392,11 +393,26 @@ def add_collection_entry(request, collection_id):
                                             args=[collection.id]))
 
 
+@ajax
+@login_required(login_url=LOGIN_URL)
+def delete_collection_entry(request, entry_id):
+    entry = get_object_or_404(CollectionEntry, pk=entry_id)
+    if (request.user != entry.collection.owner and
+        request.user not in entry.collection.editors):
+        raise PermissionDenied("You don't have permission to access this action.")
+    entry.delete()
+
+
+@login_required(login_url=LOGIN_URL)
 def collection_card(request, collection_id, card_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     card = get_object_or_404(Card, pk=card_id)
     entries = CollectionEntry.objects.filter(collection__id=collection_id,
                                              edition__card__id=card_id)
+    if (request.user != collection.owner and
+        request.user not in collection.editors and
+        request.user not in collection.viewer):
+        raise PermissionDenied("You don't have permission to access this page.")
     if entries is None:
         return Http404('Card {0} is not in the collection {1}'
                        .format(card.name, collection.name))
