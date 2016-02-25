@@ -303,6 +303,29 @@ class Card(models.Model):
     def flavour_html(self):
         return self.flavour.replace('\n', '<br />')
 
+    def get_legality(self):
+        legality = {}
+        legality['legal'] = []
+        legality['restricted'] = []
+        legality['banned'] = []
+        formats = {
+            'Vintage': self.legal_vintage,
+            'Legacy': self.legal_legacy,
+            'Extended': self.legal_extended,
+            'Standard': self.legal_standard,
+            'Classic': self.legal_classic,
+            'Commander': self.legal_commander,
+            'Modern': self.legal_modern,
+        }
+        for f in formats:
+            if formats[f] == self.LEGALITY_LEGAL:
+                legality['legal'].append(f)
+            elif formats[f] == self.LEGALITY_RESTRICTED:
+                legality['restricted'].append(f)
+            elif formats[f] == self.LEGALITY_BANNED:
+                legality['banned'].append(f)
+        return legality
+
 
 class CardEdition(models.Model):
     """Model linking `cardbox.models.Card` with
