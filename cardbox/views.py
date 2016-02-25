@@ -168,7 +168,7 @@ def cards(request):
         layout = 'list'
 
     card_list, ferrors = _filter_cards(request, Card.objects.all())
-    paginator = Paginator(card_list, 60, request=request)
+    paginator = Paginator(card_list, 30, request=request)
 
     page = request.GET.get('page', 1)
     try:
@@ -206,7 +206,7 @@ def collection(request, collection_id):
     list_entries = [(*card.get_count_in_collection(collection_id),
                      card) for card in card_list]
 
-    paginator = Paginator(list_entries, 50, request=request)
+    paginator = Paginator(list_entries, 30, request=request)
 
     page = request.GET.get('page', 1)
     try:
