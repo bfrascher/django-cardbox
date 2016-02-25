@@ -18,34 +18,29 @@
     {% endif %}
     {% endautoescape %}
 
+    {% if legality.legal or legality.restricted or legality.banned %}
+    <div class="content">
+      {% if legality.legal %}
+      <p class="text-success"><strong>Legal</strong> in {{ legality.legal|join:', ' }}</p>
+      {% endif %}
+      {% if legality.restricted %}
+      <p class="text-warning"><strong>Restricted</strong> in {{ legality.restricted|join:', ' }}</p>
+      {% endif %}
+      {% if legality.banned %}
+      <p class="text-danger"><strong>Banned</strong> in {{ legality.banned|join:', ' }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-md-5">
+    <img src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
+    <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
+  </div>
+
+  <div class="col-sm-10" id="entryTable">
     <table class="table table-striped">
       <caption><h3 class="caption text-muted">editions</h3></caption>
-      {% if entries %}
-      <thead>
-        <tr>
-          <th>Copies</th>
-          <th>Foils</th>
-          <th>Number</th>
-          <th>Set</th>
-          <th>Rarity</th>
-          <th>Artist</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for entry in entries %}
-        <tr>
-          <td>{{ entry.count }}</td>
-          <td>{{ entry.foil_count }}</td>
-          <td>{{ entry.edition.number }}{{ entry.edition.number_suffix }}</td>
-          <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
-          <td>{{ entry.edition.rarity }}</td>
-          <td>{{ entry.edition.artist }}</td>
-          <td><img src="{% static 'cardbox/images/icons/delete.png' %}" alt="Delete"></td>
-        </tr>
-        {% endfor  %}
-      </tbody>
-      {% else  %}
+      {% if editions %}
       <thead>
         <tr>
           <th>Number</th>
@@ -66,73 +61,28 @@
       </tbody>
       {% endif %}
     </table>
+  </div>
 
-    {% if card.rulings.all %}
+  {% if card.rulings.all %}
+  <div class="col-sm-10">
     <ul class="list-group">
       <caption><h3 class="caption text-muted">rulings</h3></caption>
       {% for ruling in card.rulings.all %}
       <li class="list-group-item"><strong>{{ ruling.date }}</strong>: {{ ruling.ruling }}</li>
       {% endfor %}
     </ul>
-    {% endif %}
   </div>
-  <div class="col-md-5">
-    <img src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
-    <div class="content">
-      <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
-      <ul class="legal-list">
-        {% if card.legal_vintage == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Vintage</li>
-        {% elif card.legal_vintage == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Vintage</li>
-        {% elif card.legal_vintage == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Vintage</li>
-        {% endif  %}
-        {% if card.legal_legacy == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Legacy</li>
-        {% elif card.legal_legacy == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Legacy</li>
-        {% elif card.legal_legacy == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Legacy</li>
-        {% endif  %}
-        {% if card.legal_extended == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Extended</li>
-        {% elif card.legal_extended == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Extended</li>
-        {% elif card.legal_extended == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Extended</li>
-        {% endif  %}
-        {% if card.legal_standard == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Standard</li>
-        {% elif card.legal_standard == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Standard</li>
-        {% elif card.legal_standard == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Standard</li>
-        {% endif  %}
-        {% if card.legal_classic == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Classic</li>
-        {% elif card.legal_classic == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Classic</li>
-        {% elif card.legal_classic == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Classic</li>
-        {% endif  %}
-        {% if card.legal_commander == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Commander</li>
-        {% elif card.legal_commander == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Commander</li>
-        {% elif card.legal_commander == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Commander</li>
-        {% endif  %}
-        {% if card.legal_modern == card.LEGALITY_LEGAL %}
-        <li class="text-success">Legal in Modern</li>
-        {% elif card.legal_modern == card.LEGALITY_RESTRICED %}
-        <li class="text-danger">Restricted in Modern</li>
-        {% elif card.legal_modern == card.LEGALITY_BANNED %}
-        <li class="text-danger">Banned in Modern</li>
-        {% endif  %}
-      </ul>
-    </div>
-  </div>
+  {% endif %}
 </div>
 
+{% endblock %}
+
+{% block js %}
+{% if collection %}
+<script type="text/javascript">
+ ajaxGet('{% url "cardbox:collection_entries" collection.id card.id %}', function(content) {
+   // alert(content);
+ });
+</script>
+{% endif %}
 {% endblock %}

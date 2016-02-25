@@ -92,6 +92,11 @@ body {
   text-rendering: auto;
 }
 
+.entry-number-field {
+  size: 4;
+  max-width: 50px;
+}
+
 @media screen and (max-width: 767px) {
     /* prevent body scroll when drawer opened. This doesnt work well on iOS. */
     .drawer-open {

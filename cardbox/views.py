@@ -20,7 +20,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils import timezone
 from django_ajax.decorators import ajax
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
@@ -192,8 +192,11 @@ def cards(request):
 
 def card(request, card_id):
     card = get_object_or_404(Card, pk=card_id)
+    editions = get_list_or_404(CardEdition, card=card)
     return render(request, 'cardbox/card_detail.html', {
         'card': card,
+        'editions': editions,
+        'legality': card.get_legality(),
     })
 
 
@@ -307,6 +310,7 @@ def edit_collection(request, collection_id=None):
 
 @login_required
 def delete_collection(request, collection_id):
+    raise PermissionDenied("DEBUG")
     collection = get_object_or_404(Collection, pk=collection_id)
     if request.user == collection.owner:
         collection.delete()
@@ -396,30 +400,47 @@ def add_collection_entry(request, collection_id):
 @login_required
 def delete_collection_entry(request, entry_id):
     entry = get_object_or_404(CollectionEntry, pk=entry_id)
-    if not can_edit_collection(request.user, entry.collection):
+    collection = entry.collection
+    card = entry.edition.card
+    if not can_edit_collection(request.user, collection):
         raise PermissionDenied("You don't have permission to access this action.")
     entry.delete()
+    return HttpResponseRedirect(reverse('cardbox:collection_entries',
+                                args=[collection.id, card.id]))
 
 
 @ajax
 @login_required
-def edit_collection_entry(request, entry_id):
-    entry = get_object_or_404(CollectionEntry, pk=entry_id)
-    if not can_edit_collection(request.user, entry.collection):
-        raise PermissionDenied("You don't have permission to access this action.")
-
-
-@ajax
-@login_required
-def collection_entry_table(request, collection_id, card_id):
+def collection_entries(request, collection_id, card_id):
     collection = get_object_or_404(Collection, pk=collection_id)
+    card = get_object_or_404(Card, pk=card_id)
     if not can_view_collection(request.user, collection):
         raise PermissionDenied("You don't have permission to access this data.")
+
+    if len(request.POST):
+        raise PermissionDenied("DEBUG")
+        count = request.POST.get('count', 0)
+        fcount = request.POST.get('fcount', 0)
+        entry_id = request.POST.get('entryID', 0)
+        entry = get_object_or_404(CollectionEntry, pk=entry_id)
+        if not can_edit_collection(request.user, entry.collection):
+            raise PermissionDenied("You don't have permission to edit this collection.")
+        entry.count = count
+        entry.foil_count = fcount
+        entry.save()
+
     entries = CollectionEntry.objects.filter(collection=collection,
-                                             edition__card__id=card_id)
-    return render(request, 'cardbox/collection_entry_table.html', {
-        'entries': entries
-    })
+                                             edition__card=card)
+    data = {
+        'inner-fragments': {
+            '#entryTable': render(request, 'cardbox/collection_entry_table.html', {
+                'card': card,
+                'collection': collection,
+                'entries': entries,
+            }),
+        }
+    }
+    return data
 
 
 @login_required
@@ -438,4 +459,5 @@ def collection_card(request, collection_id, card_id):
         'collection': collection,
         'card': card,
         'entries': entries,
+        'legality': card.get_legality(),
     })

@@ -1,0 +1,64 @@
+{% load staticfiles %}
+
+<table class="table table-striped">
+  <caption><h3 class="caption text-muted">editions</h3></caption>
+  {% if request.user == collection.owner or request.user in collection.editors %}
+  <thead>
+    <tr>
+      <th>Copies</th>
+      <th>Foils</th>
+      <th>Number</th>
+      <th>Set</th>
+      <th>Rarity</th>
+      <th>Artist</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  {% if entries %}
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <form action="{% url 'cardbox:collection_entries' collection.id card.id %}" data-ajax="true" method="post">
+        {% csrf_token  %}
+        <td><input class="entry-number-field" type="number" id="count" name="count" value="{{ entry.count }}"></td>
+        <td><input class="entry-number-field" type="number" id="fcount" name="fcount" value="{{ entry.foil_count }}"></td>
+        <td>{{ entry.edition.number }}{{ entry.edition.number_suffix }}</td>
+        <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
+        <td>{{ entry.edition.rarity }}</td>
+        <td>{{ entry.edition.artist }}</td>
+        <td><button type="submit" class="btn btn-success"><img src="{% static 'cardbox/images/icons/save.png' %}" alt="Save"></button></td>
+        <td><a class="btn btn-danger"><img src="{% static 'cardbox/images/icons/delete.png' %}" alt="Delete"></a></td>
+        <input type="hidden" id="entryID" name="entryID" value="{{ entry.id }}">
+      </form>
+    </tr>
+    {% endfor %}
+    {% endif %}
+  </tbody>
+  {% else %}
+  <thead>
+    <tr>
+      <th>Copies</th>
+      <th>Foils</th>
+      <th>Number</th>
+      <th>Set</th>
+      <th>Rarity</th>
+      <th>Artist</th>
+    </tr>
+  </thead>
+  {% if entries %}
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.count }}</td>
+      <td>{{ entry.foil_count }}</td>
+      <td>{{ entry.edition.number }}{{ entry.edition.number_suffix }}</td>
+      <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
+      <td>{{ entry.edition.rarity }}</td>
+      <td>{{ entry.edition.artist }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  {% endif %}
+  {% endif %}
+</table>
