@@ -60,4 +60,7 @@ docs/_build/
 target/
 
 # Cardbox
-cardbox/static/cardbox/images/*
+cardbox/static/cardbox/images/cards
+cardbox/static/cardbox/images/tokens
+cardbox/static/cardbox/images/sets
+cardbox/static/cardbox/images/mana
