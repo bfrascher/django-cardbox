@@ -49,14 +49,14 @@
   </thead>
   {% if entries %}
   <tbody>
-    {% for entry in entries %}
+    {% for edition, entry in entries %}
     <tr>
       <td>{{ entry.count }}</td>
       <td>{{ entry.foil_count }}</td>
-      <td>{{ entry.edition.number }}{{ entry.edition.number_suffix }}</td>
-      <td>[{{ entry.edition.mtgset.code }}] {{ entry.edition.mtgset.name }}</td>
-      <td>{{ entry.edition.rarity }}</td>
-      <td>{{ entry.edition.artist }}</td>
+      <td>{{ edition.number }}{{ edition.number_suffix }}</td>
+      <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>
+      <td>{{ edition.rarity }}</td>
+      <td>{{ edition.artist }}</td>
     </tr>
     {% endfor %}
   </tbody>
