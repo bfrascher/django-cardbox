@@ -398,19 +398,6 @@ def add_collection_entry(request, collection_id):
 
 @ajax
 @login_required
-def delete_collection_entry(request, entry_id):
-    entry = get_object_or_404(CollectionEntry, pk=entry_id)
-    collection = entry.collection
-    card = entry.edition.card
-    if not can_edit_collection(request.user, collection):
-        raise PermissionDenied("You don't have permission to access this action.")
-    entry.delete()
-    return HttpResponseRedirect(reverse('cardbox:collection_entries',
-                                args=[collection.id, card.id]))
-
-
-@ajax
-@login_required
 def update_collection_entries(request, collection_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     if not can_edit_collection(request.user, collection):
