@@ -9,14 +9,12 @@
     <div class="page-header">
       <h1>{{ card.name }} <small>{% if card.get_mana %}{{ card.get_mana }} ({{ card.cmc }}){% endif %}<br />{{ card.types }} {{ card.get_ptl }}</small></h1>
     </div>
-    {% autoescape off %}
     {% if card.rules %}
-    <div class="card-rules well">{{ card.rules_html }}</div>
+    <div class="card-rules well">{{ card.rules|linebreaks }}</div>
     {% endif  %}
     {% if card.flavour %}
-    <div class="card-flavour text-muted">{{ card.flavour_html }}</div>
+    <div class="card-flavour text-muted">{{ card.flavour|linebreaks }}</div>
     {% endif %}
-    {% endautoescape %}
 
     <div class="content">
       <caption><h3 class="caption text-muted">legality</h3></caption>
