@@ -14,6 +14,7 @@
         <th>Set</th>
         <th>Rarity</th>
         <th>Artist</th>
+        <th>View</th>
       </tr>
     </thead>
     {% if entries %}
@@ -33,6 +34,7 @@
         <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>
         <td>{{ edition.rarity }}</td>
         <td>{{ edition.artist }}</td>
+        <td><img src="{% static 'cardbox/images/icons/image.png' %}" onclick="changeCardImage('{{ edition.mtgset.code|upper }}', '{{ edition.number }}{{ edition.number_suffix }}')"></td>
       </tr>
       {% endfor %}
       {% endif %}

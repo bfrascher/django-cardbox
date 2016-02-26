@@ -69,6 +69,7 @@
           <th>Set</th>
           <th>Rarity</th>
           <th>Artist</th>
+          <th>View</th>
         </tr>
       </thead>
       <tbody>
@@ -78,6 +79,7 @@
           <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>
           <td>{{ edition.rarity }}</td>
           <td>{{ edition.artist }}</td>
+          <td><img src="{% static 'cardbox/images/icons/image.png' %}" onclick="changeCardImage('{{ edition.mtgset.code|upper }}', '{{ edition.number }}{{ edition.number_suffix }}')"></td>
         </tr>
         {% endfor  %}
       </tbody>
@@ -120,4 +122,10 @@
  });
 </script>
 {% endif %}
+<script type="text/javascript">
+ function changeCardImage(code, number) {
+   url = '/static/cardbox/images/cards/' + code + '/' + number + '.jpg';
+   $('#cardImage').attr('src', url);
+ }
+</script>
 {% endblock %}
