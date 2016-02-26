@@ -3,9 +3,7 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>Add cards to {{ collection.name }}
-    <small><a href="{% url 'cardbox:collection' collection.id %}">Back to collection</a></small>
-  </h1>
+  <h1>Add cards to <a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></h1>
 </div>
 
 <div class="panel panel-primary">
