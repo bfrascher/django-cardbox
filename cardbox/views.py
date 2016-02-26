@@ -207,7 +207,7 @@ def collection(request, collection_id):
     if not can_view_collection(request.user, collection):
         raise PermissionDenied
 
-    if request.GET.get('show', 'c') == 'a':
+    if request.GET.get('all', '') == 'on':
         card_list = Card.objects.all()
     else:
         card_list = Card.objects.filter(editions__collection__id=collection_id)
