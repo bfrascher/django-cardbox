@@ -52,7 +52,7 @@
   </div>
 
   <div class="col-md-5">
-    <img src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
+    <img id="cardImage" src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
     <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
   </div>
 
@@ -108,13 +108,19 @@
    $('#entryTable').html(content);
  });
  $(document).on("eldarion-ajax:begin", function(evt, $el) {
-   $('#updateStatus').removeClass("text-success text-danger").addClass("text-primary").html('updating...');
+   if ($el.hasClass("form ajax")) {
+     $('#updateStatus').removeClass("text-success text-danger").addClass("text-primary").html('updating...');
+   }
  });
  $(document).on("eldarion-ajax:success", function(evt, $el, data, textStatus, jqXHR) {
-   $('#updateStatus').removeClass("text-danger text-primary").addClass("text-success").html('saved');
+   if ($el.hasClass("form ajax")) {
+     $('#updateStatus').removeClass("text-danger text-primary").addClass("text-success").html('saved');
+   }
  });
  $(document).on("eldarion-ajax:error", function(evt, $el, data, textStatus, jqXHR) {
-   $('#updateStatus').removeClass("text-success text-primary").addClass("text-danger").html('error');
+   if ($el.hasClass("form ajax")) {
+     $('#updateStatus').removeClass("text-success text-primary").addClass("text-danger").html('error');
+   }
  });
 </script>
 {% endif %}
