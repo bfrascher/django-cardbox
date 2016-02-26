@@ -35,6 +35,8 @@ urlpatterns = [
         views.add_collection_entry, name='add_collection_entry'),
     url(r'^ajax/collectionentry/(?P<entry_id>[0-9]+)/delete$',
         views.delete_collection_entry, name='delete_collection_entry'),
+    url(r'^ajax/collectionentries/(?P<collection_id>[0-9]+)/update$',
+        views.update_collection_entries, name='update_collection_entries'),
     url(r'^ajax/collectionentries/(?P<collection_id>[0-9]+)/(?P<card_id>[0-9]+)$',
         views.collection_entries, name='collection_entries'),
     url(r'^collection/(?P<collection_id>[0-9]+)/card/(?P<card_id>[0-9]+)/$',

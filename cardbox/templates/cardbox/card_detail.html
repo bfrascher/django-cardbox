@@ -40,6 +40,10 @@
     <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
   </div>
 
+  {% if collection %}
+  <div class="col-sm-10" id="entryTable" data-refresh-url="{% url 'cardbox:collection_entries' collection.id card.id %}">
+  </div>
+  {% else %}
   <div class="col-sm-10" id="entryTable">
     <table class="table table-striped">
       <caption><h3 class="caption text-muted">editions</h3></caption>
@@ -65,6 +69,7 @@
       {% endif %}
     </table>
   </div>
+  {% endif %}
 
   {% if card.rulings.all %}
   <div class="col-sm-10">
@@ -84,7 +89,16 @@
 {% if collection %}
 <script type="text/javascript">
  ajaxGet('{% url "cardbox:collection_entries" collection.id card.id %}', function(content) {
-   // alert(content);
+   $('#entryTable').html(content);
+ });
+ $(document).on("eldarion-ajax:begin", function(evt, $el) {
+   $('#updateStatus').removeClass("text-success text-danger").addClass("text-primary").html('updating...');
+ });
+ $(document).on("eldarion-ajax:success", function(evt, $el, data, textStatus, jqXHR) {
+   $('#updateStatus').removeClass("text-danger text-primary").addClass("text-success").html('saved');
+ });
+ $(document).on("eldarion-ajax:error", function(evt, $el, data, textStatus, jqXHR) {
+   $('#updateStatus').removeClass("text-success text-primary").addClass("text-danger").html('error');
  });
 </script>
 {% endif %}

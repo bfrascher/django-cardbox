@@ -427,5 +427,8 @@ class CollectionEntry(models.Model):
                                              "copies in the collection.",
                                              default=0)
 
+    class Meta:
+        unique_together = ('collection', 'edition')
+
     def __str__(self):
         return '{0} in {1}'.format(self.edition, self.collection.name)

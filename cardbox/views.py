@@ -19,7 +19,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import F
-from django.http import Http404, HttpResponseRedirect
+from django.db.utils import IntegrityError
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils import timezone
 from django_ajax.decorators import ajax
@@ -310,7 +311,6 @@ def edit_collection(request, collection_id=None):
 
 @login_required
 def delete_collection(request, collection_id):
-    raise PermissionDenied("DEBUG")
     collection = get_object_or_404(Collection, pk=collection_id)
     if request.user == collection.owner:
         collection.delete()
@@ -411,36 +411,86 @@ def delete_collection_entry(request, entry_id):
 
 @ajax
 @login_required
+def update_collection_entries(request, collection_id):
+    collection = get_object_or_404(Collection, pk=collection_id)
+    if not can_edit_collection(request.user, collection):
+        raise PermissionDenied("You don't have permission to edit this collection.")
+    entry_ids = request.POST.getlist('entryID', [])
+    edition_ids = request.POST.getlist('editionID', [])
+    counts = request.POST.getlist('count', [])
+    fcounts = request.POST.getlist('fcount', [])
+
+    if not (len(entry_ids) == len(counts) == len(fcounts) == len(edition_ids)):
+        return HttpResponse("Invalid data", status=400)
+
+    for i, entry_id in enumerate(entry_ids):
+        # Ensure that counts[i] and fcounts[i] are numbers to prevent
+        # errors when inserting them into the database.
+        try:
+            if counts[i] is None or counts[i] == 'None':
+                count = 0
+            else:
+                count = int(counts[i])
+            if fcounts[i] is None or fcounts[i] == 'None':
+                fcount = 0
+            else:
+                fcount = int(fcounts[i])
+        except ValueError:
+            return HttpResponse('Invalid data', status=400)
+
+        try:
+            entry = CollectionEntry.objects.get(pk=entry_id)
+            # The user might have manipulated the entry ids, so we
+            # need to check whether or not we are still editing the
+            # same collection.
+            if collection != entry.collection:
+                raise PermissionDenied("You don't have permission to edit this collection entry.")
+            # Delete unnecessary entries.
+            if count == fcount == 0:
+                entry.delete()
+                continue
+        except (CollectionEntry.DoesNotExist, ValueError):
+            edition = get_object_or_404(CardEdition, pk=edition_ids[i])
+            entry = CollectionEntry(collection=collection, edition=edition)
+        entry.count = count
+        entry.foil_count = fcount
+        try:
+            entry.save()
+        except IntegrityError:
+            return HttpResponse('Invalid data', status=400)
+
+
+@ajax
+@login_required
 def collection_entries(request, collection_id, card_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     card = get_object_or_404(Card, pk=card_id)
     if not can_view_collection(request.user, collection):
         raise PermissionDenied("You don't have permission to access this data.")
 
-    if len(request.POST):
-        raise PermissionDenied("DEBUG")
-        count = request.POST.get('count', 0)
-        fcount = request.POST.get('fcount', 0)
-        entry_id = request.POST.get('entryID', 0)
-        entry = get_object_or_404(CollectionEntry, pk=entry_id)
-        if not can_edit_collection(request.user, entry.collection):
-            raise PermissionDenied("You don't have permission to edit this collection.")
-        entry.count = count
-        entry.foil_count = fcount
-        entry.save()
-
-    entries = CollectionEntry.objects.filter(collection=collection,
-                                             edition__card=card)
-    data = {
-        'inner-fragments': {
-            '#entryTable': render(request, 'cardbox/collection_entry_table.html', {
-                'card': card,
-                'collection': collection,
-                'entries': entries,
-            }),
-        }
-    }
-    return data
+    editions = CardEdition.objects.filter(card=card)
+    entries = []
+    for edition in editions:
+        try:
+            entry = CollectionEntry.objects.get(collection=collection,
+                                                edition=edition)
+        except CollectionEntry.DoesNotExist:
+            entry = CollectionEntry(count=0, foil_count=0)
+        entries.append((edition, entry))
+    # data = {
+    #     'inner-fragments': {
+    #         '#entryTable': render(request, 'cardbox/collection_entry_table.html', {
+    #             'card': card,
+    #             'collection': collection,
+    #             'entries': entries,
+    #         }),
+    #     }
+    # }
+    return render(request, 'cardbox/collection_entry_table.html', {
+        'card': card,
+        'collection': collection,
+        'entries': entries,
+    })
 
 
 @login_required
