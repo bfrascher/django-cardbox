@@ -32,7 +32,25 @@
       <p class="text-danger">This card is not legal in any format.</p>
       {% endif %}
     </div>
+
+    {% if card.multi_type %}
+    <div class="content">
+      <caption><h3 class="caption text-muted">other part{{ card.multi_cards.count|pluralize }}</h3></caption>
+      <ul>
+        {% for mcard in card.multi_cards.all %}
+        <li>
+          {% if collection %}
+          <a href="{% url 'cardbox:collection_card' collection.id mcard.id %}">{{ mcard.name }}</a>
+          {% else %}
+          <a href="{% url 'cardbox:card' mcard.id %}">{{ mcard.name }}</a>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </div>
+
   <div class="col-md-5">
     <img src="{% static card.get_image_url %}" class="img-responsive" alt="{{ card.name }}">
     <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
