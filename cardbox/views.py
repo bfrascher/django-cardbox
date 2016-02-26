@@ -451,13 +451,12 @@ def update_collection_entries(request, collection_id):
             return HttpResponse('Invalid data', status=400)
 
 
-@ajax
 @login_required
-def collection_entries(request, collection_id, card_id):
+def collection_card(request, collection_id, card_id):
     collection = get_object_or_404(Collection, pk=collection_id)
     card = get_object_or_404(Card, pk=card_id)
     if not can_view_collection(request.user, collection):
-        raise PermissionDenied("You don't have permission to access this data.")
+        raise PermissionDenied("You don't have permission to access this page.")
 
     editions = CardEdition.objects.filter(card=card)
     entries = []
@@ -469,29 +468,10 @@ def collection_entries(request, collection_id, card_id):
             entry = CollectionEntry(count=0, foil_count=0)
         entries.append((edition, entry))
 
-    return render(request, 'cardbox/collection_entry_table.html', {
-        'card': card,
-        'collection': collection,
-        'entries': entries,
-        'editable': can_edit_collection(request.user, collection)
-    })
-
-
-@login_required
-def collection_card(request, collection_id, card_id):
-    collection = get_object_or_404(Collection, pk=collection_id)
-    card = get_object_or_404(Card, pk=card_id)
-    entries = CollectionEntry.objects.filter(collection__id=collection_id,
-                                             edition__card__id=card_id)
-    if not can_view_collection(request.user, collection):
-        raise PermissionDenied("You don't have permission to access this page.")
-    if entries is None:
-        return Http404('Card {0} is not in the collection {1}'
-                       .format(card.name, collection.name))
-
     return render(request, 'cardbox/card_detail.html', {
         'collection': collection,
         'card': card,
         'entries': entries,
         'legality': card.get_legality(),
+        'editable': can_edit_collection(request.user, collection),
     })

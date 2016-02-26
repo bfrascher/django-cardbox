@@ -56,11 +56,10 @@
     <p><a href="http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={{ card.multiverseid }}">Gatherer</a> &#9899; <a href="http://magiccards.info/query?q={{ card.name }}">MagicCardsInfo</a></p>
   </div>
 
-  {% if collection %}
-  <div class="col-sm-10" id="entryTable" data-refresh-url="{% url 'cardbox:collection_entries' collection.id card.id %}">
-  </div>
-  {% else %}
-  <div class="col-sm-10" id="entryTable">
+  <div class="col-sm-10" id="editionTable">
+    {% if collection %}
+    {% include 'cardbox/collection_entry_table.html' %}
+    {% else %}
     <table class="table table-striped">
       <caption><h3 class="caption text-muted">editions</h3></caption>
       {% if editions %}
@@ -84,8 +83,8 @@
       </tbody>
       {% endif %}
     </table>
+    {% endif %}
   </div>
-  {% endif %}
 
   {% if card.rulings.all %}
   <div class="col-sm-10">
@@ -104,9 +103,6 @@
 {% block js %}
 {% if collection %}
 <script type="text/javascript">
- ajaxGet('{% url "cardbox:collection_entries" collection.id card.id %}', function(content) {
-   $('#entryTable').html(content);
- });
  $(document).on("eldarion-ajax:begin", function(evt, $el) {
    if ($el.hasClass("form ajax")) {
      $('#updateStatus').removeClass("text-success text-danger").addClass("text-primary").html('updating...');
