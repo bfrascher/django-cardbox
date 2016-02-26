@@ -207,7 +207,10 @@ def collection(request, collection_id):
     if not can_view_collection(request.user, collection):
         raise PermissionDenied
 
-    card_list = Card.objects.filter(editions__collection__id=collection_id)
+    if request.GET.get('show', 'c') == 'a':
+        card_list = Card.objects.all()
+    else:
+        card_list = Card.objects.filter(editions__collection__id=collection_id)
     card_list, ferrors = _filter_cards(request, card_list)
 
     paginator = Paginator(card_list, 30, request=request)
