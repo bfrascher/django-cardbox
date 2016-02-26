@@ -38,11 +38,13 @@
       regular expression.
     </div>
   </div>
+  {% if collection %}
   <div class="checkbox">
     <label>
       <input type="checkbox" id="all" name="all"{% if get.all == 'on' %} checked="checked"{% endif %}> Show all cards in the database
     </label>
   </div>
+  {% endif %}
   <div class="form-group{% if ferrors.fna %} {{ ferrors.fna }} {% endif %}">
     <label for="fna" class="sr-only">Card name</label>
     <input type="text" id="fna" name="fna" class="form-control" placeholder="Card name" value="{{ get.fna }}" data-toggle="popover" data-html="true" data-placement="top" data-trigger="focus" title="<strong>Card name</strong>" data-content="<strong>Example</strong>: =Sphinx ~'Sphinx of the'<br /><strong>Operators</strong>: <strong>~</strong>, <strong>&</strong>, <strong>|</strong>, <strong>=</strong>, <strong>'</strong>, <strong>r'</strong>">
