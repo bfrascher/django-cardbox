@@ -468,19 +468,12 @@ def collection_entries(request, collection_id, card_id):
         except CollectionEntry.DoesNotExist:
             entry = CollectionEntry(count=0, foil_count=0)
         entries.append((edition, entry))
-    # data = {
-    #     'inner-fragments': {
-    #         '#entryTable': render(request, 'cardbox/collection_entry_table.html', {
-    #             'card': card,
-    #             'collection': collection,
-    #             'entries': entries,
-    #         }),
-    #     }
-    # }
+
     return render(request, 'cardbox/collection_entry_table.html', {
         'card': card,
         'collection': collection,
         'entries': entries,
+        'editable': can_edit_collection(request.user, collection)
     })
 
 
