@@ -368,6 +368,7 @@ class CardEdition(models.Model):
 
     class Meta:
         unique_together = ('number', 'number_suffix', 'mtgset',)
+        ordering = ('-mtgset__release_date',)
 
     def __str__(self):
         if self.card:
