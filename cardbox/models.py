@@ -295,6 +295,12 @@ class Card(models.Model):
         sum = (CollectionEntry.objects.filter(
             collection=collection, edition__card=self)
                .aggregate(count=Sum('count'), foil_count=Sum('foil_count')))
+        # The values should always be a number since the output could
+        # be shown to the user.
+        if sum['count'] is None:
+            sum['count'] = 0
+        if sum['foil_count'] is None:
+            sum['foil_count'] = 0
         return sum['count'], sum['foil_count']
 
     def rules_html(self):
