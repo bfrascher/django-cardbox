@@ -209,10 +209,8 @@ def collection(request, collection_id):
 
     card_list = Card.objects.filter(editions__collection__id=collection_id)
     card_list, ferrors = _filter_cards(request, card_list)
-    list_entries = [(*card.get_count_in_collection(collection_id),
-                     card) for card in card_list]
 
-    paginator = Paginator(list_entries, 30, request=request)
+    paginator = Paginator(card_list, 30, request=request)
 
     page = request.GET.get('page', 1)
     try:
@@ -221,6 +219,9 @@ def collection(request, collection_id):
         entries = paginator.page(1)
     except EmptyPage:
         entries = paginator.page(paginator.num_pages)
+
+    entries.object_list = [(*card.get_count_in_collection(collection_id),
+                            card) for card in entries.object_list]
 
     layout = request.GET.get('layout', 'list')
     if layout not in ['list', 'grid']:
