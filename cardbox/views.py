@@ -116,7 +116,7 @@ def _filter_cards(request, queryset):
     filtered, errors['fmt'] = filter_cards_by_multi_type(filtered, fstr_multi_type)
     filtered, errors['fbs'] = filter_cards_by_blocks_sets(filtered, fstr_block_sets)
 
-    return filtered, errors
+    return filtered.distinct(), errors
 
 
 def index(request):
