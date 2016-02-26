@@ -1,8 +1,9 @@
 {% load staticfiles %}
 
-{% if request.user == collection.owner or request.user in collection.editors %}
+{% if editable %}
 <form class="form ajax" action="{% url 'cardbox:update_collection_entries' collection.id %}" method="post">
   {% csrf_token  %}
+{% endif %}
   <table class="table table-striped">
     <caption><h3 class="caption text-muted">editions <small id="updateStatus"></small></h3></caption>
     <thead>
@@ -19,10 +20,15 @@
     <tbody>
       {% for edition, entry in entries %}
       <tr>
+        {% if editable %}
         <input type="hidden" name="entryID" value="{{ entry.id }}">
         <input type="hidden" name="editionID" value="{{ edition.id }}">
         <td><input class="entry-number-field" type="number" id="count-{{ entry.id }}" name="count" value="{{ entry.count }}"></td>
         <td><input class="entry-number-field" type="number" id="fcount-{{ entry.id }}" name="fcount" value="{{ entry.foil_count }}"></td>
+        {% else %}
+        <td>{{ entry.count}}</td>
+        <td>{{ entry.foil_count}}</td>
+        {% endif %}
         <td>{{ edition.number }}{{ edition.number_suffix }}</td>
         <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>
         <td>{{ edition.rarity }}</td>
@@ -32,34 +38,8 @@
       {% endif %}
     </tbody>
   </table>
+{% if editable %}
   <button type="submit" class="btn btn-success"><img src="{% static 'cardbox/images/icons/save.png' %}"> Save</button>
+
 </form>
-{% else %}
-<table class="table table-striped">
-  <caption><h3 class="caption text-muted">editions</h3></caption>
-  <thead>
-    <tr>
-      <th>Copies</th>
-      <th>Foils</th>
-      <th>Number</th>
-      <th>Set</th>
-      <th>Rarity</th>
-      <th>Artist</th>
-    </tr>
-  </thead>
-  {% if entries %}
-  <tbody>
-    {% for edition, entry in entries %}
-    <tr>
-      <td>{{ entry.count }}</td>
-      <td>{{ entry.foil_count }}</td>
-      <td>{{ edition.number }}{{ edition.number_suffix }}</td>
-      <td>[{{ edition.mtgset.code }}] {{ edition.mtgset.name }}</td>
-      <td>{{ edition.rarity }}</td>
-      <td>{{ edition.artist }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-  {% endif %}
-</table>
 {% endif %}
