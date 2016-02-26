@@ -303,12 +303,6 @@ class Card(models.Model):
             sum['foil_count'] = 0
         return sum['count'], sum['foil_count']
 
-    def rules_html(self):
-        return self.rules.replace('\n', '<br />')
-
-    def flavour_html(self):
-        return self.flavour.replace('\n', '<br />')
-
     def get_legality(self):
         legality = {}
         legality['legal'] = []
