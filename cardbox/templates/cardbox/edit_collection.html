@@ -2,14 +2,15 @@
 
 {% block content %}
 
+<div class="page-header">
+  {% if collection %}
+  <h1>Edit <a href="{% url 'cardbox:collection' collection.id %}">{{ collection.name }}</a></h1>
+  {% else %}
+  <h1>New Collection
+  {% endif %}
+</div>
+
 <div class="panel panel-primary">
-  <div class="panel-heading">
-    {% if collection %}
-    <h3 class="panel-title">Edit Collection</h3>
-    {% else %}
-    <h3 class="panel-title">New Collection</h3>
-    {% endif %}
-  </div>
   <div class="panel-body">
     {% if collection %}
     <form action="{% url 'cardbox:edit_collection' collection.id %}" method="post">
